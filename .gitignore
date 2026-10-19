@@ -1,0 +1,14 @@
+# Screenshot e file di prova dell'interfaccia: non sono sorgenti
+web/_shots/
+# Output di compilazione .NET
+bin/
+obj/
+*.user
+.vs/
+TestResults/
+# Dipendenze e file temporanei
+node_modules/
+*.bad
+*.tmp
+.DS_Store
+Thumbs.db

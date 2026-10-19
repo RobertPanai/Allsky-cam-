@@ -1,0 +1,117 @@
+{
+  "app": {
+    "title": "All-sky",
+    "loading": "Loading…",
+    "offline": "The engine is not responding. I will retry on my own every few seconds.",
+    "retry": "Retry"
+  },
+  "a11y": {
+    "skip": "Skip to content"
+  },
+  "nav": {
+    "label": "Sections",
+    "live": "Live",
+    "nights": "Nights",
+    "color": "Colour",
+    "camera": "Camera",
+    "site": "Site"
+  },
+  "phase": {
+    "day": "Day",
+    "twilight": "Twilight",
+    "night": "Night"
+  },
+  "state": {
+    "capturing": "sky being captured",
+    "idle": "camera paused",
+    "error": "capture interrupted"
+  },
+  "live": {
+    "title": "{phase}, {state}",
+    "lede": "Last frame at {time}",
+    "ledeNoFrame": "No frame yet. If the first one does not arrive, check that the camera is connected.",
+    "ledeLoading": "Reading the engine status…",
+    "titleIdle": "{phase}, waiting",
+    "ledeIdle": "Capture has not started yet. Frames will appear here once it starts.",
+    "sky": {
+      "alt": "Latest frame from the all-sky camera",
+      "latest": "Last frame, {time}",
+      "picked": "Frame at {time}",
+      "empty": "No frame yet. If the first one does not arrive, check that the camera is connected.",
+      "broken": "I cannot load this frame. I will retry at the next update.",
+      "loading": "Loading the latest frame…",
+      "idle": "Capture has not started yet, so there is no frame."
+    },
+    "readouts": {
+      "exposure": "Exposure",
+      "gain": "Gain",
+      "median": "Median ADU",
+      "disk": "Free disk",
+      "camera": "Camera status",
+      "sun": "Sun altitude"
+    },
+    "camera": {
+      "connected": "{name}, connected",
+      "disconnected": "{name}, not connected",
+      "unknown": "No camera",
+      "loading": "Checking the camera…"
+    },
+    "units": {
+      "s": "{n} s",
+      "ms": "{n} ms",
+      "gb": "{n} GB",
+      "deg": "{n}°"
+    },
+    "ribbon": {
+      "title": "Night from {date}",
+      "sample": "Sample band: the engine has not provided the phases yet.",
+      "sampleNoSite": "Sample band: set the site position to see the real sun altitude.",
+      "sun": "Sun altitude {deg}",
+      "hint": "Drag the band or use the arrow keys to choose a frame.",
+      "picked": "Frame at {time}",
+      "latest": "Last frame, {time}",
+      "back": "Back to the last frame",
+      "label": "Choose a frame from the night",
+      "empty": "No frame in this night yet. If the first one does not arrive, check that the camera is connected."
+    },
+    "problem": {
+      "action": "Go to Camera",
+      "disconnected": "I cannot find the camera. Connect it with the USB cable or over the network, or start the ASCOM simulator, then try again.",
+      "error": "The camera is not responding and frames have stopped. Check the USB cable or the network connection, then try again."
+    },
+    "key": {
+      "day": "Day: Sun above the horizon",
+      "civil": "Civil twilight: from 0° to −6°",
+      "nautical": "Nautical twilight: from −6° to −12°",
+      "astronomical": "Astronomical twilight: from −12° to −18°",
+      "night": "Night: Sun below −18°",
+      "curve": "The line is the Sun's altitude; the thin horizontal line is the horizon (0°).",
+      "lines": "Dashed lines mark the phase changes."
+    }
+  },
+  "placeholder": {
+    "nights": {
+      "title": "Nights",
+      "body": "Here you will review past nights, with timelapse, keogram and startrails. Coming in the next version."
+    },
+    "color": {
+      "title": "Colour",
+      "body": "Here you will adjust the sky colours with a before and after preview. Coming in the next version."
+    },
+    "camera": {
+      "title": "Camera",
+      "body": "Here you will choose the camera and its settings. Coming in the next version."
+    },
+    "site": {
+      "title": "Site",
+      "body": "Here you will enter the observatory location. Coming in the next version."
+    }
+  },
+  "errors": {
+    "network": "I cannot reach the engine. Check that it is running, then try again.",
+    "timeout": "The engine did not answer within a few seconds. Try again in a moment.",
+    "http": "The engine answered with an error. Try again; if it keeps happening, check the log.",
+    "parse": "The engine answered in an unexpected format. Reload the page.",
+    "unknown": "Something did not go as expected. Try again."
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "color": {
+    "title": "Colour",
+    "lede": "Adjust the sky colours and compare the original frame with the processed one.",
+    "modes": {
+      "label": "What to see",
+      "onlyRaw": "Original only",
+      "onlyDone": "Processed only"
+    },
+    "compare": {
+      "label": "Comparison between the original and the processed frame",
+      "divider": "Divider between original and processed",
+      "valueText": "Original {raw}%, processed {done}%",
+      "rawTag": "Original",
+      "doneTag": "Processed",
+      "rawAlt": "Original frame, without balance or gradient removal",
+      "doneAlt": "Processed frame"
+    },
+    "preview": {
+      "empty": "No frame yet. As soon as the first one arrives, you can compare it here.",
+      "error": "I cannot load the frame. Try again in a moment."
+    },
+    "hist": {
+      "title": "Sky background",
+      "help": "How much light there is in red, green and blue in the processed frame.",
+      "label": "Histogram of the red, green and blue channels",
+      "none": "No frame to analyse yet.",
+      "neutral": "Neutral background: the three channels are almost equal.",
+      "tint": "Background leaning towards {channel}.",
+      "redName": "red",
+      "greenName": "green",
+      "blueName": "blue",
+      "medians": "Median values: R {r}, G {g}, B {b}.",
+      "r": "R",
+      "g": "G",
+      "b": "B"
+    },
+    "balance": {
+      "label": "White balance",
+      "help": "Automatic removes the colour casts of the sky. Manual lets you adjust red, green and blue one by one.",
+      "auto": "Automatic",
+      "manual": "Manual",
+      "r": "Red",
+      "g": "Green",
+      "b": "Blue",
+      "gainHelp": "Higher puts more of that colour in the sky background. At 1 the channel stays as it is.",
+      "swatch": "Preview: a neutral grey becomes R {r}, G {g}, B {b}."
+    },
+    "stability": {
+      "label": "Stability from one frame to the next",
+      "help": "Higher, less flicker in the timelapse."
+    },
+    "gradient": {
+      "label": "Gradient removal",
+      "help": "Removes the veil of light near the horizon. Too high darkens low clouds as well."
+    },
+    "curve": {
+      "label": "Curve",
+      "mtf": "MTF",
+      "asinh": "Asinh",
+      "help": "MTF makes faint stars more visible. Asinh protects bright areas and colours."
+    },
+    "saturation": {
+      "label": "Saturation",
+      "help": "1 leaves the colours as they are. Higher makes them stronger, lower makes them softer."
+    },
+    "actions": {
+      "save": "Save",
+      "reset": "Restore recommended values",
+      "confirmText": "Go back to the recommended values? The adjustments you made will be lost.",
+      "confirm": "Restore",
+      "cancel": "Cancel"
+    },
+    "status": {
+      "applying": "Applying…",
+      "saved": "Saved at {time}.",
+      "error": "Not saved. {message}",
+      "retry": "Retry"
+    }
+  }
+}

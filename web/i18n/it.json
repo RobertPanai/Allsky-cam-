@@ -1,0 +1,117 @@
+{
+  "app": {
+    "title": "All-sky",
+    "loading": "Carico…",
+    "offline": "Il motore non risponde. Riprovo da solo ogni pochi secondi.",
+    "retry": "Riprova"
+  },
+  "a11y": {
+    "skip": "Vai al contenuto"
+  },
+  "nav": {
+    "label": "Sezioni",
+    "live": "Live",
+    "nights": "Notti",
+    "color": "Colore",
+    "camera": "Camera",
+    "site": "Sito"
+  },
+  "phase": {
+    "day": "Giorno",
+    "twilight": "Crepuscolo",
+    "night": "Notte"
+  },
+  "state": {
+    "capturing": "cielo in cattura",
+    "idle": "camera in pausa",
+    "error": "cattura interrotta"
+  },
+  "live": {
+    "title": "{phase}, {state}",
+    "lede": "Ultimo frame alle {time}",
+    "ledeNoFrame": "Nessun frame ancora. Se il primo non arriva, controlla che la camera sia connessa.",
+    "ledeLoading": "Leggo lo stato del motore…",
+    "titleIdle": "{phase}, in attesa",
+    "ledeIdle": "La cattura non è ancora iniziata. Quando parte, qui compaiono i frame.",
+    "sky": {
+      "alt": "Ultimo frame della camera all-sky",
+      "latest": "Ultimo frame, {time}",
+      "picked": "Frame delle {time}",
+      "empty": "Nessun frame ancora. Se il primo non arriva, controlla che la camera sia connessa.",
+      "broken": "Non riesco a caricare questo frame. Riprovo al prossimo aggiornamento.",
+      "loading": "Carico l'ultimo frame…",
+      "idle": "La cattura non è ancora iniziata, quindi non c'è nessun frame."
+    },
+    "readouts": {
+      "exposure": "Esposizione",
+      "gain": "Guadagno",
+      "median": "Mediana ADU",
+      "disk": "Disco libero",
+      "camera": "Stato camera",
+      "sun": "Altezza del Sole"
+    },
+    "camera": {
+      "connected": "{name}, connessa",
+      "disconnected": "{name}, non connessa",
+      "unknown": "Nessuna camera",
+      "loading": "Controllo la camera…"
+    },
+    "units": {
+      "s": "{n} s",
+      "ms": "{n} ms",
+      "gb": "{n} GB",
+      "deg": "{n}°"
+    },
+    "ribbon": {
+      "title": "Notte dal {date}",
+      "sample": "Fascia di esempio: il motore non ha ancora fornito le fasi.",
+      "sampleNoSite": "Fascia di esempio: imposta la posizione del sito per vedere l'altezza reale del Sole.",
+      "sun": "Altezza del Sole {deg}",
+      "hint": "Trascina il nastro o usa le frecce per scegliere un frame.",
+      "picked": "Frame delle {time}",
+      "latest": "Ultimo frame, {time}",
+      "back": "Torna all'ultimo frame",
+      "label": "Scegli un frame della notte",
+      "empty": "Nessun frame in questa notte ancora. Se il primo non arriva, controlla che la camera sia connessa."
+    },
+    "problem": {
+      "action": "Vai a Camera",
+      "disconnected": "Non trovo la camera. Collegala con il cavo USB o in rete, oppure avvia il simulatore ASCOM, poi riprova.",
+      "error": "La camera non risponde e i frame si sono fermati. Controlla il cavo USB o la connessione in rete, poi riprova."
+    },
+    "key": {
+      "day": "Giorno: Sole sopra l'orizzonte",
+      "civil": "Crepuscolo civile: da 0° a −6°",
+      "nautical": "Crepuscolo nautico: da −6° a −12°",
+      "astronomical": "Crepuscolo astronomico: da −12° a −18°",
+      "night": "Notte: Sole sotto −18°",
+      "curve": "La linea è l'altezza del Sole; la linea sottile orizzontale è l'orizzonte (0°).",
+      "lines": "Le linee tratteggiate segnano i passaggi di fase."
+    }
+  },
+  "placeholder": {
+    "nights": {
+      "title": "Notti",
+      "body": "Qui rivedrai le notti passate, con timelapse, keogram e startrails. Arriva nella prossima versione."
+    },
+    "color": {
+      "title": "Colore",
+      "body": "Qui regolerai i colori del cielo con l'anteprima prima e dopo. Arriva nella prossima versione."
+    },
+    "camera": {
+      "title": "Camera",
+      "body": "Qui sceglierai la camera e i suoi parametri. Arriva nella prossima versione."
+    },
+    "site": {
+      "title": "Sito",
+      "body": "Qui inserirai la posizione dell'osservatorio. Arriva nella prossima versione."
+    }
+  },
+  "errors": {
+    "network": "Non riesco a contattare il motore. Controlla che sia avviato, poi riprova.",
+    "timeout": "Il motore non risponde entro pochi secondi. Riprova tra un momento.",
+    "http": "Il motore ha risposto con un errore. Riprova; se continua, controlla il registro.",
+    "parse": "Il motore ha risposto in un formato inatteso. Ricarica la pagina.",
+    "unknown": "Qualcosa non è andato come previsto. Riprova."
+  }
+}

@@ -1,0 +1,50 @@
+<!doctype html>
+<!-- Pagina di prova della schermata Colore. Non fa parte dell'app: serve solo per verificare la vista
+     con il motore di prova. Tema: ?theme=night|day|red. -->
+<html lang="it" data-theme="night">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" href="data:,">
+  <base href="/">
+  <title>Prova schermata Colore</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/color.css">
+</head>
+<body>
+  <main id="main" class="main" tabindex="-1">
+    <div id="view" class="view"></div>
+  </main>
+
+  <script type="module">
+    import { api } from '/js/api.js';
+    import { loadLocale, applyI18n } from '/js/i18n.js';
+    import { mount } from '/js/views/color.js';
+
+    const params = new URLSearchParams(location.search);
+    document.documentElement.dataset.theme = params.get('theme') || 'night';
+
+    const config = await api.config();
+    await loadLocale(config.language);
+    applyI18n(document);
+    document.title = 'Prova schermata Colore';
+
+    const status = await api.status();
+    const listeners = { status: new Set(), frame: new Set() };
+    const ctx = {
+      config,
+      getStatus: () => status,
+      on(kind, fn) {
+        listeners[kind].add(fn);
+        return () => listeners[kind].delete(fn);
+      },
+    };
+    window.__harness = { ctx, listeners, status };
+    window.__colorView = await mount(document.getElementById('view'), ctx);
+    document.querySelector('h1')?.focus({ preventScroll: true });
+  </script>
+</body>
+</html>

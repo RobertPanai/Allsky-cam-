@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>AllSky.Core</RootNamespace>
+    <AssemblyName>AllSky.Core</AssemblyName>
+  </PropertyGroup>
+
+</Project>

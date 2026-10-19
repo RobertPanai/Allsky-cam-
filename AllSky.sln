@@ -1,0 +1,55 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllSky.Core", "src\AllSky.Core\AllSky.Core.csproj", "{B8697CE0-9299-4E22-975A-20A4E6837EFB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllSky.Core.Tests", "tests\AllSky.Core.Tests\AllSky.Core.Tests.csproj", "{40DDA10E-3372-430D-BD32-1A139C8007BA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllSky.Astro", "src\AllSky.Astro\AllSky.Astro.csproj", "{3AC10688-6312-449D-BB36-A55A15811EDD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllSky.Astro.Tests", "tests\AllSky.Astro.Tests\AllSky.Astro.Tests.csproj", "{CBBDF34C-B980-4166-B8F7-A4D208AC548C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllSky.Imaging", "src\AllSky.Imaging\AllSky.Imaging.csproj", "{309F1D28-6B69-40C7-8B3B-0484B5246DD8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllSky.Imaging.Tests", "tests\AllSky.Imaging.Tests\AllSky.Imaging.Tests.csproj", "{68FC262C-04E2-4D35-89E0-031EE746CB0A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8697CE0-9299-4E22-975A-20A4E6837EFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8697CE0-9299-4E22-975A-20A4E6837EFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8697CE0-9299-4E22-975A-20A4E6837EFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8697CE0-9299-4E22-975A-20A4E6837EFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40DDA10E-3372-430D-BD32-1A139C8007BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40DDA10E-3372-430D-BD32-1A139C8007BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40DDA10E-3372-430D-BD32-1A139C8007BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40DDA10E-3372-430D-BD32-1A139C8007BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AC10688-6312-449D-BB36-A55A15811EDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AC10688-6312-449D-BB36-A55A15811EDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AC10688-6312-449D-BB36-A55A15811EDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AC10688-6312-449D-BB36-A55A15811EDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBBDF34C-B980-4166-B8F7-A4D208AC548C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBBDF34C-B980-4166-B8F7-A4D208AC548C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBBDF34C-B980-4166-B8F7-A4D208AC548C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBBDF34C-B980-4166-B8F7-A4D208AC548C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{309F1D28-6B69-40C7-8B3B-0484B5246DD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{309F1D28-6B69-40C7-8B3B-0484B5246DD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{309F1D28-6B69-40C7-8B3B-0484B5246DD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{309F1D28-6B69-40C7-8B3B-0484B5246DD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68FC262C-04E2-4D35-89E0-031EE746CB0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68FC262C-04E2-4D35-89E0-031EE746CB0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68FC262C-04E2-4D35-89E0-031EE746CB0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68FC262C-04E2-4D35-89E0-031EE746CB0A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E881B06F-0F4A-42BB-89A7-FE7376A69784}
+	EndGlobalSection
+EndGlobal

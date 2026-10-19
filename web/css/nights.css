@@ -1,0 +1,687 @@
+/* Schermata Notti: elenco delle notti, pannello di dettaglio e nastro dei frame.
+ * Colori, spazi e raggi vengono solo dai token di tokens.css, così valgono anche nei temi day e red. */
+
+/* ---------- Elenco ---------- */
+
+.nights {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.nights-head {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.nights-status {
+  font-size: var(--fs-14);
+  color: var(--ok);
+}
+
+.nights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-4);
+}
+
+.night-card {
+  min-width: 0;
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition: background-color 150ms ease;
+}
+
+.night-card:hover {
+  background: var(--surface-2);
+}
+
+.night-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: var(--radius-panel);
+  color: inherit;
+  text-decoration: none;
+}
+
+.night-thumb {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+  background: var(--surface-2);
+}
+
+.night-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.night-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.night-kicker {
+  font-size: var(--fs-12);
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.night-title {
+  display: block;
+  font-size: var(--fs-16);
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.night-meta {
+  font-size: var(--fs-14);
+  color: var(--text-2);
+}
+
+.night-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.night-flag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: var(--fs-12);
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+.night-flag[data-state="ready"] {
+  border-color: var(--ok);
+}
+
+.night-flag[data-state="ready"] .night-flag-value {
+  color: var(--ok);
+}
+
+.night-flag[data-state="generating"] {
+  border-color: var(--accent);
+}
+
+.night-flag[data-state="generating"] .night-flag-value {
+  color: var(--accent);
+}
+
+.night-flag[data-state="failed"] {
+  border-color: var(--err);
+}
+
+.night-flag[data-state="failed"] .night-flag-value {
+  color: var(--err);
+}
+
+/* La notte più recente è la più grande: immagine più alta, titolo più grande, due colonne quando c'è spazio. */
+.night-card.is-latest .night-thumb {
+  aspect-ratio: 21 / 9;
+}
+
+.night-card.is-latest .night-title {
+  font-size: var(--fs-20);
+}
+
+@media (min-width: 720px) {
+  .night-card.is-latest {
+    grid-column: span 2;
+  }
+}
+
+.nights-empty {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  max-width: 60ch;
+  padding: var(--space-5);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-panel);
+  font-size: var(--fs-14);
+}
+
+.nights-empty-title {
+  font-size: var(--fs-20);
+  font-weight: 600;
+}
+
+/* ---------- Pulsanti di questa schermata ---------- */
+
+.btn.np-primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.btn.np-primary:hover {
+  background: var(--accent);
+  opacity: 0.9;
+}
+
+.btn.np-danger-btn {
+  border-color: currentColor;
+  color: var(--err);
+}
+
+/* Anche i link con aspetto di pulsante (Scarica) non sono sottolineati. */
+a.btn {
+  text-decoration: none;
+}
+
+/* ---------- Pannello di dettaglio (dialog laterale; a schermo intero sul telefono) ---------- */
+
+.np {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(600px, 100%);
+  height: 100dvh;
+  max-width: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.np::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.np[open] {
+  animation: np-in 220ms var(--ease-out) both;
+}
+
+@keyframes np-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.np-body {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+  padding: var(--space-5) var(--space-5) var(--space-6);
+}
+
+.np-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.np-heading {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.np-title {
+  font-size: var(--fs-28);
+  font-weight: 600;
+  line-height: 1.2;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.np-meta {
+  font-size: var(--fs-14);
+  color: var(--text-2);
+}
+
+.np-section {
+  font-size: var(--fs-20);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Schede */
+
+.np-tabs {
+  display: flex;
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--line);
+}
+
+.np-tab {
+  min-height: 44px;
+  margin-bottom: -1px;
+  padding: 8px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--fs-14);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.np-tab:hover {
+  color: var(--text);
+}
+
+.np-tab[aria-selected="true"] {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+.np-tabpanel {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.np-tabpanel > * {
+  animation: np-fade 180ms ease both;
+}
+
+@keyframes np-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.np-media {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.np-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-panel);
+  background: var(--bg);
+}
+
+.np-image-img {
+  width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+  border-radius: var(--radius-panel);
+  background: var(--bg);
+}
+
+.np-fallback {
+  font-size: var(--fs-14);
+  color: var(--text-2);
+}
+
+.np-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.np-actions-end {
+  justify-content: flex-end;
+}
+
+.np-block {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  font-size: var(--fs-14);
+}
+
+.np-job {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.np-job-text {
+  font-size: var(--fs-16);
+}
+
+.np-progress {
+  width: 100%;
+  height: 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.np-progress::-webkit-progress-bar {
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+.np-progress::-webkit-progress-value {
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 400ms var(--ease-out);
+}
+
+.np-progress::-moz-progress-bar {
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+/* Nastro dei frame */
+
+.np-ribbon {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.np-pick {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.np-preview {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.np-preview-img,
+.np-preview-empty {
+  width: 144px;
+  height: 144px;
+  border-radius: 50%;
+}
+
+.np-preview-img {
+  object-fit: cover;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+
+.np-preview-empty {
+  display: grid;
+  place-items: center;
+  padding: var(--space-3);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: var(--fs-14);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.np-pick-text {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.np-pick-time {
+  font-size: var(--fs-28);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.np-pick-phase,
+.np-hint,
+.np-note {
+  font-size: var(--fs-14);
+  color: var(--text-2);
+}
+
+.np-track {
+  position: relative;
+  height: 48px;
+  border-radius: var(--radius-control);
+  touch-action: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.np-track[aria-disabled="true"] {
+  cursor: default;
+}
+
+.np-bands {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.np-seg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.np-seg-day {
+  background: var(--phase-day);
+}
+
+.np-seg-twilight {
+  background: var(--phase-twilight);
+}
+
+.np-seg-night {
+  background: var(--phase-night);
+}
+
+.np-cursor {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  width: 3px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--text);
+  box-shadow: 0 0 0 2px var(--bg);
+  pointer-events: none;
+}
+
+.np-axis {
+  position: relative;
+  height: 20px;
+  font-size: var(--fs-12);
+  color: var(--text-2);
+}
+
+.np-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.np-tick:first-child {
+  transform: none;
+}
+
+.np-tick:last-child {
+  transform: translateX(-100%);
+}
+
+.np-strip {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 4px 2px 8px;
+}
+
+.np-thumb {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 44px;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background: var(--surface-2);
+  cursor: pointer;
+}
+
+.np-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.np-thumb[aria-current="true"] {
+  border-color: var(--accent);
+}
+
+/* Eliminazione */
+
+.np-danger {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
+}
+
+.np-danger p {
+  font-size: var(--fs-14);
+  color: var(--text-2);
+}
+
+/* Conferma: finestra centrata. */
+
+.np-confirm {
+  width: min(440px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  max-height: none;
+  margin: auto;
+  padding: var(--space-5);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+.np-confirm::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.np-confirm-body {
+  margin-top: var(--space-2);
+  margin-bottom: var(--space-4);
+  font-size: var(--fs-14);
+  color: var(--text-2);
+}
+
+.np-confirm .notice {
+  margin-bottom: var(--space-4);
+}
+
+/* Ingrandimento a tutto schermo. */
+
+.np-zoom {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.np-zoom::backdrop {
+  background: var(--bg);
+}
+
+.np-zoom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--gutter);
+  border-bottom: 1px solid var(--line);
+}
+
+.np-zoom-img {
+  display: block;
+  width: 100%;
+  height: calc(100% - 64px);
+  object-fit: contain;
+}
+
+/* ---------- Adattamento al telefono ---------- */
+
+@media (max-width: 719px) {
+  .np {
+    width: 100%;
+  }
+
+  .np-body {
+    gap: var(--space-4);
+    padding: var(--space-4) var(--gutter) calc(var(--space-6) + env(safe-area-inset-bottom));
+  }
+
+  .np-title {
+    font-size: var(--fs-20);
+  }
+
+  .np-preview-img,
+  .np-preview-empty {
+    width: 112px;
+    height: 112px;
+  }
+
+  .np-pick-time {
+    font-size: var(--fs-20);
+  }
+
+  .btn.np-primary,
+  .btn.np-danger-btn,
+  .np-tab {
+    min-height: 44px;
+  }
+
+  .np-thumb {
+    width: 56px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 380px) {
+  .np-pick {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

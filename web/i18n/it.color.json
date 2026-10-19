@@ -1,0 +1,81 @@
+{
+  "color": {
+    "title": "Colore",
+    "lede": "Regola i colori del cielo e confronta il frame originale con quello elaborato.",
+    "modes": {
+      "label": "Cosa vedere",
+      "onlyRaw": "Solo originale",
+      "onlyDone": "Solo elaborata"
+    },
+    "compare": {
+      "label": "Confronto fra frame originale ed elaborato",
+      "divider": "Divisore fra originale ed elaborata",
+      "valueText": "Originale {raw}%, elaborata {done}%",
+      "rawTag": "Originale",
+      "doneTag": "Elaborata",
+      "rawAlt": "Frame originale, senza bilanciamento né rimozione del gradiente",
+      "doneAlt": "Frame elaborato"
+    },
+    "preview": {
+      "empty": "Nessun frame ancora. Appena arriva il primo, lo confronti qui.",
+      "error": "Non riesco a caricare il frame. Riprova tra un momento."
+    },
+    "hist": {
+      "title": "Fondo del cielo",
+      "help": "Quanta luce c'è in rosso, verde e blu nel frame elaborato.",
+      "label": "Istogramma dei canali rosso, verde e blu",
+      "none": "Nessun frame da analizzare ancora.",
+      "neutral": "Fondo neutro: i tre canali sono quasi uguali.",
+      "tint": "Fondo tendente al {channel}.",
+      "redName": "rosso",
+      "greenName": "verde",
+      "blueName": "blu",
+      "medians": "Valori mediani: R {r}, G {g}, B {b}.",
+      "r": "R",
+      "g": "G",
+      "b": "B"
+    },
+    "balance": {
+      "label": "Bilanciamento del bianco",
+      "help": "Automatico toglie le dominanti di colore del cielo. Manuale ti lascia regolare rosso, verde e blu uno per uno.",
+      "auto": "Automatico",
+      "manual": "Manuale",
+      "r": "Rosso",
+      "g": "Verde",
+      "b": "Blu",
+      "gainHelp": "Più alto mette più di quel colore nel fondo cielo. Con 1 il canale resta com'è.",
+      "swatch": "Anteprima: un grigio neutro diventa R {r}, G {g}, B {b}."
+    },
+    "stability": {
+      "label": "Stabilità fra un frame e l'altro",
+      "help": "Più alto, meno sfarfallio nel timelapse."
+    },
+    "gradient": {
+      "label": "Rimozione del gradiente",
+      "help": "Toglie il velo di luce vicino all'orizzonte. Troppo alto scurisce anche le nuvole basse."
+    },
+    "curve": {
+      "label": "Curva",
+      "mtf": "MTF",
+      "asinh": "Asinh",
+      "help": "MTF rende più visibili le stelle deboli. Asinh protegge le zone luminose e i colori."
+    },
+    "saturation": {
+      "label": "Saturazione",
+      "help": "1 lascia i colori come sono. Più alto li accentua, più basso li attenua."
+    },
+    "actions": {
+      "save": "Salva",
+      "reset": "Ripristina i valori consigliati",
+      "confirmText": "Tornare ai valori consigliati? Le regolazioni che hai fatto andranno perse.",
+      "confirm": "Ripristina",
+      "cancel": "Annulla"
+    },
+    "status": {
+      "applying": "Sto applicando…",
+      "saved": "Salvato alle {time}.",
+      "error": "Non salvato. {message}",
+      "retry": "Riprova"
+    }
+  }
+}

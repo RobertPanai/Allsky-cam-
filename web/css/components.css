@@ -1,0 +1,645 @@
+/* Componenti e layout: shell, navigazione, schermata Live, nastro della notte. */
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- Shell e navigazione ---------- */
+
+.shell {
+  display: grid;
+  grid-template-columns: var(--rail-w) minmax(0, 1fr);
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.nav {
+  align-self: stretch;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+}
+
+.nav-list {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-2);
+}
+
+.nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: 64px;
+  padding: 12px 4px;
+  border-radius: var(--radius-control);
+  color: var(--text-2);
+  text-decoration: none;
+  font-size: var(--fs-12);
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.nav-link:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.nav-link[aria-current="page"] {
+  color: var(--text);
+  background: var(--accent-soft);
+}
+
+.nav-link svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.main {
+  min-width: 0;
+  padding: var(--space-7) var(--space-7) var(--space-7);
+}
+
+.view {
+  max-width: 1040px;
+}
+
+.notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  box-shadow: inset 3px 0 0 var(--warn);
+  font-size: var(--fs-14);
+}
+
+.notice[data-kind="error"] {
+  box-shadow: inset 3px 0 0 var(--err);
+}
+
+.notice p {
+  flex: 1 1 240px;
+}
+
+.loading {
+  font-size: var(--fs-14);
+}
+
+/* ---------- Pulsanti ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 16px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--fs-14);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.btn:hover {
+  background: var(--surface-2);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ---------- Schermata Live ---------- */
+
+.live {
+  display: grid;
+  gap: var(--space-7);
+}
+
+.live-head {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.display {
+  font-size: var(--fs-44);
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.lede {
+  font-size: var(--fs-16);
+  color: var(--text-2);
+  min-height: 1.5em;
+}
+
+/* Stato della camera: punto e testo, sotto la frase del titolo. */
+.camera-status {
+  font-size: var(--fs-14);
+  color: var(--text-2);
+  min-height: 1.5em;
+}
+
+.live-main {
+  display: grid;
+  grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: center;
+}
+
+/* Vista del cielo: quadrato con il cerchio dell'immagine e l'anello sopra. */
+
+.sky {
+  width: 100%;
+  max-width: 440px;
+  justify-self: center;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.sky-dome {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.sky-img {
+  position: absolute;
+  left: 14.5833%;
+  top: 14.5833%;
+  width: 70.8333%;
+  height: 70.8333%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+
+.sky-img.is-entering {
+  animation: sky-in 600ms var(--ease-out) both;
+}
+
+.sky-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.sky-ring .tick-minor {
+  stroke: var(--text-2);
+  stroke-opacity: 0.45;
+  stroke-width: 1;
+}
+
+.sky-ring .tick-major {
+  stroke: var(--text-2);
+  stroke-opacity: 0.9;
+  stroke-width: 1.2;
+}
+
+.sky-ring .rim {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+
+.sky-ring text {
+  fill: var(--text-2);
+  font-size: 13px;
+  font-weight: 400;
+  font-family: var(--font);
+}
+
+.sky-empty {
+  position: absolute;
+  left: 14.5833%;
+  top: 14.5833%;
+  width: 70.8333%;
+  height: 70.8333%;
+  display: grid;
+  place-items: center;
+  padding: var(--space-6);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text-2);
+  text-align: center;
+  font-size: var(--fs-14);
+  text-wrap: balance;
+}
+
+.sky-caption {
+  text-align: center;
+  font-size: var(--fs-14);
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Dati chiave. */
+
+.readouts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-6);
+  align-content: center;
+}
+
+.readout {
+  display: grid;
+  gap: 4px;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
+.readout dt {
+  font-size: var(--fs-14);
+  color: var(--text-2);
+}
+
+.readout dd {
+  font-size: var(--fs-28);
+  font-weight: 600;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums lining-nums;
+  overflow-wrap: anywhere;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+  vertical-align: middle;
+  transform: translateY(-1px);
+}
+
+.dot.is-off {
+  background: var(--err);
+}
+
+/* Nastro della notte. */
+
+.ribbon {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.ribbon-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+}
+
+.ribbon-title {
+  font-size: var(--fs-20);
+  font-weight: 600;
+}
+
+.ribbon-note {
+  font-size: var(--fs-14);
+  color: var(--text-2);
+}
+
+.ribbon-track {
+  position: relative;
+  height: 104px;
+  touch-action: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ribbon-track[aria-disabled="true"] {
+  cursor: default;
+}
+
+.ribbon-bands {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+/* Il riquadro del nastro (fascia e curva) si disegna da sinistra all'apertura. */
+.ribbon-plot {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-control);
+  overflow: hidden;
+}
+
+.ribbon-plot.is-drawing {
+  transform-origin: left center;
+  animation: ribbon-draw 800ms var(--ease-out) both;
+}
+
+.ribbon-cursor {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  width: 3px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--text);
+  box-shadow: 0 0 0 2px var(--bg);
+  pointer-events: none;
+}
+
+.ribbon-axis {
+  position: relative;
+  height: 30px;
+  font-size: var(--fs-12);
+  color: var(--text-2);
+}
+
+.tick {
+  position: absolute;
+  top: 10px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.tick[data-edge="start"] {
+  transform: none;
+}
+
+.tick[data-edge="end"] {
+  transform: translateX(-100%);
+}
+
+.ribbon-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-4);
+  min-height: 44px;
+}
+
+.ribbon-time {
+  font-size: var(--fs-16);
+  font-variant-numeric: tabular-nums;
+}
+
+.ribbon-hint {
+  font-size: var(--fs-14);
+  color: var(--text-2);
+}
+
+.empty {
+  padding: var(--space-5);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-panel);
+  color: var(--text-2);
+  font-size: var(--fs-14);
+}
+
+/* ---------- Segnaposto delle sezioni non ancora pronte ---------- */
+
+.placeholder {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 60ch;
+  padding-top: var(--space-5);
+}
+
+.placeholder .lede {
+  font-size: var(--fs-16);
+}
+
+/* ---------- Animazioni: solo apertura e risposta alle azioni ---------- */
+
+@keyframes sky-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ribbon-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Curva dell'altezza del Sole sul nastro. Gli stroke non si deformano con il riquadro. */
+
+.ribbon-curve {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ribbon-curve .sun-halo {
+  fill: none;
+  stroke: var(--bg);
+  stroke-width: 3;
+  stroke-opacity: 0.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.ribbon-curve .sun-line {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.ribbon-curve .horizon {
+  stroke: var(--text);
+  stroke-opacity: 0.45;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.ribbon-curve .phase-halo {
+  stroke: var(--bg);
+  stroke-opacity: 0.55;
+  stroke-width: 3;
+  stroke-dasharray: 4 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.ribbon-curve .phase-line {
+  stroke: var(--text);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Tacche orarie: sotto la fascia, sul fondo della pagina. */
+
+.ribbon-ticks {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 8px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ribbon-ticks line {
+  stroke: var(--text-2);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Legenda in testo: le fasi si leggono anche senza colore. */
+
+.ribbon-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-14);
+  color: var(--text-2);
+}
+
+.ribbon-key-lines {
+  font-style: normal;
+}
+
+/* Focus visibile da tastiera sul nastro e sui pulsanti della schermata. */
+
+.ribbon-track:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: var(--radius-control);
+}
+
+.live .btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Adattamento: barra in basso sotto 720px ---------- */
+
+@media (max-width: 900px) {
+  .live-main {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+}
+
+@media (max-width: 719px) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nav {
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    padding-bottom: env(safe-area-inset-bottom);
+    border-right: 0;
+    border-top: 1px solid var(--line);
+    z-index: 20;
+  }
+
+  .nav-list {
+    display: flex;
+    gap: 0;
+    padding: 0;
+    height: var(--nav-h);
+  }
+
+  .nav-list li {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .nav-link {
+    height: 100%;
+    min-height: 0;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 2px;
+    border-radius: 0;
+    font-size: var(--fs-12);
+  }
+
+  .nav-link[aria-current="page"] {
+    background: transparent;
+    box-shadow: inset 0 2px 0 var(--accent);
+  }
+
+  .main {
+    padding: var(--space-5) var(--gutter) calc(var(--nav-h) + var(--space-6));
+  }
+
+  .live {
+    gap: var(--space-6);
+  }
+
+  .display {
+    font-size: var(--fs-28);
+  }
+
+  .sky {
+    max-width: 360px;
+  }
+
+  .readouts {
+    gap: var(--space-4) var(--space-4);
+  }
+
+  .readout dd {
+    font-size: var(--fs-20);
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+
+  .ribbon-track {
+    height: 88px;
+  }
+}
+
+/* Movimento ridotto: niente apertura animata, il contenuto compare già disegnato. */
+@media (prefers-reduced-motion: reduce) {
+  .sky-img.is-entering,
+  .ribbon-plot.is-drawing {
+    animation: none;
+  }
+}

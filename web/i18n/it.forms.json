@@ -1,0 +1,213 @@
+{
+  "forms": {
+    "required": "Questo campo è obbligatorio.",
+    "number": "Scrivi un numero, per esempio 12,5.",
+    "integer": "Scrivi un numero intero, senza virgole.",
+    "range": "Il valore deve stare tra {min} e {max}.",
+    "tooLong": "Massimo {max} caratteri.",
+    "timezone": "Scegli un fuso orario dall'elenco.",
+    "invalid": "Controlla i campi evidenziati, poi riprova.",
+    "save": "Salva",
+    "saving": "Salvo…",
+    "saved": "Salvato",
+    "unsaved": "Modifiche non salvate",
+    "saveFailed": "Non riesco a salvare la configurazione. Riprova tra un momento.",
+    "languages": {
+      "it": "Italiano",
+      "en": "English"
+    },
+    "fields": {
+      "siteName": {
+        "label": "Nome del sito",
+        "help": "Compare nelle immagini e nelle schede delle notti."
+      },
+      "latitude": {
+        "label": "Latitudine",
+        "help": "Positiva a nord dell'equatore, negativa a sud."
+      },
+      "longitude": {
+        "label": "Longitudine",
+        "help": "Positiva a est di Greenwich, negativa a ovest."
+      },
+      "elevation": {
+        "label": "Quota",
+        "help": "Altitudine sul livello del mare."
+      },
+      "timezone": {
+        "label": "Fuso orario",
+        "help": "Serve per l'ora sulle immagini e per alba e tramonto."
+      },
+      "folder": {
+        "label": "Cartella di salvataggio",
+        "help": "Qui vanno frame, timelapse e keogram."
+      },
+      "keepNights": {
+        "label": "Notti da conservare",
+        "help": "Le notti più vecchie oltre questo numero vengono eliminate."
+      },
+      "products": {
+        "legend": "Prodotti da creare",
+        "timelapse": {
+          "label": "Timelapse",
+          "help": "Video che scorre tutta la notte."
+        },
+        "keogram": {
+          "label": "Keogram",
+          "help": "Striscia che mostra come cambia il cielo durante la notte."
+        },
+        "startrails": {
+          "label": "Startrails",
+          "help": "Immagine con le scie di tutte le stelle della notte."
+        }
+      }
+    },
+    "location": {
+      "button": "Usa la posizione di questo dispositivo",
+      "help": "L'app non invia la posizione a nessun server: la usa solo per riempire i campi.",
+      "busy": "Leggo la posizione…",
+      "done": "Posizione letta. Controlla i valori prima di andare avanti.",
+      "unsupported": "Questo browser non sa leggere la posizione. Inserisci i valori a mano.",
+      "error": "Non riesco a leggere la posizione. Inserisci i valori a mano, oppure consenti l'accesso alla posizione e riprova."
+    },
+    "cameras": {
+      "found": "Camere trovate",
+      "empty": "Non trovo nessuna camera. Collega la camera USB o avvia il simulatore ASCOM, poi riprova.",
+      "search": "Cerca di nuovo",
+      "searching": "Cerco le camere…",
+      "connect": "Connetti camera",
+      "connecting": "Connessione in corso…",
+      "connected": "Connessa: {name}.",
+      "failed": "Non riesco a connettere la camera. Controlla che sia accesa, poi riprova.",
+      "previewTitle": "Anteprima dal vivo",
+      "previewAlt": "Anteprima della camera all-sky",
+      "previewEmpty": "Nessuna immagine ancora. Se il primo non arriva, controlla che la camera sia connessa.",
+      "kind": {
+        "sim": "Simulatore",
+        "ascom-com": "ASCOM",
+        "ascom-alpaca": "Alpaca"
+      }
+    }
+  },
+  "wizard": {
+    "progress": "Passi della procedura",
+    "steps": {
+      "camera": "Camera",
+      "site": "Posizione",
+      "archive": "Cartella e archivio"
+    },
+    "camera": {
+      "title": "Scegli la camera",
+      "lede": "Collega la camera e scegli quella da usare. Dopo la connessione vedrai il cielo qui sotto."
+    },
+    "site": {
+      "title": "Dove si trova l'osservatorio",
+      "lede": "Servono per calcolare il Sole e l'ora dei crepuscoli."
+    },
+    "archive": {
+      "title": "Cartella e archivio",
+      "lede": "Dove salvare le immagini e quanto conservarle."
+    },
+    "back": "Indietro",
+    "next": "Avanti",
+    "finish": "Fine",
+    "skip": "Salta per ora",
+    "skipHelp": "Non salva le modifiche. Potrai rifare la procedura dalla schermata Sito."
+  },
+  "camera": {
+    "title": "Camera",
+    "lede": "Scegli la camera e regola come scatta.",
+    "sections": {
+      "camera": "Camera",
+      "exposure": "Esposizione",
+      "capture": "Cattura"
+    },
+    "gain": {
+      "label": "Guadagno",
+      "help": "Più alto significa più sensibilità e più rumore."
+    },
+    "maxExposure": {
+      "label": "Esposizione massima di notte",
+      "help": "Pose più lunghe mostrano stelle più deboli, ma le scie si allungano."
+    },
+    "dayExposure": {
+      "label": "Esposizione di giorno",
+      "help": "Durata di una posa di giorno, con il cielo molto chiaro."
+    },
+    "binning": {
+      "label": "Binning",
+      "help": "Accorpa i pixel: meno dettaglio, più sensibilità, file più piccoli."
+    },
+    "interval": {
+      "label": "Intervallo di cattura",
+      "help": "Tempo tra due frame consecutivi."
+    },
+    "dayCapture": {
+      "label": "Cattura anche di giorno",
+      "help": "Salva frame anche con il Sole alto. Se è spenta, di giorno non si salva nulla."
+    }
+  },
+  "site": {
+    "title": "Sito",
+    "lede": "Posizione, lingua, tema, rete e archivio.",
+    "sections": {
+      "data": "Dati del sito",
+      "language": "Lingua e tema",
+      "network": "Rete",
+      "archive": "Archivio",
+      "overlay": "Testo sulle immagini"
+    },
+    "language": {
+      "label": "Lingua",
+      "help": "Cambia subito l'interfaccia. Si ricorda con Salva."
+    },
+    "theme": {
+      "label": "Tema",
+      "help": "Il tema cambia subito, per vedere l'effetto prima di salvare.",
+      "auto": {
+        "label": "Automatico",
+        "help": "Chiaro di giorno, scuro di notte."
+      },
+      "day": {
+        "label": "Giorno",
+        "help": "Sfondo chiaro, per il giorno."
+      },
+      "night": {
+        "label": "Notte",
+        "help": "Sfondo scuro, con colori leggeri."
+      },
+      "red": {
+        "label": "Rosso",
+        "help": "Solo rossi su nero: non rovina l'adattamento al buio."
+      }
+    },
+    "port": {
+      "label": "Porta",
+      "help": "Porta su cui risponde il motore. Dopo il cambio riavvia il motore."
+    },
+    "lan": {
+      "label": "Consenti accesso dalla rete locale",
+      "help": "Altri dispositivi della rete potranno aprire questa pagina.",
+      "disabled": "Disponibile in una versione successiva.",
+      "warning": "Serve una password per proteggere l'accesso. Il campo arriverà in una versione successiva: fino ad allora attiva questa opzione solo su reti di cui ti fidi."
+    },
+    "overlay": {
+      "enabled": {
+        "label": "Mostra il testo",
+        "help": "Riquadro di testo sopra i frame."
+      },
+      "showTime": {
+        "label": "Ora",
+        "help": "Ora locale del frame."
+      },
+      "showSensorTemp": {
+        "label": "Temperatura del sensore",
+        "help": "Quando la camera la fornisce."
+      },
+      "label": {
+        "label": "Etichetta",
+        "help": "Testo fisso, per esempio il nome del club. Massimo 40 caratteri."
+      }
+    },
+    "rerun": "Rifai la configurazione guidata"
+  }
+}

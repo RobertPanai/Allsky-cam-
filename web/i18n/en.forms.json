@@ -1,0 +1,213 @@
+{
+  "forms": {
+    "required": "This field is required.",
+    "number": "Write a number, for example 12.5.",
+    "integer": "Write a whole number, without commas.",
+    "range": "The value must be between {min} and {max}.",
+    "tooLong": "Up to {max} characters.",
+    "timezone": "Choose a time zone from the list.",
+    "invalid": "Check the highlighted fields, then try again.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "unsaved": "Unsaved changes",
+    "saveFailed": "I cannot save the configuration. Try again in a moment.",
+    "languages": {
+      "it": "Italiano",
+      "en": "English"
+    },
+    "fields": {
+      "siteName": {
+        "label": "Site name",
+        "help": "Shown on the images and on the night pages."
+      },
+      "latitude": {
+        "label": "Latitude",
+        "help": "Positive north of the equator, negative south."
+      },
+      "longitude": {
+        "label": "Longitude",
+        "help": "Positive east of Greenwich, negative west."
+      },
+      "elevation": {
+        "label": "Elevation",
+        "help": "Height above sea level."
+      },
+      "timezone": {
+        "label": "Time zone",
+        "help": "Used for the time on the images and for sunrise and sunset."
+      },
+      "folder": {
+        "label": "Save folder",
+        "help": "Frames, timelapses and keograms go here."
+      },
+      "keepNights": {
+        "label": "Nights to keep",
+        "help": "Nights older than this number are deleted."
+      },
+      "products": {
+        "legend": "Products to create",
+        "timelapse": {
+          "label": "Timelapse",
+          "help": "A video that runs through the whole night."
+        },
+        "keogram": {
+          "label": "Keogram",
+          "help": "A strip showing how the sky changes during the night."
+        },
+        "startrails": {
+          "label": "Startrails",
+          "help": "An image with the star trails of the whole night."
+        }
+      }
+    },
+    "location": {
+      "button": "Use this device's location",
+      "help": "The app does not send the location to any server: it only uses it to fill in the fields.",
+      "busy": "Reading the location…",
+      "done": "Location read. Check the values before you continue.",
+      "unsupported": "This browser cannot read the location. Enter the values by hand.",
+      "error": "I cannot read the location. Enter the values by hand, or allow location access and try again."
+    },
+    "cameras": {
+      "found": "Cameras found",
+      "empty": "I cannot find any camera. Connect the USB camera or start the ASCOM simulator, then try again.",
+      "search": "Search again",
+      "searching": "Searching for cameras…",
+      "connect": "Connect camera",
+      "connecting": "Connecting…",
+      "connected": "Connected: {name}.",
+      "failed": "I cannot connect the camera. Check that it is on, then try again.",
+      "previewTitle": "Live preview",
+      "previewAlt": "Preview from the all-sky camera",
+      "previewEmpty": "No image yet. If the first one does not arrive, check that the camera is connected.",
+      "kind": {
+        "sim": "Simulator",
+        "ascom-com": "ASCOM",
+        "ascom-alpaca": "Alpaca"
+      }
+    }
+  },
+  "wizard": {
+    "progress": "Setup steps",
+    "steps": {
+      "camera": "Camera",
+      "site": "Location",
+      "archive": "Folder and archive"
+    },
+    "camera": {
+      "title": "Choose the camera",
+      "lede": "Connect the camera and choose the one to use. After it connects, you will see the sky below."
+    },
+    "site": {
+      "title": "Where the observatory is",
+      "lede": "These are needed to calculate the Sun and the twilight times."
+    },
+    "archive": {
+      "title": "Folder and archive",
+      "lede": "Where to save the images and how long to keep them."
+    },
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "skip": "Skip for now",
+    "skipHelp": "Does not save your changes. You can run the setup again from the Site page."
+  },
+  "camera": {
+    "title": "Camera",
+    "lede": "Choose the camera and set how it captures.",
+    "sections": {
+      "camera": "Camera",
+      "exposure": "Exposure",
+      "capture": "Capture"
+    },
+    "gain": {
+      "label": "Gain",
+      "help": "Higher means more sensitivity and more noise."
+    },
+    "maxExposure": {
+      "label": "Maximum night exposure",
+      "help": "Longer exposures show fainter stars, but the trails get longer."
+    },
+    "dayExposure": {
+      "label": "Day exposure",
+      "help": "Length of one day exposure, when the sky is very bright."
+    },
+    "binning": {
+      "label": "Binning",
+      "help": "Combines pixels: less detail, more sensitivity, smaller files."
+    },
+    "interval": {
+      "label": "Capture interval",
+      "help": "Time between two consecutive frames."
+    },
+    "dayCapture": {
+      "label": "Capture during the day",
+      "help": "Saves frames even with the Sun up. If off, nothing is saved by day."
+    }
+  },
+  "site": {
+    "title": "Site",
+    "lede": "Location, language, theme, network and archive.",
+    "sections": {
+      "data": "Site details",
+      "language": "Language and theme",
+      "network": "Network",
+      "archive": "Archive",
+      "overlay": "Text on the images"
+    },
+    "language": {
+      "label": "Language",
+      "help": "Changes the interface at once. Saved with Save."
+    },
+    "theme": {
+      "label": "Theme",
+      "help": "The theme changes at once, so you can see it before saving.",
+      "auto": {
+        "label": "Automatic",
+        "help": "Light by day, dark by night."
+      },
+      "day": {
+        "label": "Day",
+        "help": "Light background, for daytime."
+      },
+      "night": {
+        "label": "Night",
+        "help": "Dark background, with soft colours."
+      },
+      "red": {
+        "label": "Red",
+        "help": "Only reds on black: keeps your night vision."
+      }
+    },
+    "port": {
+      "label": "Port",
+      "help": "Port the engine answers on. After changing it, restart the engine."
+    },
+    "lan": {
+      "label": "Allow access from the local network",
+      "help": "Other devices on the network will be able to open this page.",
+      "disabled": "Available in a later version.",
+      "warning": "A password is needed to protect access. The field will arrive in a later version: until then, turn this on only on networks you trust."
+    },
+    "overlay": {
+      "enabled": {
+        "label": "Show text",
+        "help": "A text box over the frames."
+      },
+      "showTime": {
+        "label": "Time",
+        "help": "Local time of the frame."
+      },
+      "showSensorTemp": {
+        "label": "Sensor temperature",
+        "help": "When the camera provides it."
+      },
+      "label": {
+        "label": "Label",
+        "help": "Fixed text, for example the club name. Up to 40 characters."
+      }
+    },
+    "rerun": "Run the setup again"
+  }
+}

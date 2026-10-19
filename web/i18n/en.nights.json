@@ -1,0 +1,101 @@
+{
+  "nights": {
+    "title": "Nights",
+    "lede": "Review past nights: timelapse, keogram and startrails.",
+    "loading": "Loading nights…",
+    "empty": {
+      "title": "No nights yet",
+      "body": "Nights will appear here as soon as the camera captures its first frames. A night runs from noon to noon.",
+      "action": "Go to Live"
+    },
+    "card": {
+      "latest": "Most recent",
+      "current": "In progress"
+    },
+    "night": {
+      "title": "Night of {date}",
+      "span": "from {from} to {to}",
+      "missing": "Night not found"
+    },
+    "units": {
+      "frames": "{n} frames",
+      "mb": "{n} MB",
+      "gb": "{n} GB"
+    },
+    "products": {
+      "timelapse": "Timelapse",
+      "keogram": "Keogram",
+      "startrails": "Startrails"
+    },
+    "states": {
+      "timelapse": {
+        "ready": "ready",
+        "generating": "in progress",
+        "none": "not created",
+        "failed": "failed"
+      },
+      "keogram": {
+        "ready": "ready",
+        "none": "not available"
+      },
+      "startrails": {
+        "ready": "ready",
+        "none": "not available"
+      }
+    },
+    "tabs": {
+      "label": "Night products",
+      "timelapse": "Timelapse",
+      "keogram": "Keogram",
+      "startrails": "Startrails"
+    },
+    "actions": {
+      "close": "Close",
+      "zoom": "Enlarge",
+      "download": "Download",
+      "create": "Create timelapse",
+      "delete": "Delete night",
+      "cancel": "Cancel"
+    },
+    "timelapse": {
+      "videoLabel": "Timelapse of the night of {date}",
+      "fallback": "Your browser cannot play this video. You can download it and open it with a video player.",
+      "none": "This night's timelapse has not been created yet. You can create it now; it takes a few minutes.",
+      "generating": "Creating the timelapse: {n}%. You can keep using the app.",
+      "generatingUnknown": "Creating the timelapse. You can keep using the app.",
+      "failed": "Creating the timelapse stopped before it finished. Try again: a new attempt usually works. If it happens again, check the free disk space on the Live screen."
+    },
+    "keogram": {
+      "alt": "Keogram of the night of {date}",
+      "none": "The keogram for this night is not available."
+    },
+    "startrails": {
+      "alt": "Startrails of the night of {date}",
+      "none": "The startrails for this night are not available."
+    },
+    "image": {
+      "fallback": "I cannot load this image. Try again in a moment."
+    },
+    "ribbon": {
+      "title": "Frames of the night",
+      "label": "Choose a frame from the night",
+      "hint": "Drag the strip or use the arrow keys to choose a frame.",
+      "picked": "Frame at {time}",
+      "thumbAlt": "Frame at {time}",
+      "loading": "Loading frames…",
+      "empty": "No frames in this night.",
+      "broken": "Frame not available.",
+      "sample": "Sample band: the engine has not provided the sun phases yet.",
+      "strip": "Frame thumbnails"
+    },
+    "danger": {
+      "intro": "Deleting the night removes its frames, keogram, startrails and timelapse. This cannot be undone."
+    },
+    "confirm": {
+      "title": "Delete the night of {date}?",
+      "body": "This will delete {frames} ({size}), the keogram, the startrails and the timelapse. This cannot be undone."
+    },
+    "deleted": "Night of {date} deleted.",
+    "notFound": "This night cannot be found. It may have been deleted."
+  }
+}

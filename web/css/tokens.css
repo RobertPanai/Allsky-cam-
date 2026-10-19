@@ -1,0 +1,100 @@
+/*
+ * Token di design: tre temi, scelti da data-theme su <html>.
+ * night (predefinito), day, red. Il tema "auto" lo decide app.js
+ * in base alla fase del Sole ricevuta da /api/status.
+ */
+
+:root,
+:root[data-theme="night"] {
+  color-scheme: dark;
+
+  --bg: #0A0F1E;          /* Zenit */
+  --surface: #141C33;     /* Orizzonte */
+  --surface-2: #1B2542;
+  --line: rgba(238, 242, 250, 0.10);
+  --line-strong: rgba(238, 242, 250, 0.22);
+  --text: #EEF2FA;        /* Brina */
+  --text-2: #9AA7C7;      /* Foschia */
+  --accent: #7C9CFF;      /* Cometa */
+  --on-accent: #0A0F1E;
+  --accent-soft: rgba(124, 156, 255, 0.16);
+  --ok: #5FD3B2;          /* Aria */
+  --warn: #FFB86B;        /* Alba */
+  --err: #FF6B7A;         /* Meteora */
+  --phase-day: #3D5B8F;
+  --phase-twilight: #8C6679;
+  --phase-night: #1A2750;
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+:root[data-theme="day"] {
+  color-scheme: light;
+
+  --bg: #F3F6FB;
+  --surface: #FFFFFF;
+  --surface-2: #E9EEF7;
+  --line: rgba(15, 23, 48, 0.10);
+  --line-strong: rgba(15, 23, 48, 0.24);
+  --text: #0F1730;
+  --text-2: #4B5878;
+  --accent: #2F4FC4;
+  --on-accent: #FFFFFF;
+  --accent-soft: rgba(47, 79, 196, 0.10);
+  --ok: #0B7A5F;
+  --warn: #8A5400;
+  --err: #B3202F;
+  --phase-day: #BFD6F2;
+  --phase-twilight: #E8B68F;
+  --phase-night: #2A3A6B;
+  --shadow: 0 12px 40px rgba(15, 23, 48, 0.10);
+}
+
+/* Tema osservatorio: solo sfumature di rosso su nero. */
+:root[data-theme="red"] {
+  color-scheme: dark;
+
+  --bg: #0B0000;
+  --surface: #1A0403;
+  --surface-2: #2A0806;
+  --line: rgba(255, 120, 100, 0.14);
+  --line-strong: rgba(255, 120, 100, 0.32);
+  --text: #F6C2B8;
+  --text-2: #C07A6E;
+  --accent: #E8705F;
+  --on-accent: #0B0000;
+  --accent-soft: rgba(232, 112, 95, 0.18);
+  --ok: #E9A090;
+  --warn: #FF8A5C;
+  --err: #FF4A3D;
+  --phase-day: #7A2119;
+  --phase-twilight: #4E1210;
+  --phase-night: #3D0E09;
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+:root {
+  --font: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+
+  --fs-12: 12px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-20: 20px;
+  --fs-28: 28px;
+  --fs-44: 44px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --radius-panel: 14px;
+  --radius-control: 8px;
+  --rail-w: 96px;
+  --nav-h: 64px;
+  --gutter: 16px;
+
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+}

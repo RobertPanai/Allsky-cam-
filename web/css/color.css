@@ -1,0 +1,462 @@
+/* Schermata Colore: confronto prima/dopo, cursori, istogramma del fondo cielo.
+ * Tutto sotto .color-view. I colori vengono dai token di tokens.css. */
+
+.color-view {
+  /* Canali dell'istogramma: il tratto cambia anche tra un canale e l'altro, così non serve il colore per leggerli. */
+  --ch-r: #E5484D;
+  --ch-g: #2F9E5B;
+  --ch-b: #3E63DD;
+
+  display: grid;
+  gap: var(--space-6);
+}
+
+.color-head {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.color-layout {
+  display: grid;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .color-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+    gap: var(--space-7);
+  }
+}
+
+/* ---------- Anteprima prima/dopo ---------- */
+
+.color-preview {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+  width: 100%;
+  max-width: 560px;
+}
+
+.color-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.color-view .color-modes .btn[aria-pressed="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.compare {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: var(--radius-panel);
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--line);
+  /* Il trascinamento orizzontale è del divisore; il tocco verticale continua a scorrere la pagina. */
+  touch-action: pan-y;
+  user-select: none;
+  cursor: ew-resize;
+}
+
+.compare[aria-busy="true"] {
+  cursor: progress;
+}
+
+.compare-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.compare-img.is-raw {
+  /* Valore di partenza: color.js lo aggiorna con il divisore ad ogni spostamento. */
+  clip-path: inset(0 50% 0 0);
+}
+
+.compare-tag {
+  position: absolute;
+  top: var(--space-3);
+  z-index: 1;
+  padding: 4px 10px;
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  color: var(--text);
+  font-size: var(--fs-14);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.compare-tag.is-raw {
+  left: var(--space-3);
+}
+
+.compare-tag.is-done {
+  right: var(--space-3);
+}
+
+.compare-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.compare-divider::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1px;
+  width: 2px;
+  background: var(--text);
+  box-shadow: 0 0 0 1px var(--bg);
+}
+
+.compare-handle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid var(--text);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  pointer-events: auto;
+  touch-action: none;
+  cursor: ew-resize;
+}
+
+.compare-handle svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.compare-msg {
+  position: absolute;
+  left: var(--space-3);
+  right: var(--space-3);
+  bottom: var(--space-3);
+  z-index: 3;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: inset 3px 0 0 var(--warn);
+  font-size: var(--fs-14);
+}
+
+.compare-msg[data-kind="error"] {
+  box-shadow: inset 3px 0 0 var(--err);
+}
+
+/* Nessun frame: il riquadro mostra solo il messaggio, al centro. */
+.compare[data-empty="true"] {
+  display: grid;
+  place-items: center;
+  padding: var(--space-6);
+  background: var(--surface);
+  cursor: default;
+}
+
+.compare[data-empty="true"] .compare-msg {
+  position: static;
+  max-width: 36ch;
+  text-align: center;
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-2);
+  text-wrap: balance;
+}
+
+/* ---------- Istogramma ---------- */
+
+.hist {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.hist-title {
+  font-size: var(--fs-16);
+  font-weight: 600;
+}
+
+.hist-help,
+.hist-note {
+  font-size: var(--fs-14);
+  color: var(--text-2);
+}
+
+.hist-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 6;
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.hist-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  font-size: var(--fs-12);
+  color: var(--text-2);
+}
+
+.hist-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hist-line {
+  display: inline-block;
+  width: 24px;
+  border-top: 2px solid;
+}
+
+.hist-legend .is-r .hist-line {
+  border-top-style: solid;
+  color: var(--ch-r);
+}
+
+.hist-legend .is-g .hist-line {
+  border-top-style: dashed;
+  color: var(--ch-g);
+}
+
+.hist-legend .is-b .hist-line {
+  border-top-style: dotted;
+  color: var(--ch-b);
+}
+
+/* ---------- Pannello dei controlli ---------- */
+
+.color-panel {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+  padding: var(--space-5);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.color-view .ctl {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ctl-legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  font-size: var(--fs-16);
+  font-weight: 600;
+}
+
+.ctl-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.ctl-head label {
+  font-size: var(--fs-16);
+  font-weight: 600;
+}
+
+.ctl-head output {
+  font-size: var(--fs-16);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.ctl-help,
+.swatch-text {
+  font-size: var(--fs-14);
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.color-view input[type="range"] {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.choice {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--line-strong);
+  font-size: var(--fs-14);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.choice:hover {
+  background: var(--surface-2);
+}
+
+.choice:has(input:checked) {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.choice:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Il cerchio della radio resta nascosto, ma il pulsante nativo resta raggiungibile da tastiera. */
+.choice input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  pointer-events: none;
+}
+
+.gains {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--surface-2);
+}
+
+.swatch {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.swatch-chip {
+  flex: none;
+  width: 44px;
+  height: 28px;
+  border-radius: var(--radius-control);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.swatch-text {
+  margin: 0;
+}
+
+/* ---------- Azioni e stato ---------- */
+
+.color-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.color-view .btn.is-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.color-view .btn.is-primary:hover {
+  background: var(--accent);
+  opacity: 0.9;
+}
+
+.reset-confirm {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--surface-2);
+  box-shadow: inset 3px 0 0 var(--warn);
+  font-size: var(--fs-14);
+}
+
+.reset-confirm p {
+  margin: 0;
+}
+
+.save-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  font-size: var(--fs-14);
+}
+
+.save-status p {
+  margin: 0;
+}
+
+.save-status p[data-kind="applying"] {
+  color: var(--text-2);
+}
+
+.save-status p[data-kind="saved"] {
+  color: var(--ok);
+}
+
+.save-status p[data-kind="error"] {
+  color: var(--err);
+}
+
+/* ---------- Telefono ---------- */
+
+@media (max-width: 719px) {
+  .color-view {
+    gap: var(--space-5);
+  }
+
+  .color-layout {
+    gap: var(--space-5);
+  }
+
+  .color-preview {
+    max-width: none;
+  }
+
+  .color-panel {
+    padding: var(--space-4);
+  }
+}

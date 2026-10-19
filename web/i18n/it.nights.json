@@ -1,0 +1,101 @@
+{
+  "nights": {
+    "title": "Notti",
+    "lede": "Rivedi le notti passate: timelapse, keogram e startrails.",
+    "loading": "Carico le notti…",
+    "empty": {
+      "title": "Nessuna notte ancora",
+      "body": "Le notti compariranno qui non appena la camera catturerà i primi frame. Una notte va da mezzogiorno a mezzogiorno.",
+      "action": "Vai a Live"
+    },
+    "card": {
+      "latest": "Più recente",
+      "current": "In corso"
+    },
+    "night": {
+      "title": "Notte dal {date}",
+      "span": "dalle {from} alle {to}",
+      "missing": "Notte non trovata"
+    },
+    "units": {
+      "frames": "{n} frame",
+      "mb": "{n} MB",
+      "gb": "{n} GB"
+    },
+    "products": {
+      "timelapse": "Timelapse",
+      "keogram": "Keogram",
+      "startrails": "Startrails"
+    },
+    "states": {
+      "timelapse": {
+        "ready": "pronto",
+        "generating": "in corso",
+        "none": "da creare",
+        "failed": "non riuscito"
+      },
+      "keogram": {
+        "ready": "pronto",
+        "none": "non disponibile"
+      },
+      "startrails": {
+        "ready": "pronto",
+        "none": "non disponibile"
+      }
+    },
+    "tabs": {
+      "label": "Prodotti della notte",
+      "timelapse": "Timelapse",
+      "keogram": "Keogram",
+      "startrails": "Startrails"
+    },
+    "actions": {
+      "close": "Chiudi",
+      "zoom": "Ingrandisci",
+      "download": "Scarica",
+      "create": "Crea timelapse",
+      "delete": "Elimina notte",
+      "cancel": "Annulla"
+    },
+    "timelapse": {
+      "videoLabel": "Timelapse della notte dal {date}",
+      "fallback": "Il browser non riesce a mostrare questo video. Puoi scaricarlo e guardarlo con un lettore video.",
+      "none": "Il timelapse di questa notte non è ancora stato creato. Puoi crearlo adesso: ci vuole qualche minuto.",
+      "generating": "Creo il timelapse: {n}%. Puoi continuare a usare l'app.",
+      "generatingUnknown": "Creo il timelapse. Puoi continuare a usare l'app.",
+      "failed": "La creazione del timelapse si è interrotta prima della fine. Riprova: di solito basta un nuovo tentativo. Se succede ancora, controlla il disco libero nella schermata Live."
+    },
+    "keogram": {
+      "alt": "Keogram della notte dal {date}",
+      "none": "Il keogram di questa notte non è disponibile."
+    },
+    "startrails": {
+      "alt": "Startrails della notte dal {date}",
+      "none": "Gli startrails di questa notte non sono disponibili."
+    },
+    "image": {
+      "fallback": "Non riesco a caricare questa immagine. Riprova tra un momento."
+    },
+    "ribbon": {
+      "title": "Frame della notte",
+      "label": "Scegli un frame della notte",
+      "hint": "Trascina il nastro o usa le frecce per scegliere un frame.",
+      "picked": "Frame delle {time}",
+      "thumbAlt": "Frame delle {time}",
+      "loading": "Carico i frame…",
+      "empty": "Nessun frame in questa notte.",
+      "broken": "Frame non disponibile.",
+      "sample": "Fascia di esempio: il motore non ha ancora fornito le fasi.",
+      "strip": "Miniature dei frame"
+    },
+    "danger": {
+      "intro": "Eliminare la notte cancella i suoi frame, il keogram, gli startrails e il timelapse. Non si può annullare."
+    },
+    "confirm": {
+      "title": "Eliminare la notte dal {date}?",
+      "body": "Verranno cancellati {frames} ({size}), il keogram, gli startrails e il timelapse. Non si può annullare."
+    },
+    "deleted": "Notte dal {date} eliminata.",
+    "notFound": "Non trovo questa notte. Potrebbe essere stata eliminata."
+  }
+}
