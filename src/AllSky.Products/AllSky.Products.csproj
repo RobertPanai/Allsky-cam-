@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AllSky.Products</RootNamespace>
+    <AssemblyName>AllSky.Products</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AllSky.Core\AllSky.Core.csproj" />
+    <ProjectReference Include="..\AllSky.Imaging\AllSky.Imaging.csproj" />
+  </ItemGroup>
+
+</Project>

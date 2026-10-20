@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AllSky.Engine</RootNamespace>
+    <AssemblyName>AllSky.Engine</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AllSky.Core\AllSky.Core.csproj" />
+    <ProjectReference Include="..\AllSky.Astro\AllSky.Astro.csproj" />
+    <ProjectReference Include="..\AllSky.Capture\AllSky.Capture.csproj" />
+    <ProjectReference Include="..\AllSky.Archive\AllSky.Archive.csproj" />
+    <ProjectReference Include="..\AllSky.Products\AllSky.Products.csproj" />
+    <ProjectReference Include="..\AllSky.Timelapse\AllSky.Timelapse.csproj" />
+  </ItemGroup>
+
+</Project>

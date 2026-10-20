@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AllSky.Processing</RootNamespace>
+    <AssemblyName>AllSky.Processing</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AllSky.Core\AllSky.Core.csproj" />
+    <ProjectReference Include="..\AllSky.Astro\AllSky.Astro.csproj" />
+    <ProjectReference Include="..\AllSky.Imaging\AllSky.Imaging.csproj" />
+    <ProjectReference Include="..\AllSky.Imaging.Jpeg\AllSky.Imaging.Jpeg.csproj" />
+    <ProjectReference Include="..\AllSky.Imaging.Overlay\AllSky.Imaging.Overlay.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AllSky.Processing.Tests" />
+  </ItemGroup>
+
+</Project>

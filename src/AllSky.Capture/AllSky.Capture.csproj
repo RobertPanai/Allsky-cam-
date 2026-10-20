@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>AllSky.Capture</RootNamespace>
+    <AssemblyName>AllSky.Capture</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AllSky.Core\AllSky.Core.csproj" />
+    <ProjectReference Include="..\AllSky.Astro\AllSky.Astro.csproj" />
+  </ItemGroup>
+
+</Project>

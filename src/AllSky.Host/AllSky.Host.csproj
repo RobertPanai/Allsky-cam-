@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AllSky.Host</RootNamespace>
+    <AssemblyName>AllSky.Host</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Kestrel e minimal API sono nello shared framework: nessun pacchetto NuGet. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AllSky.Core\AllSky.Core.csproj" />
+    <ProjectReference Include="..\AllSky.Engine\AllSky.Engine.csproj" />
+    <ProjectReference Include="..\AllSky.Archive\AllSky.Archive.csproj" />
+    <ProjectReference Include="..\AllSky.Capture\AllSky.Capture.csproj" />
+    <ProjectReference Include="..\AllSky.Cameras.Sim\AllSky.Cameras.Sim.csproj" />
+    <ProjectReference Include="..\AllSky.Cameras.Ascom\AllSky.Cameras.Ascom.csproj" />
+    <ProjectReference Include="..\AllSky.Cameras.Alpaca\AllSky.Cameras.Alpaca.csproj" />
+    <ProjectReference Include="..\AllSky.Timelapse\AllSky.Timelapse.csproj" />
+    <ProjectReference Include="..\AllSky.Processing\AllSky.Processing.csproj" />
+    <ProjectReference Include="..\AllSky.Imaging.Jpeg\AllSky.Imaging.Jpeg.csproj" />
+    <ProjectReference Include="..\AllSky.Imaging.Overlay\AllSky.Imaging.Overlay.csproj" />
+    <ProjectReference Include="..\AllSky.Products\AllSky.Products.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Permette al progetto di test di avviare l'Host con parametri di prova (tuning, avvio interno). -->
+    <InternalsVisibleTo Include="AllSky.Host.Tests" />
+  </ItemGroup>
+
+</Project>

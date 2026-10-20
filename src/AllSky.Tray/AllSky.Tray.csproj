@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AllSky.Tray</RootNamespace>
+    <AssemblyName>AllSky</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AllSky.Host\AllSky.Host.csproj" />
+  </ItemGroup>
+
+  <!--
+    Cartella web accanto all'eseguibile. CopyToPublishDirectory copia nel publish (anche single-file,
+    dove AppContext.BaseDirectory è la cartella dell'exe, quindi web\ resta accanto ad AllSky.exe).
+    CopyToOutputDirectory serve a far funzionare anche dotnet run / build locale.
+    Nessun EmbeddedResource: i file restano leggibili dal disco, come si aspetta il server web.
+  -->
+  <ItemGroup>
+    <None Include="..\..\web\**"
+          Exclude="..\..\web\mock\**;..\..\web\_dev\**;..\..\web\_shots\**"
+          LinkBase="web"
+          CopyToOutputDirectory="PreserveNewest"
+          CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
