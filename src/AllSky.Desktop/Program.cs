@@ -1,3 +1,7 @@
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using AllSky.Core;
 using AllSky.Host;
 using AllSky.Tray.Updates;

@@ -1,4 +1,7 @@
+using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Windows;
 using AllSky.Core;
 using AllSky.Host;
 using AllSky.Updates;

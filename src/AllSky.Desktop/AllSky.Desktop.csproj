@@ -18,8 +18,9 @@
   </PropertyGroup>
 
   <!--
-    Il SDK WPF/WinForms aggiunge namespace impliciti che collidono con i nomi usati qui (Path, Application, MessageBox...).
-    Si rimuovono quelli non necessari; WinForms è importato con un alias solo nel file del tray (TrayIcon.cs).
+    Si tolgono solo i namespace impliciti di WinForms/Drawing e Shapes, che collidono con i nomi usati qui
+    (Path di Shapes contro System.IO.Path, Application/MessageBox di WinForms contro WPF). WinForms è importato
+    con un alias solo in TrayIcon.cs. Gli altri namespace sono importati esplicitamente nei singoli file.
   -->
   <ItemGroup>
     <Using Remove="System.Windows.Forms" />
