@@ -64,3 +64,14 @@ Una voce per iterazione, la più recente in fondo. Formato:
   - Runtime del Desktop mai eseguito (NotifyIcon, finestra, chiusura ordinata, cambio tema a caldo).
   - Adattatore SGP4 non confrontato con valori di riferimento reali; oggetti deep-space (SDP4) non rifiutati.
   - Font Inter/JetBrains Mono: licenza da verificare in P1.10, per ora font di sistema.
+
+## 2026-10-22 01:40 — P1.3, P2.1, P5.2
+- Fatto: shell di navigazione desktop; sidecar JSON per frame (scrittura atomica, ricostruzione retroattiva); classificatore scie (Meteor/Bolide/Satellite/AereoOSatellite, frame scartati).
+- Test: runner shim 1103 eseguiti, 1102 PASS, 1 FAIL (il test instabile noto). CI Windows run 39686838761 verde (dopo 2 correzioni di compilazione: `Stretch` ambiguo con `AllSky.Core.Stretch`, `Foreground`).
+- Non verificato:
+  - UI Desktop mai eseguita né vista (icone, focus, barra di stato a 1100 px, notte rossa): screenshot in P1.9.
+  - Voce "pubblicazioni" della barra di stato sempre "n/d" finché il servizio non espone lo stato.
+  - Azimut Luna nel sidecar: errore atteso ~1° (angolo orario geocentrico). Scrittura atomica/fsync per frame provata solo su Linux: misurare la latenza sul PC reale.
+  - Soglie del classificatore non tarate su cielo reale.
+- Decisioni: la prima occorrenza di un oggetto che si ripete esce come Meteor, il frame successivo la riclassifica AereoOSatellite (P5.3 la tratta come provvisoria). Adattatore PassFinder → IPredictedTrackProvider rimandato a P4.4 (serve proiezione alt/az→pixel).
+- Warning CI: switch non esaustivo in DesktopTexts.cs (ViewName/EmptyText) con valore enum non coperto → da sistemare.
