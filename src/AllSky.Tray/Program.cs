@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Windows.Forms;
+using AllSky.Core;
 using AllSky.Host;
 using AllSky.Tray.Updates;
 using Velopack;
@@ -29,9 +30,6 @@ public sealed record AppPaths(string DataFolder, string ConfigPath, string WebRo
 /// </summary>
 internal static class Program
 {
-    /// <summary>Nome del mutex di istanza unica (prefisso Local\: visibile solo nella sessione utente corrente).</summary>
-    private const string SingleInstanceMutexName = @"Local\AllSky.Tray.SingleInstance";
-
     /// <summary>Tempo massimo concesso all'avvio dell'host prima di considerarlo fallito.</summary>
     private static readonly TimeSpan StartTimeout = TimeSpan.FromSeconds(30);
 
@@ -43,13 +41,22 @@ internal static class Program
 
     /// <summary>Avvia AllSky Brain. Restituisce 0 in uscita normale, 1 se l'host non parte.</summary>
     [STAThread]
-    private static int Main()
+    private static int Main(string[] args)
     {
         // Velopack deve essere la prima istruzione: gestisce qui installazione, disinstallazione e riavvio dopo un aggiornamento.
         VelopackApp.Build().Run();
 
-        // Mutex senza proprietà: serve solo a sapere se un'altra istanza esiste già.
-        using var mutex = new Mutex(initiallyOwned: false, SingleInstanceMutexName, out bool createdNew);
+        // Cartella dati "AllSky" (non "AllSkyBrain"): il nome del prodotto è cambiato, ma il percorso di default resta
+        // quello delle installazioni precedenti, così config.json, log e dati non vanno migrati.
+        // Sovrascrivibile con --data-folder o con la variabile ALLSKY_DATA_FOLDER (vedi DataFolderResolver).
+        string defaultDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AllSky");
+        string dataFolder = DataFolderResolver.Resolve(
+            args, Environment.GetEnvironmentVariable(DataFolderResolver.EnvironmentVariableName), defaultDataFolder);
+
+        // Mutex senza proprietà: serve solo a sapere se un'altra istanza esiste già per la stessa cartella dati.
+        // Con cartelle diverse le istanze possono coesistere, perché il nome del mutex dipende dalla cartella.
+        string mutexName = DataFolderResolver.SingleInstanceMutexName(dataFolder, defaultDataFolder);
+        using var mutex = new Mutex(initiallyOwned: false, mutexName, out bool createdNew);
         if (!createdNew)
         {
             MessageBox.Show("AllSky Brain è già in esecuzione (icona nella barra in basso).", "AllSky Brain",
@@ -57,9 +64,6 @@ internal static class Program
             return 0;
         }
 
-        // cartella dati "AllSky" (non "AllSkyBrain"): il nome del prodotto è cambiato, ma il percorso resta
-        // quello delle installazioni precedenti, così config.json, log e dati non vanno migrati.
-        string dataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AllSky");
         var paths = new AppPaths(
             DataFolder: dataFolder,
             ConfigPath: Path.Combine(dataFolder, "config.json"),
