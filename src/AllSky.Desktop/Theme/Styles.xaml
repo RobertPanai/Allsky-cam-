@@ -8,7 +8,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!-- Raggi e insertion locali. Sono valori di layout, non di colore: restano fissi per tutti i temi. -->
+  <!-- Raggi e margini interni locali. Sono valori di layout, non di colore: restano fissi per tutti i temi. -->
   <CornerRadius x:Key="Radius.Small">6</CornerRadius>
   <CornerRadius x:Key="Radius.Control">8</CornerRadius>
   <CornerRadius x:Key="Radius.Panel">10</CornerRadius>
@@ -17,7 +17,7 @@
   <Thickness x:Key="Inset.Tip">10,6</Thickness>
   <Thickness x:Key="Inset.Panel">16</Thickness>
 
-  <!-- Anello di focus da tastiera: ciano, 2 px, appena fuori dal controllo. -->
+  <!-- Anello di focus da tastiera: ciano, 2 px, disegnato sul bordo del controllo (senza margini negativi). -->
   <Style x:Key="Focus.Ring">
     <Setter Property="Control.Template">
       <Setter.Value>
@@ -25,7 +25,6 @@
           <Border BorderBrush="{DynamicResource Brush.Accent}"
                   BorderThickness="2"
                   CornerRadius="{DynamicResource Radius.Control}"
-                  Margin="-2"
                   SnapsToDevicePixels="True"/>
         </ControlTemplate>
       </Setter.Value>
