@@ -8,8 +8,10 @@
     <AssemblyName>AllSky.Satellites</AssemblyName>
   </PropertyGroup>
 
-  <!-- Solo logica pura: HTTP e orologio sono iniettati, nessuna dipendenza NuGet. -->
+  <!-- Solo logica pura: HTTP e orologio sono iniettati, nessuna dipendenza NuGet.
+       AllSky.Astro fornisce l'altezza del Sole (SolarPosition) per la visibilità a occhio nudo. -->
   <ItemGroup>
+    <ProjectReference Include="..\AllSky.Astro\AllSky.Astro.csproj" />
     <InternalsVisibleTo Include="AllSky.Satellites.Tests" />
   </ItemGroup>
 

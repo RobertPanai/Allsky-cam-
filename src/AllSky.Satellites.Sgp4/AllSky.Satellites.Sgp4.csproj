@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AllSky.Satellites.Sgp4</RootNamespace>
+    <AssemblyName>AllSky.Satellites.Sgp4</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Adapter SGP.NET (MIT) per IOrbitPropagator. Versione 1.6.0: l'unica verificata dal sorgente del repo;
+       la corrispondenza tra il pacchetto NuGet "SGP.NET" e il repository parzivail/SGP.NET NON è verificata
+       dal container (NuGet risponde 403 al proxy). Vedi i commenti in SgpNetPropagatorFactory.cs. -->
+  <ItemGroup>
+    <ProjectReference Include="..\AllSky.Satellites\AllSky.Satellites.csproj" />
+    <PackageReference Include="SGP.NET" Version="1.6.0" />
+  </ItemGroup>
+
+</Project>

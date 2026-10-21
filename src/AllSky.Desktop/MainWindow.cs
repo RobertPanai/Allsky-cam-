@@ -37,7 +37,8 @@ internal sealed class MainWindow : System.Windows.Window
         _texts = texts;
 
         Title = texts.WindowTitle;
-        Background = Brushes.Black;
+        // Colori dal tema (Brush.Background), così la modalità notte rossa li cambia senza ricreare la finestra.
+        SetResourceReference(BackgroundProperty, "Brush.Background");
         Width = 1100;
         Height = 700;
         MinWidth = 1100;
@@ -45,11 +46,11 @@ internal sealed class MainWindow : System.Windows.Window
 
         _statusText = new TextBlock
         {
-            Foreground = Brushes.White,
             FontSize = 18,
             TextWrapping = TextWrapping.Wrap,
             Margin = new Thickness(32),
         };
+        _statusText.SetResourceReference(TextBlock.ForegroundProperty, "Brush.Text");
         Content = _statusText;
 
         Closing += OnClosing;

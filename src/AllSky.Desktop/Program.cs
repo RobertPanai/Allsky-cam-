@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AllSky.Core;
@@ -93,9 +94,14 @@ internal static class Program
             return 1;
         }
 
-        var app = new App(runtime, paths, texts);
+        // --gallery apre la "Galleria componenti" al posto della finestra principale (solo prova dell'interfaccia).
+        bool showGallery = args is not null && args.Any(a => string.Equals(a, GalleryArgument, StringComparison.OrdinalIgnoreCase));
+        var app = new App(runtime, paths, texts, showGallery);
         return app.Run();
     }
+
+    /// <summary>Argomento da riga di comando che apre la galleria dei componenti.</summary>
+    internal const string GalleryArgument = "--gallery";
 
     /// <summary>Registra un'eccezione non gestita nel crash log e mostra un messaggio (una sola volta alla volta).</summary>
     /// <param name="paths">Cartelle e file dell'app.</param>

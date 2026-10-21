@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Stili dell'applicazione desktop. Ogni colore, font e spaziatura arriva da ThemeManager come risorsa dinamica:
+  qui non c'è nessun valore di colore scritto a mano.
+  Specifica visiva: docs/ralph/IMPLEMENTATION_PLAN.md §5. Regole d'uso: docs/DESIGN-DESKTOP.md.
+  Nessuna animazione continua: gli stati cambiano solo con i trigger.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Raggi e insertion locali. Sono valori di layout, non di colore: restano fissi per tutti i temi. -->
+  <CornerRadius x:Key="Radius.Small">6</CornerRadius>
+  <CornerRadius x:Key="Radius.Control">8</CornerRadius>
+  <CornerRadius x:Key="Radius.Panel">10</CornerRadius>
+  <Thickness x:Key="Inset.Button">16,6</Thickness>
+  <Thickness x:Key="Inset.Field">10,6</Thickness>
+  <Thickness x:Key="Inset.Tip">10,6</Thickness>
+  <Thickness x:Key="Inset.Panel">16</Thickness>
+
+  <!-- Anello di focus da tastiera: ciano, 2 px, appena fuori dal controllo. -->
+  <Style x:Key="Focus.Ring">
+    <Setter Property="Control.Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <Border BorderBrush="{DynamicResource Brush.Accent}"
+                  BorderThickness="2"
+                  CornerRadius="{DynamicResource Radius.Control}"
+                  Margin="-2"
+                  SnapsToDevicePixels="True"/>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Testo di base: colore e font per ogni TextBlock. -->
+  <Style TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>
+    <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Size.Body}"/>
+  </Style>
+
+  <!-- Titolo di pannello: maiuscoletto, colore secondario, come etichetta di strumentazione. -->
+  <Style x:Key="PanelTitle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}"/>
+    <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Size.Caption}"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Typography.Capitals" Value="AllSmallCaps"/>
+    <Setter Property="Margin" Value="0,0,0,8"/>
+  </Style>
+
+  <!-- Pannello: bordo 1 px, angoli 10 px e una linea luminosa di 1 px in alto.
+       La linea è uno sfumato in modalità Absolute tra BorderActive e Surface1 che occupa la prima riga di sfondo
+       (sotto il bordo), poi resta Surface1 per tutto il resto del pannello. -->
+  <Style x:Key="Panel" TargetType="Border">
+    <Setter Property="CornerRadius" Value="{DynamicResource Radius.Panel}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="{DynamicResource Inset.Panel}"/>
+    <Setter Property="Background">
+      <Setter.Value>
+        <LinearGradientBrush MappingMode="Absolute" StartPoint="0,1" EndPoint="0,2">
+          <GradientStop Offset="0" Color="{DynamicResource Color.BorderActive}"/>
+          <GradientStop Offset="1" Color="{DynamicResource Color.Surface1}"/>
+        </LinearGradientBrush>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Pulsante: modello comune ai tre stili. I colori stanno negli stili e arrivano con TemplateBinding. -->
+  <ControlTemplate x:Key="Button.Template" TargetType="Button">
+    <Border x:Name="Chrome"
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            CornerRadius="{DynamicResource Radius.Control}"
+            Padding="{TemplateBinding Padding}"
+            SnapsToDevicePixels="True">
+      <ContentPresenter HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        RecognizesAccessKey="True"/>
+    </Border>
+  </ControlTemplate>
+
+  <!-- Pulsante secondario: stile predefinito di tutti i pulsanti. -->
+  <Style x:Key="Button.Secondary" TargetType="Button">
+    <Setter Property="Background" Value="{DynamicResource Brush.Surface2}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>
+    <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Size.Body}"/>
+    <Setter Property="MinHeight" Value="32"/>
+    <Setter Property="Padding" Value="{DynamicResource Inset.Button}"/>
+    <Setter Property="Cursor" Value="Hand"/>
+    <Setter Property="FocusVisualStyle" Value="{DynamicResource Focus.Ring}"/>
+    <Setter Property="Template" Value="{StaticResource Button.Template}"/>
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface3}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.BorderActive}"/>
+      </Trigger>
+      <Trigger Property="IsPressed" Value="True">
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface1}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/>
+      </Trigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface1}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextTertiary}"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <!-- Pulsante principale: un solo per schermata, per l'azione dominante. -->
+  <Style x:Key="Button.Primary" TargetType="Button">
+    <Setter Property="Background" Value="{DynamicResource Brush.Accent}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Background}"/>
+    <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Size.Body}"/>
+    <Setter Property="MinHeight" Value="32"/>
+    <Setter Property="Padding" Value="{DynamicResource Inset.Button}"/>
+    <Setter Property="Cursor" Value="Hand"/>
+    <Setter Property="FocusVisualStyle" Value="{DynamicResource Focus.Ring}"/>
+    <Setter Property="Template" Value="{StaticResource Button.Template}"/>
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Text}"/>
+      </Trigger>
+      <Trigger Property="IsPressed" Value="True">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent2}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent2}"/>
+      </Trigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface2}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextTertiary}"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <!-- Pulsante di pericolo: per le azioni distruttive (che chiedono comunque conferma). -->
+  <Style x:Key="Button.Danger" TargetType="Button">
+    <Setter Property="Background" Value="{DynamicResource Brush.Surface2}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Error}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Error}"/>
+    <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Size.Body}"/>
+    <Setter Property="MinHeight" Value="32"/>
+    <Setter Property="Padding" Value="{DynamicResource Inset.Button}"/>
+    <Setter Property="Cursor" Value="Hand"/>
+    <Setter Property="FocusVisualStyle" Value="{DynamicResource Focus.Ring}"/>
+    <Setter Property="Template" Value="{StaticResource Button.Template}"/>
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{DynamicResource Brush.Error}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Background}"/>
+      </Trigger>
+      <Trigger Property="IsPressed" Value="True">
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface1}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Error}"/>
+      </Trigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface1}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextTertiary}"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <!-- Stile predefinito dei pulsanti: il secondario. -->
+  <Style TargetType="Button" BasedOn="{StaticResource Button.Secondary}"/>
+
+  <!-- Campo di testo: sfondo Surface2, bordo che si accende con il mouse e con il focus. -->
+  <ControlTemplate x:Key="TextBox.Template" TargetType="TextBox">
+    <Border x:Name="Chrome"
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            CornerRadius="{DynamicResource Radius.Small}"
+            Padding="{TemplateBinding Padding}"
+            SnapsToDevicePixels="True">
+      <ScrollViewer x:Name="PART_ContentHost"
+                    Focusable="False"
+                    HorizontalScrollBarVisibility="Hidden"
+                    VerticalScrollBarVisibility="Hidden"/>
+    </Border>
+    <ControlTemplate.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Brush.TextTertiary}"/>
+      </Trigger>
+      <Trigger Property="IsKeyboardFocused" Value="True">
+        <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Brush.BorderActive}"/>
+      </Trigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.Surface1}"/>
+        <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextTertiary}"/>
+      </Trigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+
+  <Style TargetType="TextBox">
+    <Setter Property="Background" Value="{DynamicResource Brush.Surface2}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>
+    <Setter Property="CaretBrush" Value="{DynamicResource Brush.Accent}"/>
+    <Setter Property="SelectionBrush" Value="{DynamicResource Brush.Accent}"/>
+    <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Size.Body}"/>
+    <Setter Property="MinHeight" Value="32"/>
+    <Setter Property="Padding" Value="{DynamicResource Inset.Field}"/>
+    <Setter Property="FocusVisualStyle" Value="{DynamicResource Focus.Ring}"/>
+    <Setter Property="Template" Value="{StaticResource TextBox.Template}"/>
+  </Style>
+
+  <!-- Interruttore: binario (IsChecked) con pista e pallino. Il pallino scorre cambiando allineamento, senza animazioni. -->
+  <Style TargetType="CheckBox">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>
+    <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Size.Body}"/>
+    <Setter Property="Cursor" Value="Hand"/>
+    <Setter Property="FocusVisualStyle" Value="{DynamicResource Focus.Ring}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="CheckBox">
+          <BulletDecorator Background="Transparent" SnapsToDevicePixels="True">
+            <BulletDecorator.Bullet>
+              <Grid Width="40" Height="22">
+                <Border x:Name="Track"
+                        CornerRadius="11"
+                        Background="{DynamicResource Brush.Surface3}"
+                        BorderBrush="{DynamicResource Brush.Border}"
+                        BorderThickness="1"/>
+                <Border x:Name="Knob"
+                        Width="16"
+                        Height="16"
+                        CornerRadius="8"
+                        HorizontalAlignment="Left"
+                        Margin="2,0,0,0"
+                        Background="{DynamicResource Brush.TextSecondary}"/>
+              </Grid>
+            </BulletDecorator.Bullet>
+            <ContentPresenter Margin="10,0,0,0"
+                              VerticalAlignment="Center"
+                              RecognizesAccessKey="True"/>
+          </BulletDecorator>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Track" Property="BorderBrush" Value="{DynamicResource Brush.BorderActive}"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Track" Property="Background" Value="{DynamicResource Brush.Accent}"/>
+              <Setter TargetName="Track" Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/>
+              <Setter TargetName="Knob" Property="HorizontalAlignment" Value="Right"/>
+              <Setter TargetName="Knob" Property="Margin" Value="0,0,2,0"/>
+              <Setter TargetName="Knob" Property="Background" Value="{DynamicResource Brush.Background}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Track" Property="Background" Value="{DynamicResource Brush.Surface1}"/>
+              <Setter TargetName="Track" Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
+              <Setter TargetName="Knob" Property="Background" Value="{DynamicResource Brush.TextTertiary}"/>
+              <Setter Property="Foreground" Value="{DynamicResource Brush.TextTertiary}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Pallino dello slider. -->
+  <Style x:Key="Slider.Thumb" TargetType="Thumb">
+    <Setter Property="Width" Value="16"/>
+    <Setter Property="Height" Value="16"/>
+    <Setter Property="OverridesDefaultStyle" Value="True"/>
+    <Setter Property="IsTabStop" Value="False"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Thumb">
+          <Border x:Name="Knob"
+                  CornerRadius="8"
+                  Background="{DynamicResource Brush.Text}"
+                  BorderBrush="{DynamicResource Brush.Accent}"
+                  BorderThickness="2"/>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Knob" Property="Background" Value="{DynamicResource Brush.Accent}"/>
+            </Trigger>
+            <Trigger Property="IsDragging" Value="True">
+              <Setter TargetName="Knob" Property="Background" Value="{DynamicResource Brush.Accent}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Slider orizzontale: pista sottile, parte attiva in accento, pallino. -->
+  <Style TargetType="Slider">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}"/>
+    <Setter Property="MinHeight" Value="24"/>
+    <Setter Property="FocusVisualStyle" Value="{DynamicResource Focus.Ring}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Slider">
+          <Grid VerticalAlignment="Center">
+            <Track x:Name="PART_Track" VerticalAlignment="Center">
+              <Track.DecreaseRepeatButton>
+                <RepeatButton Command="Slider.DecreaseLarge" Focusable="False" IsTabStop="False">
+                  <RepeatButton.Template>
+                    <ControlTemplate TargetType="RepeatButton">
+                      <Border Height="4"
+                              CornerRadius="2"
+                              VerticalAlignment="Center"
+                              Background="{DynamicResource Brush.Accent}"/>
+                    </ControlTemplate>
+                  </RepeatButton.Template>
+                </RepeatButton>
+              </Track.DecreaseRepeatButton>
+              <Track.IncreaseRepeatButton>
+                <RepeatButton Command="Slider.IncreaseLarge" Focusable="False" IsTabStop="False">
+                  <RepeatButton.Template>
+                    <ControlTemplate TargetType="RepeatButton">
+                      <Border Height="4"
+                              CornerRadius="2"
+                              VerticalAlignment="Center"
+                              Background="{DynamicResource Brush.Surface3}"/>
+                    </ControlTemplate>
+                  </RepeatButton.Template>
+                </RepeatButton>
+              </Track.IncreaseRepeatButton>
+              <Track.Thumb>
+                <Thumb Style="{StaticResource Slider.Thumb}"/>
+              </Track.Thumb>
+            </Track>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Foreground" Value="{DynamicResource Brush.TextTertiary}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Barra di avanzamento sottile. Nessuna animazione: l'avanzamento indeterminato mostra solo la barra piena. -->
+  <Style TargetType="ProgressBar">
+    <Setter Property="Height" Value="4"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}"/>
+    <Setter Property="Background" Value="{DynamicResource Brush.Surface3}"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ProgressBar">
+          <Grid>
+            <Border Background="{TemplateBinding Background}" CornerRadius="2"/>
+            <Border x:Name="PART_Track" CornerRadius="2"/>
+            <Border x:Name="PART_Indicator"
+                    HorizontalAlignment="Left"
+                    Background="{TemplateBinding Foreground}"
+                    CornerRadius="2"/>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Barra di scorrimento verticale sottile: 8 px, pollice che si accende con il mouse. -->
+  <Style x:Key="ScrollBar.Thumb" TargetType="Thumb">
+    <Setter Property="OverridesDefaultStyle" Value="True"/>
+    <Setter Property="IsTabStop" Value="False"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Thumb">
+          <Border x:Name="Knob"
+                  Margin="1"
+                  CornerRadius="3"
+                  Background="{DynamicResource Brush.TextTertiary}"/>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Knob" Property="Background" Value="{DynamicResource Brush.Accent}"/>
+            </Trigger>
+            <Trigger Property="IsDragging" Value="True">
+              <Setter TargetName="Knob" Property="Background" Value="{DynamicResource Brush.Accent}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <ControlTemplate x:Key="ScrollBar.Vertical" TargetType="ScrollBar">
+    <Grid Background="{TemplateBinding Background}">
+      <Track x:Name="PART_Track" IsDirectionReversed="True">
+        <Track.DecreaseRepeatButton>
+          <RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="False" IsTabStop="False"/>
+        </Track.DecreaseRepeatButton>
+        <Track.Thumb>
+          <Thumb Style="{StaticResource ScrollBar.Thumb}"/>
+        </Track.Thumb>
+        <Track.IncreaseRepeatButton>
+          <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="False" IsTabStop="False"/>
+        </Track.IncreaseRepeatButton>
+      </Track>
+    </Grid>
+  </ControlTemplate>
+
+  <ControlTemplate x:Key="ScrollBar.Horizontal" TargetType="ScrollBar">
+    <Grid Background="{TemplateBinding Background}">
+      <Track x:Name="PART_Track">
+        <Track.DecreaseRepeatButton>
+          <RepeatButton Command="ScrollBar.PageLeftCommand" Opacity="0" Focusable="False" IsTabStop="False"/>
+        </Track.DecreaseRepeatButton>
+        <Track.Thumb>
+          <Thumb Style="{StaticResource ScrollBar.Thumb}"/>
+        </Track.Thumb>
+        <Track.IncreaseRepeatButton>
+          <RepeatButton Command="ScrollBar.PageRightCommand" Opacity="0" Focusable="False" IsTabStop="False"/>
+        </Track.IncreaseRepeatButton>
+      </Track>
+    </Grid>
+  </ControlTemplate>
+
+  <Style TargetType="ScrollBar">
+    <Setter Property="Width" Value="8"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Template" Value="{StaticResource ScrollBar.Vertical}"/>
+    <Style.Triggers>
+      <Trigger Property="Orientation" Value="Horizontal">
+        <Setter Property="Width" Value="Auto"/>
+        <Setter Property="Height" Value="8"/>
+        <Setter Property="Template" Value="{StaticResource ScrollBar.Horizontal}"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <!-- Suggerimento: pannello Surface2 con bordo acceso e testo di base. Nessuna ombra. -->
+  <ControlTemplate x:Key="ToolTip.Template" TargetType="ToolTip">
+    <Border Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="{DynamicResource Radius.Small}"
+            Padding="{TemplateBinding Padding}">
+      <ContentPresenter/>
+    </Border>
+  </ControlTemplate>
+
+  <Style TargetType="ToolTip">
+    <Setter Property="OverridesDefaultStyle" Value="True"/>
+    <Setter Property="HasDropShadow" Value="False"/>
+    <Setter Property="Background" Value="{DynamicResource Brush.Surface2}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.BorderActive}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>
+    <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Size.Caption}"/>
+    <Setter Property="Padding" Value="{DynamicResource Inset.Tip}"/>
+    <Setter Property="Template" Value="{StaticResource ToolTip.Template}"/>
+  </Style>
+
+  <!-- Separatore orizzontale: linea di 1 px con il colore del bordo. -->
+  <ControlTemplate x:Key="Separator.Template" TargetType="Separator">
+    <Border Height="1"
+            Background="{TemplateBinding Background}"
+            SnapsToDevicePixels="True"/>
+  </ControlTemplate>
+
+  <Style TargetType="Separator">
+    <Setter Property="Background" Value="{DynamicResource Brush.Border}"/>
+    <Setter Property="Margin" Value="0,8"/>
+    <Setter Property="Template" Value="{StaticResource Separator.Template}"/>
+  </Style>
+
+  <!-- Etichetta: testo secondario, nessun margine proprio. -->
+  <ControlTemplate x:Key="Label.Template" TargetType="Label">
+    <ContentPresenter Margin="{TemplateBinding Padding}" RecognizesAccessKey="True"/>
+  </ControlTemplate>
+
+  <Style TargetType="Label">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}"/>
+    <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Size.Body}"/>
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="Template" Value="{StaticResource Label.Template}"/>
+  </Style>
+
+</ResourceDictionary>

@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using AllSky.Core;
+using AllSky.Desktop.Theme;
+using AllSky.Desktop.Views;
 using AllSky.Host;
 
 namespace AllSky.Desktop;
@@ -23,7 +25,9 @@ public sealed class App : System.Windows.Application
     private readonly AllSkyHostRuntime _runtime;
     private readonly AppPaths _paths;
     private readonly DesktopTexts _texts;
+    private readonly bool _showGallery;
     private MainWindow? _window;
+    private ComponentGalleryWindow? _gallery;
     private TrayIcon? _tray;
     private bool _exiting;
     private bool _hostStopped;
@@ -32,7 +36,8 @@ public sealed class App : System.Windows.Application
     /// <param name="runtime">Host già avviato, da arrestare all'uscita.</param>
     /// <param name="paths">Cartelle e file usati per i log.</param>
     /// <param name="texts">Testi nella lingua scelta.</param>
-    public App(AllSkyHostRuntime runtime, AppPaths paths, DesktopTexts texts)
+    /// <param name="showGallery">Se true, al posto della finestra principale si apre la "Galleria componenti" (argomento <c>--gallery</c>).</param>
+    public App(AllSkyHostRuntime runtime, AppPaths paths, DesktopTexts texts, bool showGallery = false)
     {
         ArgumentNullException.ThrowIfNull(runtime);
         ArgumentNullException.ThrowIfNull(paths);
@@ -41,7 +46,11 @@ public sealed class App : System.Windows.Application
         _runtime = runtime;
         _paths = paths;
         _texts = texts;
+        _showGallery = showGallery;
     }
+
+    /// <summary>Gestore del tema (colori, luminosità, modalità notte). Creato all'avvio, prima di qualsiasi finestra.</summary>
+    public ThemeManager Theme { get; private set; } = null!;
 
     /// <inheritdoc />
     protected override void OnStartup(System.Windows.StartupEventArgs e)
@@ -54,9 +63,27 @@ public sealed class App : System.Windows.Application
         // Rete di sicurezza come nel Tray (UnhandledExceptionMode.CatchException): l'eccezione viene registrata e l'interfaccia resta viva.
         DispatcherUnhandledException += OnDispatcherUnhandledException;
 
+        // Tema prima delle finestre: le risorse di colore e font devono esistere quando i controlli le cercano.
+        Theme = new ThemeManager(Resources);
+        Resources.MergedDictionaries.Add(new ResourceDictionary
+        {
+            Source = new Uri("/AllSkyBrain;component/Theme/Styles.xaml", UriKind.Relative),
+        });
+
         _window = new MainWindow(_runtime.Service, _texts);
         _tray = new TrayIcon(_runtime, _paths, _texts, ShowMainWindow, ExitApplication);
-        _window.Show();
+
+        if (_showGallery)
+        {
+            // Con --gallery la galleria sostituisce la finestra principale. La finestra principale resta creata
+            // (non mostrata) così che l'icona nell'area di notifica continui a funzionare.
+            _gallery = new ComponentGalleryWindow(Theme);
+            _gallery.Show();
+        }
+        else
+        {
+            _window.Show();
+        }
     }
 
     /// <summary>Mostra la finestra principale: dall'icona o dal doppio clic. Ripristina la finestra se è ridotta a icona.</summary>
