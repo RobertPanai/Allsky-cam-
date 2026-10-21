@@ -243,7 +243,7 @@ internal sealed class ShellControl : Grid
             Data = ShellIcons.For(view),
             Width = 24,
             Height = 24,
-            Stretch = Stretch.None,
+            Stretch = System.Windows.Media.Stretch.None,
             StrokeThickness = 1.5,
             StrokeLineJoin = PenLineJoin.Round,
             StrokeStartLineCap = PenLineCap.Round,
@@ -253,7 +253,7 @@ internal sealed class ShellControl : Grid
         };
 
         // Il tratto dell'icona segue il colore del testo della voce: secondario, poi accento o testo quando è selezionata.
-        icon.SetBinding(System.Windows.Shapes.Shape.StrokeProperty, new Binding(nameof(Foreground))
+        icon.SetBinding(System.Windows.Shapes.Shape.StrokeProperty, new Binding(nameof(System.Windows.Controls.Control.Foreground))
         {
             RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(RadioButton), 1),
         });

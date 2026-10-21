@@ -80,7 +80,7 @@ internal sealed class StatusBarPanel : Border
             Data = icon,
             Width = 16,
             Height = 16,
-            Stretch = Stretch.Uniform,
+            Stretch = System.Windows.Media.Stretch.Uniform,
             StrokeThickness = 2,
             StrokeLineJoin = PenLineJoin.Round,
             StrokeStartLineCap = PenLineCap.Round,
