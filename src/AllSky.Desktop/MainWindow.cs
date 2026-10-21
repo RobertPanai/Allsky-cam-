@@ -1,9 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Input;
 using AllSky.Core;
+using AllSky.Desktop.Shell;
+using AllSky.Desktop.Theme;
 using AllSky.Engine;
 
 namespace AllSky.Desktop;
@@ -19,8 +20,7 @@ namespace AllSky.Desktop;
 internal sealed class MainWindow : System.Windows.Window
 {
     private readonly IAllSkyService _service;
-    private readonly DesktopTexts _texts;
-    private readonly TextBlock _statusText;
+    private readonly ShellControl _shell;
     private bool _exiting;
     private bool _detached;
 
@@ -33,7 +33,6 @@ internal sealed class MainWindow : System.Windows.Window
         ArgumentNullException.ThrowIfNull(texts);
 
         _service = service;
-        _texts = texts;
 
         Title = texts.WindowTitle;
         // Colori dal tema (Brush.Background), così la modalità notte rossa li cambia senza ricreare la finestra.
@@ -43,14 +42,11 @@ internal sealed class MainWindow : System.Windows.Window
         MinWidth = 1100;
         MinHeight = 700;
 
-        _statusText = new TextBlock
-        {
-            FontSize = 18,
-            TextWrapping = TextWrapping.Wrap,
-            Margin = new Thickness(32),
-        };
-        _statusText.SetResourceReference(TextBlock.ForegroundProperty, "Brush.Text");
-        Content = _statusText;
+        // La finestra ospita la shell (barra laterale, viste, barra di stato). Il tema è quello dell'applicazione.
+        ThemeManager theme = ((App)System.Windows.Application.Current).Theme;
+        _shell = new ShellControl(texts, theme);
+        Content = _shell;
+        PreviewKeyDown += OnPreviewKeyDown;
 
         Closing += OnClosing;
         service.StatusChanged += OnStatusChanged;
@@ -71,6 +67,15 @@ internal sealed class MainWindow : System.Windows.Window
 
         _detached = true;
         _service.StatusChanged -= OnStatusChanged;
+    }
+
+    /// <summary>Scorciatoie e frecce della shell. Gira in anteprima (tunnel), così Ctrl+1..6 funziona con qualunque fuoco.</summary>
+    private void OnPreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (_shell.TryHandleKey(e))
+        {
+            e.Handled = true;
+        }
     }
 
     /// <summary>Chiusura dalla X: la finestra si nasconde. Durante l'uscita dall'app lascia chiudere davvero.</summary>
@@ -108,32 +113,9 @@ internal sealed class MainWindow : System.Windows.Window
         }));
     }
 
-    /// <summary>Scrive lo stato nella finestra. Va chiamato dal thread dell'interfaccia.</summary>
+    /// <summary>Scrive lo stato nella shell. Va chiamato dal thread dell'interfaccia.</summary>
     private void Render(StatusDto status)
     {
-        var lines = new List<string>
-        {
-            $"{_texts.StateLabel}: {_texts.StateName(status.State)}",
-            $"{_texts.CameraLabel}: {CameraText(status.Camera)}",
-            $"{_texts.LastFrameLabel}: {_texts.FormatLastFrame(status.LastFrame?.Id, status.LastFrame?.Timestamp)}",
-        };
-
-        if (!string.IsNullOrWhiteSpace(status.Error))
-        {
-            lines.Add($"{_texts.ErrorLabel}: {status.Error}");
-        }
-
-        _statusText.Text = string.Join(Environment.NewLine, lines);
-    }
-
-    /// <summary>Nome della camera, o il testo "non collegata" se la sorgente non è connessa.</summary>
-    private string CameraText(CameraStatusDto camera)
-    {
-        if (!camera.Connected)
-        {
-            return _texts.CameraNotConnected;
-        }
-
-        return string.IsNullOrWhiteSpace(camera.Name) ? camera.Id : camera.Name;
+        _shell.Update(status);
     }
 }
