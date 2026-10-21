@@ -13,7 +13,7 @@ namespace AllSky.Tray.Updates;
 /// </remarks>
 internal sealed class VelopackBackend : IUpdateBackend
 {
-    /// <summary>Repository GitHub delle release di AllSky Brain. È l'unico punto del progetto in cui compare questo indirizzo.</summary>
+    /// <summary>Repository GitHub delle release di All Sky Brain. È l'unico punto del progetto in cui compare questo indirizzo.</summary>
     internal const string RepositoryUrl = "https://github.com/RobertPanai/Allsky-cam-";
 
     private readonly UpdateManager _manager;

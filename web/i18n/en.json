@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "AllSky Brain",
+    "title": "All Sky Brain",
     "loading": "Loading…",
     "offline": "The engine is not responding. I will retry on my own every few seconds.",
     "retry": "Retry"

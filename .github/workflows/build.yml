@@ -62,11 +62,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          NOTE="Ultima build di AllSky Brain per Windows 10/11 x64 (generata da main ad ogni push). Non firmata: Windows e Chrome possono mostrare un avviso. Verifica il file con il SHA-256 nel file .sha256. Estrai lo zip e avvia AllSkyBrain.exe."
+          NOTE="Ultima build di All Sky Brain per Windows 10/11 x64 (generata da main ad ogni push). Non firmata: Windows e Chrome possono mostrare un avviso. Verifica il file con il SHA-256 nel file .sha256. Estrai lo zip e avvia AllSkyBrain.exe."
           if gh release view latest >/dev/null 2>&1; then
             gh release upload latest AllSkyBrain-win-x64.zip AllSkyBrain-win-x64.zip.sha256 --clobber
             gh release edit latest --notes "$NOTE"
           else
             gh release create latest AllSkyBrain-win-x64.zip AllSkyBrain-win-x64.zip.sha256 \
-              --prerelease --title "AllSky Brain - ultima build" --notes "$NOTE"
+              --prerelease --title "All Sky Brain - ultima build" --notes "$NOTE"
           fi

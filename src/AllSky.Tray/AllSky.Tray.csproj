@@ -8,8 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>AllSky.Tray</RootNamespace>
     <AssemblyName>AllSkyBrain</AssemblyName>
-    <Product>AllSky Brain</Product>
-    <AssemblyTitle>AllSky Brain</AssemblyTitle>
+    <Product>All Sky Brain</Product>
+    <AssemblyTitle>All Sky Brain</AssemblyTitle>
   </PropertyGroup>
 
   <ItemGroup>

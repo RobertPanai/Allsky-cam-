@@ -1,6 +1,6 @@
-# AllSky Brain
+# All Sky Brain
 
-AllSky Brain è un'applicazione per Windows che cattura le immagini di una camera all-sky, le elabora e le archivia notte per notte. Dalle immagini crea timelapse, keogram e startrails. Si controlla da una pagina web che gira sul computer, con un'icona nell'area di notifica.
+All Sky Brain è un'applicazione per Windows che cattura le immagini di una camera all-sky, le elabora e le archivia notte per notte. Dalle immagini crea timelapse, keogram e startrails. Si controlla da una pagina web che gira sul computer, con un'icona nell'area di notifica.
 
 ## Cosa fa
 
@@ -10,7 +10,7 @@ AllSky Brain è un'applicazione per Windows che cattura le immagini di una camer
 - **Prodotti**: timelapse MP4, keogram e startrails per ogni notte.
 - **Camere**: simulatore incluso, oppure camere ASCOM (driver COM) e ASCOM Alpaca raggiungibili in rete.
 - **Interfaccia web locale**: sezioni Live, Notti, Colore, Camera, Sito e Pubblicazione, con layout adatto anche al telefono.
-- **Icona nell'area di notifica**: apre il pannello, permette di avviare AllSky Brain con Windows e chiude l'applicazione.
+- **Icona nell'area di notifica**: apre il pannello, permette di avviare All Sky Brain con Windows e chiude l'applicazione.
 - **Pubblicazione periodica** (facoltativa): invia l'ultima immagine a un server web. Vedi [docs/PUBBLICAZIONE.md](docs/PUBBLICAZIONE.md).
 
 ## Requisiti
@@ -37,7 +37,7 @@ L'applicazione non è firmata digitalmente. Windows SmartScreen può quindi most
 
 ## Primo avvio
 
-All'avvio AllSky Brain crea l'icona nell'area di notifica (accanto all'orologio). Doppio clic sull'icona, oppure la voce **Apri pannello**, apre la UI nel browser all'indirizzo `http://127.0.0.1:5810`. Se la porta è occupata, AllSky Brain usa la successiva libera e apre la UI su quella.
+All'avvio All Sky Brain crea l'icona nell'area di notifica (accanto all'orologio). Doppio clic sull'icona, oppure la voce **Apri pannello**, apre la UI nel browser all'indirizzo `http://127.0.0.1:5810`. Se la porta è occupata, All Sky Brain usa la successiva libera e apre la UI su quella.
 
 Al primo avvio viene creato il file di configurazione con valori predefiniti e la UI apre la procedura guidata. Dalla UI:
 

@@ -2,7 +2,7 @@
 
 Versione del modulo: 0.1.0.
 
-La pubblicazione invia periodicamente l'ultima immagine della camera a un server web scelto dall'utente. Il server riceve un JPEG ridimensionato e i suoi metadati. AllSky Brain fa solo richieste HTTPS in uscita verso l'indirizzo configurato: non apre porte e non espone nulla in rete.
+La pubblicazione invia periodicamente l'ultima immagine della camera a un server web scelto dall'utente. Il server riceve un JPEG ridimensionato e i suoi metadati. All Sky Brain fa solo richieste HTTPS in uscita verso l'indirizzo configurato: non apre porte e non espone nulla in rete.
 
 ## Cos'è
 

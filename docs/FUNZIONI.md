@@ -1,6 +1,6 @@
-# Funzioni del progetto AllSky Brain
+# Funzioni del progetto All Sky Brain
 
-AllSky Brain è un motore locale per una camera all-sky: cattura i frame, raggruppa le immagini per notte e crea timelapse, keogram e startrails. Il motore è scritto in C# e si divide in tre librerie: **Core** (configurazione, tipi di frame e di camera, interfacce), **Astro** (posizione del Sole e della Luna, fasi del cielo, notte osservativa) e **Imaging** (demosaicing, bilanciamento del bianco, stretch e levigatura). L'interfaccia web è in JavaScript a moduli, in `web/js` (servizi comuni) e `web/js/views` (schermate); `web/mock/server.mjs` è un motore di prova con dati finti che implementa lo stesso contratto HTTP.
+All Sky Brain è un motore locale per una camera all-sky: cattura i frame, raggruppa le immagini per notte e crea timelapse, keogram e startrails. Il motore è scritto in C# e si divide in tre librerie: **Core** (configurazione, tipi di frame e di camera, interfacce), **Astro** (posizione del Sole e della Luna, fasi del cielo, notte osservativa) e **Imaging** (demosaicing, bilanciamento del bianco, stretch e levigatura). L'interfaccia web è in JavaScript a moduli, in `web/js` (servizi comuni) e `web/js/views` (schermate); `web/mock/server.mjs` è un motore di prova con dati finti che implementa lo stesso contratto HTTP.
 
 Convenzioni del documento:
 

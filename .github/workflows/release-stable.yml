@@ -51,5 +51,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           vpk download github --repoUrl "https://github.com/${{ github.repository }}" --token $env:GH_TOKEN
-          vpk pack --packId AllSkyBrain --packVersion ${{ steps.ver.outputs.version }} --packDir publish/AllSkyBrain --mainExe AllSkyBrain.exe --packTitle "AllSky Brain"
-          vpk upload github --repoUrl "https://github.com/${{ github.repository }}" --token $env:GH_TOKEN --publish --releaseName "AllSky Brain ${{ steps.ver.outputs.version }}" --tag "${{ steps.ver.outputs.tag }}"
+          vpk pack --packId AllSkyBrain --packVersion ${{ steps.ver.outputs.version }} --packDir publish/AllSkyBrain --mainExe AllSkyBrain.exe --packTitle "All Sky Brain"
+          vpk upload github --repoUrl "https://github.com/${{ github.repository }}" --token $env:GH_TOKEN --publish --releaseName "All Sky Brain ${{ steps.ver.outputs.version }}" --tag "${{ steps.ver.outputs.tag }}"

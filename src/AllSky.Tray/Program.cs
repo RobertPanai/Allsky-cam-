@@ -39,7 +39,7 @@ internal static class Program
     /// <summary>Impedisce di mostrare più finestre di crash se un'eccezione ne genera altre.</summary>
     private static int _inCrashReport;
 
-    /// <summary>Avvia AllSky Brain. Restituisce 0 in uscita normale, 1 se l'host non parte.</summary>
+    /// <summary>Avvia All Sky Brain. Restituisce 0 in uscita normale, 1 se l'host non parte.</summary>
     [STAThread]
     private static int Main(string[] args)
     {
@@ -59,7 +59,7 @@ internal static class Program
         using var mutex = new Mutex(initiallyOwned: false, mutexName, out bool createdNew);
         if (!createdNew)
         {
-            MessageBox.Show("AllSky Brain è già in esecuzione (icona nella barra in basso).", "AllSky Brain",
+            MessageBox.Show("All Sky Brain è già in esecuzione (icona nella barra in basso).", "All Sky Brain",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return 0;
         }
@@ -104,7 +104,7 @@ internal static class Program
         catch (Exception ex)
         {
             AppLog.Append(paths.StartupLog, ex.ToString());
-            MessageBox.Show(BuildStartupMessage(port, paths.StartupLog, ex), "AllSky Brain",
+            MessageBox.Show(BuildStartupMessage(port, paths.StartupLog, ex), "All Sky Brain",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             return 1;
         }
@@ -116,7 +116,7 @@ internal static class Program
     /// <summary>Testo dell'errore mostrato quando l'host non parte. La causa più comune è la porta occupata.</summary>
     private static string BuildStartupMessage(int port, string logPath, Exception ex)
     {
-        return $"Impossibile avviare AllSky Brain: la porta {port} potrebbe essere occupata. " +
+        return $"Impossibile avviare All Sky Brain: la porta {port} potrebbe essere occupata. " +
                "Chiudi l'altro programma o cambia la porta in Impostazioni.\n\n" +
                $"Dettagli: {ex.Message}\n\nRegistro: {logPath}";
     }
@@ -179,8 +179,8 @@ internal static class Program
 
         AppLog.Append(paths.CrashLog, ex.ToString());
         MessageBox.Show(
-            $"AllSky Brain ha riscontrato un errore imprevisto e potrebbe chiudersi.\n\nDettagli: {ex.Message}\n\nRegistro: {paths.CrashLog}",
-            "AllSky Brain", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            $"All Sky Brain ha riscontrato un errore imprevisto e potrebbe chiudersi.\n\nDettagli: {ex.Message}\n\nRegistro: {paths.CrashLog}",
+            "All Sky Brain", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 }
 
