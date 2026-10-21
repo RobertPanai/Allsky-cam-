@@ -4,6 +4,7 @@ using AllSky.Capture;
 using AllSky.Core;
 using AllSky.Publish;
 using AllSky.Timelapse;
+using System.Globalization;
 
 namespace AllSky.Engine;
 
@@ -512,10 +513,27 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
             ? previous.Current
             : new ExposureSetting(config.Camera.DayExposureMs, config.Camera.Gain);
 
+        // Limiti del driver sanificati: il log segnala solo i casi in cui il valore usato differisce da quello del driver.
+        (double minExposureMs, double maxExposureMs) = ExposureLimits.Sanitize(
+            info.MinExposureMs,
+            info.MaxExposureMs,
+            config.Camera.MaxExposureMs);
+        bool driverLimitsCorrected =
+            minExposureMs != info.MinExposureMs
+            || !ExposureLimits.IsUsable(info.MaxExposureMs)
+            || maxExposureMs != Math.Min(config.Camera.MaxExposureMs, info.MaxExposureMs);
+        if (driverLimitsCorrected)
+        {
+            _log(
+                $"Limiti di esposizione del driver non validi (min={Fmt(info.MinExposureMs)}, max={Fmt(info.MaxExposureMs)}): " +
+                $"uso min={Fmt(minExposureMs)}, max={Fmt(maxExposureMs)}",
+                null);
+        }
+
         // Gain fisso da configurazione: il controller regola solo l'esposizione.
         var exposureOptions = new AutoExposureOptions(
-            info.MinExposureMs,
-            Math.Min(config.Camera.MaxExposureMs, info.MaxExposureMs),
+            minExposureMs,
+            maxExposureMs,
             config.Camera.Gain,
             config.Camera.Gain);
         var autoExposure = new AutoExposure(exposureOptions, info.MaxAdu, initial);
@@ -910,6 +928,9 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
             }
         }
     }
+
+    /// <summary>Formato invariante di un valore in millisecondi, per i messaggi di log.</summary>
+    private static string Fmt(double valueMs) => valueMs.ToString("R", CultureInfo.InvariantCulture);
 
     private static IReadOnlyList<ValidationError> ValidateAll(AppConfig config)
     {

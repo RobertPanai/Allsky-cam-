@@ -129,6 +129,42 @@ public sealed class AllSkyEngineTests
     }
 
     [Fact]
+    public async Task DriverConLimitiEsposizioneZero_LaCatturaPartaERegistraLaSanificazione()
+    {
+        using var h = new Harness();
+        var clock = new FakeClock(new DateTimeOffset(2026, 10, 19, 22, 0, 0, TimeSpan.Zero)); // notte
+        h.SaveConfig(Config(h.ArchiveFolder, intervalSeconds: 60));
+
+        // Il driver riporta minimo e massimo a zero (proprietà non valorizzate): deve partire comunque.
+        var sim = new SimCamera(SmallSim(), clock);
+        var camera = new TestCamera(sim, info: sim.Info with { MinExposureMs = 0.0, MaxExposureMs = 0.0 });
+        var reached = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var delay = new ScriptDelay(clock, (index, ct) =>
+        {
+            if (index < 3)
+            {
+                return Task.CompletedTask;
+            }
+
+            reached.TrySetResult();
+            return Task.Delay(System.Threading.Timeout.Infinite, ct);
+        });
+
+        await using var engine = new AllSkyEngine(h.Dependencies(clock, new TestCameraProvider(_ => camera), delay));
+        await engine.StartAsync();
+        await reached.Task.WaitAsync(Timeout);
+
+        StatusDto status = engine.GetStatus();
+        Assert.NotEqual("error", status.State);
+        Assert.Null(status.Error);
+        Assert.True(camera.Captures > 0);
+        Assert.Contains(
+            h.Logs,
+            l => l == "Limiti di esposizione del driver non validi (min=0, max=0): uso min=0.001, max=30000");
+        await engine.StopAsync();
+    }
+
+    [Fact]
     public void UpdateConfig_ConErroreDiValidazione_NonCambiaNullaENonScrive()
     {
         using var h = new Harness();

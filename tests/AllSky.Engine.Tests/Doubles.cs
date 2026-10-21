@@ -76,20 +76,23 @@ internal sealed class TestCamera : ICameraSource
 {
     private readonly ICameraSource _inner;
     private readonly Func<double, double, CancellationToken, Task<RawFrame>>? _capture;
+    private readonly CameraInfo? _info;
     private int _disposals;
     private int _captures;
 
-    public TestCamera(ICameraSource inner, Func<double, double, CancellationToken, Task<RawFrame>>? capture = null)
+    /// <param name="info">Se presente, sostituisce le caratteristiche riportate dalla camera interna (per simulare un driver anomalo).</param>
+    public TestCamera(ICameraSource inner, Func<double, double, CancellationToken, Task<RawFrame>>? capture = null, CameraInfo? info = null)
     {
         _inner = inner;
         _capture = capture;
+        _info = info;
     }
 
     public string Id => _inner.Id;
 
     public string Name => "Camera di prova";
 
-    public CameraInfo Info => _inner.Info;
+    public CameraInfo Info => _info ?? _inner.Info;
 
     public int Disposals => Volatile.Read(ref _disposals);
 
@@ -251,6 +254,18 @@ internal sealed class Harness : IDisposable
     public RecordingEncoder Encoder { get; } = new();
 
     public RecordingTimelapse Timelapses { get; } = new();
+
+    /// <summary>Messaggi di log ricevuti dall'engine finora.</summary>
+    public IReadOnlyList<string> Logs
+    {
+        get
+        {
+            lock (_gate)
+            {
+                return _logs.ToList();
+            }
+        }
+    }
 
     public void SaveConfig(AppConfig config)
     {

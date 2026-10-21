@@ -310,9 +310,27 @@ public sealed class AscomComCamera : ICameraSource
             BayerOffsetY: offsetY,
             MaxAdu: (int)d.MaxADU,
             PixelSizeUm: (double)d.PixelSizeX,
-            MinExposureMs: (double)d.ExposureMin * 1000.0,
-            MaxExposureMs: (double)d.ExposureMax * 1000.0,
+            MinExposureMs: ReadExposureLimitMs(() => (double)d.ExposureMin, unknown: 0.0),
+            MaxExposureMs: ReadExposureLimitMs(() => (double)d.ExposureMax, unknown: double.PositiveInfinity),
             GainRange: ReadGainRange(d));
+    }
+
+    /// <summary>
+    /// Legge un limite di esposizione (secondi) e lo restituisce in millisecondi. Se il driver non lo implementa,
+    /// lo riporta come 0 o non finito, lancia un'eccezione: si usa <paramref name="unknown"/>, che il motore
+    /// sanifica (0 = minimo ignoto, +infinito = massimo ignoto). La connessione non fallisce per questo.
+    /// </summary>
+    private static double ReadExposureLimitMs(Func<double> readSeconds, double unknown)
+    {
+        try
+        {
+            double seconds = readSeconds();
+            return double.IsFinite(seconds) && seconds > 0.0 ? seconds * 1000.0 : unknown;
+        }
+        catch (Exception)
+        {
+            return unknown;
+        }
     }
 
     private static (int Min, int Max)? ReadGainRange(dynamic d)

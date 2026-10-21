@@ -1,4 +1,5 @@
 using AllSky.Astro;
+using System.Globalization;
 
 namespace AllSky.Capture;
 
@@ -153,6 +154,9 @@ public sealed class AutoExposure
         return Math.Clamp(value, min, max);
     }
 
+    /// <summary>Formato invariante per i messaggi d'errore.</summary>
+    private static string Fmt(double value) => value.ToString("R", CultureInfo.InvariantCulture);
+
     private static void Validate(AutoExposureOptions options, int maxAdu)
     {
         if (maxAdu < 2)
@@ -161,11 +165,15 @@ public sealed class AutoExposure
         }
         if (!(options.MinExposureMs > 0.0) || !(options.MaxExposureMs >= options.MinExposureMs))
         {
-            throw new ArgumentOutOfRangeException(nameof(options), "Esposizione: serve 0 < min <= max.");
+            throw new ArgumentOutOfRangeException(
+                nameof(options),
+                $"Esposizione: serve 0 < min <= max. Ricevuti: min={Fmt(options.MinExposureMs)} max={Fmt(options.MaxExposureMs)}.");
         }
         if (!(options.MaxGain >= options.MinGain))
         {
-            throw new ArgumentOutOfRangeException(nameof(options), "Gain: serve min <= max.");
+            throw new ArgumentOutOfRangeException(
+                nameof(options),
+                $"Gain: serve min <= max. Ricevuti: min={Fmt(options.MinGain)} max={Fmt(options.MaxGain)}.");
         }
         if (!(options.TargetFraction > 0.0 && options.TargetFraction < 1.0))
         {

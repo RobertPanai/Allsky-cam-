@@ -285,8 +285,10 @@ public sealed class AlpacaCamera : ICameraSource
         int height = await _client.GetAsync<int>(DeviceType, _deviceNumber, "cameraysize", ct);
         int maxAdu = await _client.GetAsync<int>(DeviceType, _deviceNumber, "maxadu", ct);
         double pixelSizeUm = await _client.GetAsync<double>(DeviceType, _deviceNumber, "pixelsizex", ct);
-        double exposureMinSeconds = await _client.GetAsync<double>(DeviceType, _deviceNumber, "exposuremin", ct);
-        double exposureMaxSeconds = await _client.GetAsync<double>(DeviceType, _deviceNumber, "exposuremax", ct);
+        // Limiti di esposizione opzionali: se il dispositivo non li implementa o li riporta non validi,
+        // si usano valori ignoti (0 = minimo ignoto, +infinito = massimo ignoto), che il motore sanifica.
+        double exposureMinMs = await ReadExposureLimitMsAsync("exposuremin", unknown: 0.0, ct);
+        double exposureMaxMs = await ReadExposureLimitMsAsync("exposuremax", unknown: double.PositiveInfinity, ct);
 
         // Gain opzionale: se il dispositivo non lo implementa, la camera viene trattata senza controllo del gain.
         bool canSetGain;
@@ -308,8 +310,22 @@ public sealed class AlpacaCamera : ICameraSource
             maxAdu,
             pixelSizeUm,
             canSetGain,
-            exposureMinSeconds * 1000.0,
-            exposureMaxSeconds * 1000.0);
+            exposureMinMs,
+            exposureMaxMs);
+    }
+
+    /// <summary>Legge un limite di esposizione (secondi) in millisecondi; un errore dell'API o un valore non valido danno <paramref name="unknown"/>.</summary>
+    private async Task<double> ReadExposureLimitMsAsync(string property, double unknown, CancellationToken ct)
+    {
+        try
+        {
+            double seconds = await _client.GetAsync<double>(DeviceType, _deviceNumber, property, ct);
+            return double.IsFinite(seconds) && seconds > 0.0 ? seconds * 1000.0 : unknown;
+        }
+        catch (AlpacaException)
+        {
+            return unknown;
+        }
     }
 
     /// <summary>Imposta il gain arrotondato e restituisce il valore applicato.</summary>

@@ -234,6 +234,28 @@ public class AutoExposureTests
     }
 
     [Fact]
+    public void Constructor_InvalidExposure_MessageIncludesReceivedValues()
+    {
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new AutoExposure(new AutoExposureOptions(0, 30000, 0, 500), MaxAdu, new ExposureSetting(100, 250)));
+        Assert.StartsWith("Esposizione: serve 0 < min <= max.", ex.Message);
+        Assert.Contains("min=0 max=30000", ex.Message);
+
+        var inverted = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new AutoExposure(new AutoExposureOptions(2, 1, 0, 500), MaxAdu, new ExposureSetting(100, 250)));
+        Assert.Contains("min=2 max=1", inverted.Message);
+    }
+
+    [Fact]
+    public void Constructor_InvalidGain_MessageIncludesReceivedValues()
+    {
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new AutoExposure(new AutoExposureOptions(2, 30000, 500, 0), MaxAdu, new ExposureSetting(100, 250)));
+        Assert.StartsWith("Gain: serve min <= max.", ex.Message);
+        Assert.Contains("min=500 max=0", ex.Message);
+    }
+
+    [Fact]
     public void Constructor_RejectsInvalidOptions()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() =>
