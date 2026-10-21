@@ -51,3 +51,16 @@ Una voce per iterazione, la più recente in fondo. Formato:
   - Elenco dei driver ObservingConditions dal registro ASCOM: lasciato come TODO (chiave non verificata).
   - SkyBrightness e StarFWHM non letti (nessun campo nel record).
 - Decisioni: pressione da `surface_pressure` (non `pressure_msl`).
+
+## 2026-10-22 01:00 — P1.1, P3.2, P1.2, P4.2
+- Fatto:
+  - P1.1: scheletro `AllSky.Desktop` (WPF + NotifyIcon, Velopack all'avvio, istanza singola).
+  - P3.2: calibrazione fisheye dal Sole (rilevatore + solver LM + collector).
+  - P1.2: tema (Palette, ThemeManager, Styles.xaml, galleria componenti `--gallery`), palette notte rossa solo canale R.
+  - P4.2: propagazione satelliti (`IOrbitPropagator`), PassFinder con ombra terrestre, adattatore SGP.NET 1.6.0.
+- Test: CI Windows run 39684703136 verde (`dotnet test AllSky.sln` + publish Desktop). Il test instabile noto non ha fallito in quella run.
+- Fatti verificati: SGP.NET 1.6.0 si ripristina da NuGet e compila in CI (22/10/2026) — risolve il dubbio "NuGet = repo".
+- Non verificato:
+  - Runtime del Desktop mai eseguito (NotifyIcon, finestra, chiusura ordinata, cambio tema a caldo).
+  - Adattatore SGP4 non confrontato con valori di riferimento reali; oggetti deep-space (SDP4) non rifiutati.
+  - Font Inter/JetBrains Mono: licenza da verificare in P1.10, per ora font di sistema.
