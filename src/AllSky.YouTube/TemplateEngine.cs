@@ -306,6 +306,17 @@ internal static class TemplateEngine
         return sb.ToString();
     }
 
+    /// <summary>Controlla il contesto: valori nulli o negativi sono errori del chiamante, quindi lanciano.</summary>
+    internal static void Validate(TitleContext ctx)
+    {
+        ArgumentNullException.ThrowIfNull(ctx);
+        ArgumentNullException.ThrowIfNull(ctx.Location);
+        if (ctx.Frames < 0) throw new ArgumentOutOfRangeException(nameof(ctx), ctx.Frames, "Il numero di fotogrammi non può essere negativo.");
+        if (ctx.VideoDuration < TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(ctx), ctx.VideoDuration, "La durata non può essere negativa.");
+        if (ctx.Meteors < 0) throw new ArgumentOutOfRangeException(nameof(ctx), ctx.Meteors, "Il numero di meteore non può essere negativo.");
+        if (ctx.Transits < 0) throw new ArgumentOutOfRangeException(nameof(ctx), ctx.Transits, "Il numero di transiti non può essere negativo.");
+    }
+
     private static void AddError(List<TemplateError> errors, int position, string message) =>
         errors.Add(new TemplateError(position, $"posizione {position}: {message}"));
 }

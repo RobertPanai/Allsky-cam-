@@ -36,7 +36,7 @@ public sealed class TitleTemplate
     /// </summary>
     public string Render(TitleContext ctx)
     {
-        ArgumentNullException.ThrowIfNull(ctx);
+        TemplateEngine.Validate(ctx);
         string text = TemplateEngine.NormalizeLine(TemplateEngine.Render(_tokens, ctx));
         return TemplateEngine.TruncateUtf16(text, YouTubeLimits.TitleMaxLength);
     }

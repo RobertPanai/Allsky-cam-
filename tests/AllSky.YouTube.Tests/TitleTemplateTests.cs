@@ -236,9 +236,11 @@ public sealed class TitleTemplateTests
     }
 
     [Fact]
-    public void TitleContext_ValoriNegativi_Lanciano()
+    public void Render_ValoriNegativi_Lanciano()
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => _ = Fixtures.Sample() with { Frames = -1 });
-        Assert.Throws<ArgumentOutOfRangeException>(() => _ = Fixtures.Sample() with { VideoDuration = TimeSpan.FromSeconds(-1) });
+        TitleTemplate template = TitleTemplate.Parse("{fotogrammi}").Template!;
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => template.Render(Fixtures.Sample() with { Frames = -1 }));
+        Assert.Throws<ArgumentOutOfRangeException>(() => template.Render(Fixtures.Sample() with { VideoDuration = TimeSpan.FromSeconds(-1) }));
     }
 }

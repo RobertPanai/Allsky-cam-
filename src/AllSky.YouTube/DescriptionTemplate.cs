@@ -28,7 +28,7 @@ public sealed class DescriptionTemplate
     /// </summary>
     public string Render(TitleContext ctx)
     {
-        ArgumentNullException.ThrowIfNull(ctx);
+        TemplateEngine.Validate(ctx);
         string text = TemplateEngine.NormalizeMultiline(TemplateEngine.Render(_tokens, ctx));
         return TemplateEngine.TruncateUtf8(text, YouTubeLimits.DescriptionMaxBytes);
     }
