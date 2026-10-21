@@ -18,7 +18,13 @@ public static class SolarPosition
     /// <param name="latDeg">Latitudine dell'osservatore in gradi (nord positivo).</param>
     /// <param name="lonDeg">Longitudine dell'osservatore in gradi (est positivo).</param>
     /// <returns>Altezza in gradi, negativa se il Sole è sotto l'orizzonte.</returns>
-    public static double Altitude(DateTimeOffset utc, double latDeg, double lonDeg)
+    public static double Altitude(DateTimeOffset utc, double latDeg, double lonDeg) =>
+        Horizon(utc, latDeg, lonDeg).AltitudeDeg;
+
+    /// <summary>
+    /// Altezza e azimut del Sole (azimut da nord verso est). Stessi calcoli di <see cref="Altitude"/>.
+    /// </summary>
+    public static HorizontalPosition Horizon(DateTimeOffset utc, double latDeg, double lonDeg)
     {
         AstroTime.CheckLatLon(latDeg, lonDeg);
 
@@ -44,7 +50,9 @@ public static class SolarPosition
                       + Math.Cos(latRad) * Math.Cos(decRad) * Math.Cos(haRad);
         sinAlt = Math.Clamp(sinAlt, -1.0, 1.0);
 
-        return AstroTime.ToDeg(Math.Asin(sinAlt));
+        double altDeg = AstroTime.ToDeg(Math.Asin(sinAlt));
+        double azDeg = AstroTime.AzimuthFromNorthDeg(haRad, decRad, latRad);
+        return new HorizontalPosition(altDeg, azDeg);
     }
 
     /// <summary>

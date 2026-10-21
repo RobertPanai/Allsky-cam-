@@ -48,6 +48,12 @@ public sealed class StreakDetector
     private int _width;
     private int _height;
 
+    /// <summary>True se l'ultimo frame elaborato e' stato scartato perche' globalmente variato (vedi <see cref="StreakDetectorOptions.MaxChangedFraction"/>).</summary>
+    public bool LastFrameDiscarded { get; private set; }
+
+    /// <summary>Frazione di pixel sopra soglia (fuori dalle maschere) nell'ultimo frame elaborato. 0 se non c'e' ancora un fondo.</summary>
+    public double LastChangedFraction { get; private set; }
+
     // Numero di frame integrati nel fondo dall'ultimo Reset (0 = fondo vuoto).
     private int _framesIntegrated;
 
@@ -65,7 +71,12 @@ public sealed class StreakDetector
     }
 
     /// <summary>Azzera il fondo adattivo. Il frame successivo riempie il fondo e non produce rilevazioni.</summary>
-    public void Reset() => _framesIntegrated = 0;
+    public void Reset()
+    {
+        _framesIntegrated = 0;
+        LastFrameDiscarded = false;
+        LastChangedFraction = 0.0;
+    }
 
     /// <summary>
     /// Elabora un frame e restituisce le scie trovate, ordinate per punteggio decrescente.
@@ -80,6 +91,8 @@ public sealed class StreakDetector
         ReadOnlySpan<(int X, int Y, int R)> exclusionCircles = default)
     {
         ValidateFrame(frame);
+        LastFrameDiscarded = false;
+        LastChangedFraction = 0.0;
         for (int c = 0; c < exclusionCircles.Length; c++)
         {
             if (exclusionCircles[c].R < 0)
@@ -150,8 +163,10 @@ public sealed class StreakDetector
         }
 
         // Frame globalmente variato (nuvole, fulmini, fari): scartato.
-        if ((double)changed / n > _options.MaxChangedFraction)
+        LastChangedFraction = (double)changed / n;
+        if (LastChangedFraction > _options.MaxChangedFraction)
         {
+            LastFrameDiscarded = true;
             return Array.Empty<Streak>();
         }
 

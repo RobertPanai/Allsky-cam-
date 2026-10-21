@@ -78,7 +78,14 @@ public static class MoonPosition
     /// <param name="utc">Istante di calcolo (con qualsiasi offset: viene convertito in UTC).</param>
     /// <param name="latDeg">Latitudine dell'osservatore in gradi (nord positivo).</param>
     /// <param name="lonDeg">Longitudine dell'osservatore in gradi (est positivo).</param>
-    public static double Altitude(DateTimeOffset utc, double latDeg, double lonDeg)
+    public static double Altitude(DateTimeOffset utc, double latDeg, double lonDeg) =>
+        Horizon(utc, latDeg, lonDeg).AltitudeDeg;
+
+    /// <summary>
+    /// Altezza e azimut della Luna (azimut da nord verso est). L'altezza include la parallasse diurna;
+    /// l'azimut usa angolo orario e declinazione geocentrici, con un errore dell'ordine di un grado.
+    /// </summary>
+    public static HorizontalPosition Horizon(DateTimeOffset utc, double latDeg, double lonDeg)
     {
         AstroTime.CheckLatLon(latDeg, lonDeg);
 
@@ -108,7 +115,8 @@ public static class MoonPosition
         double parallax = Math.Asin(EarthRadiusKm / ecl.DistanceKm);
         double hTopo = hGeo - parallax * Math.Cos(hGeo);
 
-        return AstroTime.ToDeg(hTopo);
+        double azDeg = AstroTime.AzimuthFromNorthDeg(hourAngle, dec, phi);
+        return new HorizontalPosition(AstroTime.ToDeg(hTopo), azDeg);
     }
 
     /// <summary>

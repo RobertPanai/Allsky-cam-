@@ -43,6 +43,18 @@ internal static class AstroTime
 
     public static double CosDeg(double deg) => Math.Cos(ToRad(deg));
 
+    /// <summary>
+    /// Azimut da nord verso est (gradi, [0, 360)) da angolo orario e declinazione (radianti) e latitudine (radianti).
+    /// Forma di Meeus, cap. 13: l'angolo viene misurato da sud verso ovest e poi convertito a partire da nord.
+    /// </summary>
+    public static double AzimuthFromNorthDeg(double hourAngleRad, double decRad, double latRad)
+    {
+        double fromSouthWest = Math.Atan2(
+            Math.Sin(hourAngleRad),
+            Math.Cos(hourAngleRad) * Math.Sin(latRad) - Math.Tan(decRad) * Math.Cos(latRad));
+        return NormalizeDeg(ToDeg(fromSouthWest) + 180.0);
+    }
+
     public static void CheckLatLon(double latDeg, double lonDeg)
     {
         if (double.IsNaN(latDeg) || latDeg < -90.0 || latDeg > 90.0)

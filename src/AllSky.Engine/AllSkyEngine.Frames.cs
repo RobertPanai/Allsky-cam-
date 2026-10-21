@@ -84,6 +84,8 @@ public sealed partial class AllSkyEngine
             return Task.CompletedTask;
         }
 
+        WriteFrameSidecar(raw, processed);
+
         OfferToPublisher(raw, processed);
 
         AccumulateFrame(raw, processed);
@@ -102,6 +104,35 @@ public sealed partial class AllSkyEngine
         Notify(FrameProduced, new FrameEvent(id, timestamp));
         RaiseStatus();
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Scrive il sidecar <c>&lt;frame&gt;.json</c> accanto al JPEG appena archiviato. Non lancia mai e non cambia
+    /// lo stato di errore: un guasto dei metadati viene solo registrato nel log, la cattura continua.
+    /// </summary>
+    private void WriteFrameSidecar(RawFrame raw, ProcessedFrame processed)
+    {
+        try
+        {
+            AppConfig config = ConfigSnapshot();
+            FrameSidecar sidecar = FrameSidecars.FromCapture(
+                raw.Timestamp,
+                processed.Phase,
+                raw.ExposureMs,
+                raw.Gain,
+                raw.SensorTempC,
+                new ObservingSite
+                {
+                    LatitudeDeg = config.Site.Latitude,
+                    LongitudeDeg = config.Site.Longitude,
+                },
+                TimeZoneOf());
+            FrameSidecars.TryWrite(ArchiveOf(), sidecar, _log);
+        }
+        catch (Exception ex)
+        {
+            _log("Preparazione dei metadati del frame non riuscita", ex);
+        }
     }
 
     /// <summary>

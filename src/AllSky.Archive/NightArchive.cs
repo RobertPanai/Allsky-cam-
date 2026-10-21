@@ -453,6 +453,99 @@ public sealed class NightArchive
         idx.MetaNeedsNewline = false;
     }
 
+    // ---- Sidecar dei frame ----
+
+    /// <summary>Percorso del sidecar <c>&lt;frame&gt;.json</c> accanto al JPEG. Il file puo' non esistere.</summary>
+    public string GetSidecarPath(string nightId, string frameId)
+    {
+        ValidateNightId(nightId);
+        ValidateFrameId(frameId);
+        return ResolveUnderNights(_nightsRoot, nightId, FramesFolderName, frameId + ".json");
+    }
+
+    /// <summary>
+    /// Scrive il sidecar del frame accanto al suo JPEG, in modo atomico (file .tmp poi rinomina).
+    /// Notte e identificatore derivano da <see cref="FrameSidecar.TimestampUtc"/>. Sovrascrive un sidecar esistente.
+    /// Se la scrittura fallisce il sidecar precedente resta intatto.
+    /// </summary>
+    public void WriteSidecar(FrameSidecar sidecar)
+    {
+        ArgumentNullException.ThrowIfNull(sidecar);
+        DateTimeOffset utc = sidecar.TimestampUtc.ToUniversalTime();
+        string nightId = ObservingNight.GetNightId(utc, _tz);
+        string frameId = utc.ToString(FrameIdFormat, CultureInfo.InvariantCulture);
+        byte[] json = JsonSerializer.SerializeToUtf8Bytes(sidecar, FrameSidecars.JsonOptions);
+
+        lock (_gate)
+        {
+            string path = GetSidecarPath(nightId, frameId);
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            WriteAtomic(path, json);
+        }
+    }
+
+    /// <summary>
+    /// Sidecar salvato del frame, o null se non esiste o non e' leggibile (un JSON corrotto e' trattato come assente).
+    /// </summary>
+    public FrameSidecar? ReadSidecar(string nightId, string frameId)
+    {
+        string path = GetSidecarPath(nightId, frameId);
+        lock (_gate)
+        {
+            if (!File.Exists(path))
+            {
+                return null;
+            }
+
+            try
+            {
+                return JsonSerializer.Deserialize<FrameSidecar>(File.ReadAllBytes(path), FrameSidecars.JsonOptions);
+            }
+            catch (JsonException)
+            {
+                return null;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Metadati del frame: il sidecar se esiste, altrimenti una ricostruzione da meta.jsonl (o, se il frame non e'
+    /// indicizzato, dal solo istante inscritto nel nome). Null se il frame non esiste.
+    /// <paramref name="site"/> serve al calcolo di Sole e Luna; senza sito quei campi restano null.
+    /// </summary>
+    public FrameSidecar? GetFrameSidecar(string nightId, string frameId, ObservingSite? site)
+    {
+        ValidateNightId(nightId);
+        ValidateFrameId(frameId);
+
+        FrameSidecar? stored = ReadSidecar(nightId, frameId);
+        if (stored is not null)
+        {
+            return stored;
+        }
+
+        lock (_gate)
+        {
+            NightIndex idx = LoadIndex(nightId);
+            if (idx.Positions.TryGetValue(frameId, out int pos))
+            {
+                return FrameSidecars.Reconstruct(idx.Frames[pos], site, _tz);
+            }
+        }
+
+        if (!File.Exists(GetFramePath(nightId, frameId)))
+        {
+            return null;
+        }
+
+        DateTimeOffset ts = DateTimeOffset.ParseExact(
+            frameId,
+            FrameIdFormat,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+        return FrameSidecars.FromTimestamp(ts, site, _tz);
+    }
+
     // ---- Stato del timelapse ----
 
     private TimelapseState ReadTimelapseState(string nightId)
