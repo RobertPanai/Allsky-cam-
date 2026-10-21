@@ -69,6 +69,10 @@ export const api = {
   startTimelapse: (nightId) =>
     request(`/api/nights/${encodeURIComponent(nightId)}/timelapse`, { method: 'POST', body: {} }),
   deleteNight: (nightId) => request(`/api/nights/${encodeURIComponent(nightId)}`, { method: 'DELETE' }),
+  publishSettings: () => request('/api/publish/settings'),
+  savePublishSettings: (body) => request('/api/publish/settings', { method: 'PUT', body }),
+  publishStatus: () => request('/api/publish/status'),
+  publishTest: (body) => request('/api/publish/test', { method: 'POST', body }),
 
   // Immagini: si usano direttamente come src di <img>, non passano da fetch.
   urls: {
@@ -82,7 +86,7 @@ export const api = {
 
 // Eventi dal motore: SSE su /api/events; se non disponibili, polling di /api/status ogni 5 s.
 // Restituisce una funzione per chiudere tutto.
-export function openEvents({ onStatus, onFrame, onConnection }) {
+export function openEvents({ onStatus, onFrame, onPublish, onConnection }) {
   let source = null;
   let pollTimer = null;
   let closed = false;
@@ -131,6 +135,17 @@ export function openEvents({ onStatus, onFrame, onConnection }) {
       } catch {
         // Un frame malformato non blocca la UI: arriverà lo status successivo.
       }
+    });
+
+    // Stato della pubblicazione: il JSON è lo stesso di GET /api/publish/status.
+    source.addEventListener('publish', (event) => {
+      let status;
+      try {
+        status = JSON.parse(event.data);
+      } catch {
+        return;
+      }
+      onPublish?.(status);
     });
 
     source.onopen = () => {

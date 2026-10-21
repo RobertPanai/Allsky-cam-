@@ -1,0 +1,136 @@
+{
+  "publish": {
+    "title": "Pubblicazione",
+    "lede": "Invia periodicamente l'ultima immagine a un server web.",
+    "toggle": {
+      "label": "Pubblica sul server",
+      "help": "Quando è attivo, l'invio continua anche con la pagina chiusa.",
+      "invalid": "Non posso attivare l'invio: controlla i campi qui sotto e riprova.",
+      "failed": "Non riesco a cambiare l'interruttore. Riprova tra un momento."
+    },
+    "state": {
+      "label": "Stato",
+      "unavailable": "Non riesco a leggere lo stato. Riprovo tra poco.",
+      "names": {
+        "disabled": "Disattivata",
+        "idle": "In attesa",
+        "sending": "Invio in corso",
+        "backoff": "Nuovo tentativo",
+        "suspended": "Sospesa",
+        "unknown": "Stato sconosciuto"
+      },
+      "help": {
+        "disabled": "Non invia nulla. Attiva l'interruttore per iniziare.",
+        "idle": "Il prossimo invio parte alla scadenza dell'intervallo.",
+        "sending": "Sto inviando l'ultima immagine.",
+        "backoff": "Il server non ha risposto. Riprovo da solo più tardi.",
+        "suspended": "Il server ha rifiutato il token. Controlla token e ID dispositivo e salva di nuovo."
+      }
+    },
+    "facts": {
+      "lastSuccess": "Ultimo invio riuscito",
+      "never": "Nessun invio riuscito finora",
+      "lastError": "Ultimo errore",
+      "none": "Nessuno",
+      "queue": "In coda",
+      "sent": "Inviate",
+      "discarded": "Scartate",
+      "nextAttempt": "Prossimo tentativo",
+      "count": {
+        "one": "immagine",
+        "other": "immagini"
+      },
+      "justNow": "poco fa",
+      "soon": "tra poco"
+    },
+    "errors": {
+      "load": "Non riesco a leggere le impostazioni di pubblicazione. Controlla che il motore sia avviato, poi riprova.",
+      "codes": {
+        "auth": "Il server ha rifiutato il token. Controlla token e ID dispositivo e salva di nuovo.",
+        "rejected": "Il server ha rifiutato l'immagine. Controlla l'ID dispositivo e riprova.",
+        "too_large": "L'immagine è troppo grande per il server. Riduci il lato lungo o la qualità JPEG.",
+        "rate_limited": "Il server chiede di rallentare: ci sono troppe richieste. Riprovo più tardi.",
+        "server_error": "Il server ha avuto un problema interno. Riprovo più tardi.",
+        "network": "Non riesco a raggiungere il server. Controlla la connessione e l'URL.",
+        "timeout": "Il server non ha risposto in tempo. Riprovo più tardi.",
+        "bad_response": "Il server ha risposto in un formato inatteso. Controlla l'URL del server.",
+        "invalid_settings": "Alcune impostazioni non sono valide. Correggile e salva di nuovo.",
+        "unknown": "Errore sconosciuto. Il registro del motore contiene i dettagli."
+      }
+    },
+    "form": {
+      "sections": {
+        "server": "Server",
+        "image": "Immagine e frequenza",
+        "advanced": "Avanzate"
+      },
+      "serverUrl": {
+        "label": "URL del server",
+        "help": "Indirizzo completo, che inizia con https://."
+      },
+      "deviceId": {
+        "label": "ID dispositivo",
+        "help": "Nome con cui il server riconosce questa camera, per esempio allsky-1."
+      },
+      "token": {
+        "label": "Token",
+        "help": "Il token è segreto: una volta salvato non viene più mostrato.",
+        "saved": "Token salvato",
+        "replace": "Sostituisci",
+        "remove": "Rimuovi",
+        "removing": "Il token sarà rimosso quando salvi.",
+        "cancel": "Annulla"
+      },
+      "profileName": {
+        "label": "Nome profilo",
+        "help": "Facoltativo. Serve a riconoscere il profilo se ne usi più di uno."
+      },
+      "interval": {
+        "label": "Intervallo",
+        "help": "Secondi tra un invio e il successivo. Minimo 15.",
+        "unit": "s"
+      },
+      "longEdge": {
+        "label": "Lato lungo",
+        "help": "Dimensione massima dell'immagine inviata, in pixel.",
+        "unit": "px"
+      },
+      "quality": {
+        "label": "Qualità JPEG",
+        "help": "Più alta è più nitida e più pesante. Predefinito 75.",
+        "slider": "Qualità JPEG, cursore"
+      },
+      "extra": {
+        "summary": "Header aggiuntivo",
+        "help": "Serve solo se il server chiede un'intestazione in più.",
+        "name": {
+          "label": "Nome header",
+          "help": "Per esempio X-Chiave."
+        },
+        "value": {
+          "label": "Valore header",
+          "help": "Trattato come il token: non viene mai mostrato.",
+          "saved": "Valore salvato",
+          "replace": "Sostituisci",
+          "remove": "Rimuovi",
+          "removing": "Il valore sarà rimosso quando salvi.",
+          "cancel": "Annulla"
+        }
+      }
+    },
+    "test": {
+      "button": "Test connessione",
+      "running": "Verifico la connessione…",
+      "codes": {
+        "ok": "Connessione riuscita. Il server accetta il token e l'ID dispositivo.",
+        "auth": "Il server ha rifiutato il token. Controlla token e ID dispositivo.",
+        "no_health_endpoint": "Il server risponde, ma non ha la pagina di controllo. Verifica l'URL.",
+        "network": "Non riesco a raggiungere il server. Controlla la connessione e l'URL.",
+        "timeout": "Il server non ha risposto in tempo. Riprova tra un momento.",
+        "server_error": "Il server ha avuto un problema interno. Riprova più tardi.",
+        "invalid_settings": "Alcune impostazioni non sono valide. Correggile e riprova.",
+        "unknown": "Test non riuscito. Riprova."
+      }
+    }
+  }
+}

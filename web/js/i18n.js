@@ -1,11 +1,11 @@
 // Caricamento delle stringhe, formattazione di numeri e orari, messaggi d'errore.
 // Tutte le stringhe visibili stanno in web/i18n/*.json. Per ogni lingua si carica il file base
 // {lang}.json e, unite in profondità, le parti opzionali {lang}.forms.json, {lang}.nights.json,
-// {lang}.color.json. Una parte mancante (404) si ignora.
+// {lang}.color.json, {lang}.publish.json. Una parte mancante (404) si ignora.
 
 const LOCALE_TAGS = { it: 'it-IT', en: 'en-GB' };
 const SUPPORTED = Object.keys(LOCALE_TAGS);
-const OPTIONAL_PARTS = ['forms', 'nights', 'color'];
+const OPTIONAL_PARTS = ['forms', 'nights', 'color', 'publish'];
 
 let lang = 'it';
 let dict = {};

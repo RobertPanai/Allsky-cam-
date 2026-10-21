@@ -54,5 +54,42 @@ Una "notte" va da mezzogiorno locale a mezzogiorno locale; id = data di inizio `
 - `POST /api/nights/{id}/timelapse` -> `{ "ok": true }` (avvia la generazione); progresso nello `status` come `jobs:[{kind,nightId,progress}]`.
 - `DELETE /api/nights/{id}`
 
+## Pubblicazione (Uplink)
+Invio periodico dell'ultima immagine verso un server web configurato dall'utente. Il motore fa solo richieste in uscita verso l'indirizzo configurato e non espone nulla in rete. Il token e il valore dell'header extra non escono mai dall'Host: le risposte dicono solo se sono impostati (`hasToken`, `hasExtraHeaderValue`). Le rotte che scrivono o provano la connessione accettano solo richieste dal computer locale (indirizzo di loopback); altrimenti rispondono `403` con `{ "error": "..." }`. La lettura è sempre consentita.
+
+- `GET /api/publish/settings` ->
+```json
+{
+  "enabled": true,
+  "serverUrl": "https://example.org",
+  "deviceId": "allsky-1",
+  "hasToken": true,
+  "profileName": "Cielo di prova",
+  "intervalSeconds": 60,
+  "longEdgePx": 1200,
+  "jpegQuality": 75,
+  "extraHeaderName": null,
+  "hasExtraHeaderValue": false
+}
+```
+- `PUT /api/publish/settings` body: gli stessi campi (senza `hasToken` e `hasExtraHeaderValue`), più i segreti facoltativi `token` e `extraHeaderValue` (stringa non vuota sostituisce il valore salvato; assente, `null` o vuota lascia invariato) e i flag `clearToken` e `clearExtraHeaderValue` (`true` cancella). Un campo assente mantiene il valore corrente. Risposta `{ "ok": true }`, oppure `{ "ok": false, "errors": [{ "path": "serverUrl", "message": "..." }] }` con HTTP 200: in caso di errori non si salva nulla. Se il salvataggio su disco fallisce, la risposta è `ok:false` con un errore sul percorso `token`.
+- `GET /api/publish/status` ->
+```json
+{
+  "state": "disabled | idle | sending | backoff | suspended",
+  "lastSuccessUtc": "2026-10-21T21:30:00.000Z",
+  "lastErrorCode": "auth",
+  "lastError": "Il server ha rifiutato il token: controlla token e ID dispositivo nelle impostazioni.",
+  "lastErrorUtc": "2026-10-21T21:31:00.000Z",
+  "queueCount": 0,
+  "sentTotal": 12,
+  "discardedTotal": 0,
+  "nextAttemptUtc": null
+}
+```
+Le date sono UTC in formato `yyyy-MM-ddTHH:mm:ss.fffZ`, oppure `null`. Senza servizi di pubblicazione (avvio fallito) lo stato è `disabled`.
+- `POST /api/publish/test` body: come il PUT, con i valori del form anche se non salvati; i segreti non inviati prendono quelli salvati. Il test non modifica impostazioni né stato. Risposta `{ "ok": true, "code": "ok", "message": "...", "statusCode": 200 }`. Con impostazioni non valide: `{ "ok": false, "code": "invalid_settings", "message": "<primo errore>", "statusCode": null }` e nessuna richiesta di rete. Codici possibili: `ok`, `auth` (token o ID rifiutati), `no_health_endpoint` (il server non espone la verifica), `server_error`, `timeout`, `network`, `invalid_settings`.
+- Evento SSE `publish` su `GET /api/events`: il payload è lo stesso JSON di `GET /api/publish/status`. Arriva all'apertura della connessione e a ogni cambio di stato.
+
 ## Errori
 HTTP 4xx/5xx con `{ "error": "frase in italiano/inglese che dice cosa è successo e cosa fare" }`.

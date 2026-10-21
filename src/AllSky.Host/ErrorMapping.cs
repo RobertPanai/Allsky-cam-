@@ -18,18 +18,22 @@ internal static class ErrorMapping
         {
             case ArgumentException argument:
                 // I messaggi di NightArchive e del motore sono gia' in italiano e dicono cosa correggere.
-                return (400, CleanParameterSuffix(argument.Message));
+                return (400, Safe(host, CleanParameterSuffix(argument.Message)));
             case EngineException engine:
-                return (500, engine.Message);
+                return (500, Safe(host, engine.Message));
             case FileNotFoundException or DirectoryNotFoundException:
                 return (404, "File non trovato. Riprovare o scegliere un'altra notte dall'elenco.");
             case InvalidOperationException invalid:
-                return (409, invalid.Message);
+                return (409, Safe(host, invalid.Message));
             default:
                 host.Log.Write("Errore non gestito durante una richiesta HTTP", ex);
-                return (500, $"Errore interno del motore: {ex.Message}. Dettagli nel file di log in '{host.LogFolder}'.");
+                return (500, Safe(host, $"Errore interno del motore: {ex.Message}. Dettagli nel file di log in '{host.LogFolder}'."));
         }
     }
+
+    /// <summary>Il messaggio passa dal filtro dei segreti prima di arrivare alla UI.</summary>
+    private static string Safe(HostContext host, string message) =>
+        host.Sanitize is null ? message : host.Sanitize(message);
 
     /// <summary>Toglie il suffisso "(Parameter 'x')" che .NET aggiunge ai messaggi degli argomenti.</summary>
     private static string CleanParameterSuffix(string message)

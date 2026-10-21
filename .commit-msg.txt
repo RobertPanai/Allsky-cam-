@@ -1,0 +1,14 @@
+Primo import: motore Core/Astro/Imaging e interfaccia web di prova
+
+Contenuto:
+- docs/: architettura via API.md, brief di design dell'interfaccia.
+- src/AllSky.Core: configurazione JSON versionata, validazione, interfacce camera.
+- src/AllSky.Astro: posizione di Sole e Luna, fasi del cielo, notte osservativa.
+- src/AllSky.Imaging: debayer bilineare, bilanciamento del bianco, stretch, levigatura.
+- tests/: test xunit per i tre progetti (non ancora eseguiti: serve il PC Windows).
+- web/: interfaccia (Live, Notti, Colore, Camera, Sito, procedura guidata) e motore di prova.
+
+Stato: codice C# non compilato. L'interfaccia gira solo con il motore di prova.
+
+Co-Authored-By: Claude Haiku 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01DoCokSzEmJmMAgL8bkRP17

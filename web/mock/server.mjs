@@ -458,7 +458,106 @@ function readBody(req) {
   });
 }
 
-// ----- Eventi (SSE): status ogni 5 s, frame quando ne arriva uno nuovo -----
+// ----- Pubblicazione (prova): impostazioni e stato in memoria -----
+// Il token e il valore dell'header restano solo in publishSecrets: non vengono mai restituiti né loggati.
+
+const PUBLISH_DEFAULTS = {
+  enabled: false,
+  serverUrl: '',
+  deviceId: '',
+  profileName: '',
+  intervalSeconds: 60,
+  longEdgePx: 1200,
+  jpegQuality: 75,
+  extraHeaderName: '',
+};
+let publishSettings = { ...PUBLISH_DEFAULTS };
+const publishSecrets = { token: null, extraHeaderValue: null };
+let publishStatusData = {
+  state: 'disabled',
+  lastSuccessUtc: null,
+  lastErrorCode: null,
+  lastError: null,
+  lastErrorUtc: null,
+  queueCount: 0,
+  sentTotal: 0,
+  discardedTotal: 0,
+  nextAttemptUtc: null,
+};
+let publishCycle = { startedAt: Date.now(), sendingUntil: 0 };
+const publishClients = new Set();
+const DEVICE_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,47}$/;
+const HEADER_RE = /^[A-Za-z0-9-]{1,64}$/;
+
+function publishSettingsView() {
+  return {
+    ...publishSettings,
+    hasToken: publishSecrets.token !== null,
+    hasExtraHeaderValue: publishSecrets.extraHeaderValue !== null,
+  };
+}
+
+function validatePublish(body) {
+  const errors = [];
+  const url = body.serverUrl;
+  if (typeof url !== 'string' || !(/^https:\/\/\S+$/.test(url) || /^http:\/\/localhost(:\d+)?(\/\S*)?$/.test(url))) {
+    errors.push({ path: 'serverUrl', message: "L'URL deve iniziare con https:// (o http://localhost)." });
+  }
+  if (typeof body.deviceId !== 'string' || !DEVICE_RE.test(body.deviceId)) {
+    errors.push({ path: 'deviceId', message: 'Usa lettere, numeri, punti, trattini o underscore, senza spazi.' });
+  }
+  if (typeof body.profileName !== 'string' || body.profileName.length > 60) {
+    errors.push({ path: 'profileName', message: 'Il nome del profilo può avere al massimo 60 caratteri.' });
+  }
+  if (!Number.isInteger(body.intervalSeconds) || body.intervalSeconds < 15) {
+    errors.push({ path: 'intervalSeconds', message: "L'intervallo minimo è 15 secondi." });
+  }
+  if (!Number.isInteger(body.longEdgePx) || body.longEdgePx < 320 || body.longEdgePx > 4000) {
+    errors.push({ path: 'longEdgePx', message: 'Il lato lungo va da 320 a 4000 pixel.' });
+  }
+  if (!Number.isInteger(body.jpegQuality) || body.jpegQuality < 1 || body.jpegQuality > 100) {
+    errors.push({ path: 'jpegQuality', message: 'La qualità JPEG va da 1 a 100.' });
+  }
+  const name = body.extraHeaderName ?? '';
+  if (name && !HEADER_RE.test(name)) {
+    errors.push({ path: 'extraHeaderName', message: 'Il nome dell\'header può contenere solo lettere, numeri e trattini.' });
+  }
+  if (!name && typeof body.extraHeaderValue === 'string' && body.extraHeaderValue.trim()) {
+    errors.push({ path: 'extraHeaderName', message: 'Scrivi anche il nome dell\'header.' });
+  }
+  if (typeof body.token === 'string' && body.token.length > 256) {
+    errors.push({ path: 'token', message: 'Il token è troppo lungo.' });
+  }
+  return errors;
+}
+
+function publishBroadcast() {
+  const data = JSON.stringify(publishStatusData);
+  for (const res of publishClients) res.write(`event: publish\ndata: ${data}\n\n`);
+}
+
+function setPublishState(state, extra = {}) {
+  publishStatusData = { ...publishStatusData, state, ...extra };
+  publishBroadcast();
+}
+
+// Ciclo finto: ogni intervallo passa da idle a sending (1,5 s) e torna idle con un invio riuscito.
+function publishTick() {
+  if (!publishSettings.enabled) return;
+  const now = Date.now();
+  const s = publishStatusData;
+  if (s.state === 'sending' && now >= publishCycle.sendingUntil) {
+    publishCycle = { startedAt: now, sendingUntil: 0 };
+    publishStatusData = { ...s, state: 'idle', lastSuccessUtc: iso(now), sentTotal: s.sentTotal + 1 };
+    publishBroadcast();
+  } else if (s.state === 'idle' && now - publishCycle.startedAt >= publishSettings.intervalSeconds * 1000) {
+    publishCycle = { startedAt: publishCycle.startedAt, sendingUntil: now + 1500 };
+    setPublishState('sending', { nextAttemptUtc: null });
+  }
+}
+setInterval(publishTick, 1000).unref();
+
+// ----- Eventi (SSE): status ogni 5 s, frame quando ne arriva uno nuovo, publish a ogni cambio -----
 
 function handleEvents(req, res) {
   res.writeHead(200, {
@@ -481,6 +580,8 @@ function handleEvents(req, res) {
 
   sendStatus();
   checkFrame();
+  res.write(`event: publish\ndata: ${JSON.stringify(publishStatusData)}\n\n`);
+  publishClients.add(res);
   let tick = 0;
   const timer = setInterval(() => {
     tick += 1;
@@ -488,7 +589,10 @@ function handleEvents(req, res) {
     if (tick % 5 === 0) sendStatus();
   }, 1000);
 
-  req.on('close', () => clearInterval(timer));
+  req.on('close', () => {
+    clearInterval(timer);
+    publishClients.delete(res);
+  });
 }
 
 // ----- Router dell'API -----
@@ -511,6 +615,110 @@ async function handleApi(req, res, url) {
 
   if (p === '/api/status' && method === 'GET') return sendJson(res, 200, status());
   if (p === '/api/events' && method === 'GET') return handleEvents(req, res);
+
+  // Pubblicazione: contratto della schermata. Il token non esce mai da qui.
+  if (p === '/api/publish/settings') {
+    if (method === 'GET') return sendJson(res, 200, publishSettingsView());
+    if (method === 'PUT') {
+      let body;
+      try {
+        body = JSON.parse(await readBody(req));
+      } catch {
+        return sendJson(res, 400, { error: 'Le impostazioni non sono un JSON valido.' });
+      }
+      if (!body || typeof body !== 'object' || Array.isArray(body)) {
+        return sendJson(res, 400, { error: 'Le impostazioni devono essere un oggetto JSON.' });
+      }
+      const merged = { ...publishSettings, ...body };
+      const errors = validatePublish(merged);
+      if (errors.length) return sendJson(res, 200, { ok: false, errors });
+
+      const wasEnabled = publishSettings.enabled;
+      publishSettings = {
+        enabled: body.enabled === true,
+        serverUrl: merged.serverUrl,
+        deviceId: merged.deviceId,
+        profileName: merged.profileName,
+        intervalSeconds: merged.intervalSeconds,
+        longEdgePx: merged.longEdgePx,
+        jpegQuality: merged.jpegQuality,
+        extraHeaderName: merged.extraHeaderName,
+      };
+      if (typeof body.token === 'string' && body.token.trim()) publishSecrets.token = body.token.trim();
+      if (body.clearToken === true) publishSecrets.token = null;
+      if (typeof body.extraHeaderValue === 'string' && body.extraHeaderValue.trim()) {
+        publishSecrets.extraHeaderValue = body.extraHeaderValue.trim();
+      }
+      if (body.clearExtraHeaderValue === true) publishSecrets.extraHeaderValue = null;
+
+      if (!publishSettings.enabled) {
+        setPublishState('disabled', { nextAttemptUtc: null });
+      } else if (!wasEnabled || publishStatusData.state === 'disabled') {
+        publishCycle = { startedAt: Date.now(), sendingUntil: 0 };
+        setPublishState('idle', { nextAttemptUtc: null });
+      }
+      return sendJson(res, 200, { ok: true });
+    }
+  }
+
+  if (p === '/api/publish/status' && method === 'GET') return sendJson(res, 200, publishStatusData);
+
+  if (p === '/api/publish/test' && method === 'POST') {
+    let body;
+    try {
+      body = JSON.parse((await readBody(req)) || '{}');
+    } catch {
+      return sendJson(res, 200, { ok: false, code: 'invalid_settings', message: 'Richiesta non valida.' });
+    }
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return sendJson(res, 200, { ok: false, code: 'invalid_settings', message: 'Richiesta non valida.' });
+    }
+    const merged = { ...publishSettings, ...body };
+    if (validatePublish(merged).length) {
+      return sendJson(res, 200, { ok: false, code: 'invalid_settings', message: 'Alcune impostazioni non sono valide.' });
+    }
+    const hasToken = (typeof body.token === 'string' && body.token.trim()) || publishSecrets.token !== null;
+    if (!hasToken) {
+      return sendJson(res, 200, { ok: false, code: 'auth', message: 'Il server richiede un token.', statusCode: 401 });
+    }
+    return sendJson(res, 200, {
+      ok: true,
+      code: 'ok',
+      message: 'Il server risponde e accetta il token (prova).',
+      statusCode: 200,
+    });
+  }
+
+  // Solo per le prove: forza lo stato della pubblicazione (GET o POST ?state=...).
+  if (p === '/api/__mock/publish') {
+    const want = url.searchParams.get('state');
+    const nowIso = iso(Date.now());
+    if (want === 'backoff') {
+      publishCycle.sendingUntil = 0;
+      setPublishState('backoff', {
+        lastErrorCode: 'network',
+        lastError: 'Connessione rifiutata (ECONNREFUSED), prova su 127.0.0.1:443',
+        lastErrorUtc: nowIso,
+        nextAttemptUtc: iso(Date.now() + 60_000),
+      });
+    } else if (want === 'suspended') {
+      setPublishState('suspended', {
+        lastErrorCode: 'auth',
+        lastError: 'HTTP 401: token non accettato',
+        lastErrorUtc: nowIso,
+        nextAttemptUtc: null,
+      });
+    } else if (want === 'idle') {
+      publishCycle = { startedAt: Date.now(), sendingUntil: 0 };
+      setPublishState(publishSettings.enabled ? 'idle' : 'disabled', { nextAttemptUtc: null });
+    } else if (want === 'sending') {
+      publishCycle.sendingUntil = Date.now() + 60_000;
+      setPublishState('sending', { nextAttemptUtc: null });
+    } else {
+      return sendJson(res, 400, { error: 'Stato di prova non riconosciuto.' });
+    }
+    return sendJson(res, 200, { ok: true, state: publishStatusData.state });
+  }
 
   if (p === '/api/config') {
     if (method === 'GET') return sendJson(res, 200, config);
@@ -625,6 +833,12 @@ async function handleApi(req, res, url) {
   }
 
   if (p === '/api/__mock/reset' && method === 'POST') {
+    // Pubblicazione: torna disattivata, senza token né header salvati.
+    publishSettings = { ...PUBLISH_DEFAULTS };
+    publishSecrets.token = null;
+    publishSecrets.extraHeaderValue = null;
+    publishStatusData = { ...publishStatusData, state: 'disabled', nextAttemptUtc: null, lastErrorCode: null, lastError: null, lastErrorUtc: null, lastSuccessUtc: null, sentTotal: 0, discardedTotal: 0, queueCount: 0 };
+    publishBroadcast();
     deletedNights.clear();
     timelapseOverride.clear();
     timelapseJobs.clear();

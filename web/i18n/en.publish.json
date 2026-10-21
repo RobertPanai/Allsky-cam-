@@ -1,0 +1,136 @@
+{
+  "publish": {
+    "title": "Publishing",
+    "lede": "Send the latest image to a web server at regular intervals.",
+    "toggle": {
+      "label": "Publish to the server",
+      "help": "When it is on, sending goes on even with this page closed.",
+      "invalid": "I cannot turn sending on: check the fields below and try again.",
+      "failed": "I cannot change the switch. Try again in a moment."
+    },
+    "state": {
+      "label": "Status",
+      "unavailable": "I cannot read the status. I will retry shortly.",
+      "names": {
+        "disabled": "Off",
+        "idle": "Waiting",
+        "sending": "Sending",
+        "backoff": "Retrying",
+        "suspended": "Suspended",
+        "unknown": "Unknown status"
+      },
+      "help": {
+        "disabled": "Nothing is sent. Turn the switch on to start.",
+        "idle": "The next send starts when the interval is up.",
+        "sending": "Sending the latest image.",
+        "backoff": "The server did not answer. I will retry on my own later.",
+        "suspended": "The server rejected the token. Check the token and the device ID, then save again."
+      }
+    },
+    "facts": {
+      "lastSuccess": "Last successful send",
+      "never": "No successful send yet",
+      "lastError": "Last error",
+      "none": "None",
+      "queue": "Queued",
+      "sent": "Sent",
+      "discarded": "Discarded",
+      "nextAttempt": "Next attempt",
+      "count": {
+        "one": "image",
+        "other": "images"
+      },
+      "justNow": "just now",
+      "soon": "in a moment"
+    },
+    "errors": {
+      "load": "I cannot read the publishing settings. Check that the engine is running, then try again.",
+      "codes": {
+        "auth": "The server rejected the token. Check the token and the device ID, then save again.",
+        "rejected": "The server rejected the image. Check the device ID and try again.",
+        "too_large": "The image is too large for the server. Reduce the long edge or the JPEG quality.",
+        "rate_limited": "The server asks to slow down: too many requests. I will retry later.",
+        "server_error": "The server had an internal problem. I will retry later.",
+        "network": "I cannot reach the server. Check the connection and the URL.",
+        "timeout": "The server did not answer in time. I will retry later.",
+        "bad_response": "The server answered in an unexpected format. Check the server URL.",
+        "invalid_settings": "Some settings are not valid. Correct them and save again.",
+        "unknown": "Unknown error. The engine log has the details."
+      }
+    },
+    "form": {
+      "sections": {
+        "server": "Server",
+        "image": "Image and frequency",
+        "advanced": "Advanced"
+      },
+      "serverUrl": {
+        "label": "Server URL",
+        "help": "Full address, starting with https://."
+      },
+      "deviceId": {
+        "label": "Device ID",
+        "help": "The name the server uses for this camera, for example allsky-1."
+      },
+      "token": {
+        "label": "Token",
+        "help": "The token is secret: once saved it is never shown again.",
+        "saved": "Token saved",
+        "replace": "Replace",
+        "remove": "Remove",
+        "removing": "The token will be removed when you save.",
+        "cancel": "Cancel"
+      },
+      "profileName": {
+        "label": "Profile name",
+        "help": "Optional. Helps tell profiles apart if you use more than one."
+      },
+      "interval": {
+        "label": "Interval",
+        "help": "Seconds between one send and the next. Minimum 15.",
+        "unit": "s"
+      },
+      "longEdge": {
+        "label": "Long edge",
+        "help": "Largest size of the image sent, in pixels.",
+        "unit": "px"
+      },
+      "quality": {
+        "label": "JPEG quality",
+        "help": "Higher is sharper and heavier. Default 75.",
+        "slider": "JPEG quality, slider"
+      },
+      "extra": {
+        "summary": "Extra header",
+        "help": "Only needed if the server asks for one more header.",
+        "name": {
+          "label": "Header name",
+          "help": "For example X-Key."
+        },
+        "value": {
+          "label": "Header value",
+          "help": "Treated like the token: it is never shown.",
+          "saved": "Value saved",
+          "replace": "Replace",
+          "remove": "Remove",
+          "removing": "The value will be removed when you save.",
+          "cancel": "Cancel"
+        }
+      }
+    },
+    "test": {
+      "button": "Test connection",
+      "running": "Checking the connection…",
+      "codes": {
+        "ok": "Connection works. The server accepts the token and the device ID.",
+        "auth": "The server rejected the token. Check the token and the device ID.",
+        "no_health_endpoint": "The server answers, but it has no health page. Check the URL.",
+        "network": "I cannot reach the server. Check the connection and the URL.",
+        "timeout": "The server did not answer in time. Try again in a moment.",
+        "server_error": "The server had an internal problem. Try again later.",
+        "invalid_settings": "Some settings are not valid. Correct them and try again.",
+        "unknown": "Test failed. Try again."
+      }
+    }
+  }
+}

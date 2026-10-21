@@ -1,6 +1,7 @@
 using System.Text;
 using System.Threading.Channels;
 using AllSky.Engine;
+using AllSky.Publish;
 using Microsoft.AspNetCore.Http;
 
 namespace AllSky.Host;
@@ -17,15 +18,21 @@ internal static class EventStream
 
     /// <summary>Gestisce una connessione SSE fino alla disconnessione del client o all'arresto dell'Host.</summary>
     /// <param name="context">Richiesta HTTP.</param>
-    /// <param name="engine">Servizio da cui arrivano gli eventi.</param>
-    /// <param name="stopping">Annullato all'arresto dell'Host.</param>
-    public static async Task ServeAsync(HttpContext context, IAllSkyService engine, CancellationToken stopping)
+    /// <param name="host">Dipendenze dell'Host: motore, arresto, servizi della pubblicazione e filtro dei segreti.
+    /// Con la pubblicazione presente, l'evento <c>publish</c> segue ogni cambio di stato.</param>
+    public static async Task ServeAsync(HttpContext context, HostContext host)
     {
+        IAllSkyService engine = host.Engine;
+        CancellationToken stopping = host.Stopping;
+        PublishServices? publishing = host.Publishing;
         var messages = Channel.CreateUnbounded<string>(new UnboundedChannelOptions { SingleReader = true });
 
         // Gli eventi del motore arrivano da thread diversi: qui si accoda soltanto, la scrittura e' sul thread della richiesta.
-        Action<StatusDto> onStatus = status => messages.Writer.TryWrite(Frame("status", status));
+        Action<StatusDto> onStatus = status => messages.Writer.TryWrite(Frame("status", host.FilterStatus(status)));
         Action<FrameEvent> onFrame = frame => messages.Writer.TryWrite(Frame("frame", frame));
+        Action<PublishStatus>? onPublish = publishing is null
+            ? null
+            : status => messages.Writer.TryWrite(Frame("publish", PublishRoutes.ViewOf(status, publishing.Redactor)));
 
         context.Response.StatusCode = StatusCodes.Status200OK;
         context.Response.ContentType = "text/event-stream; charset=utf-8";
@@ -34,6 +41,11 @@ internal static class EventStream
 
         engine.StatusChanged += onStatus;
         engine.FrameProduced += onFrame;
+        if (publishing is not null && onPublish is not null)
+        {
+            Subscribe(publishing, onPublish);
+        }
+
         try
         {
             using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted, stopping);
@@ -41,6 +53,11 @@ internal static class EventStream
 
             await context.Response.WriteAsync("retry: 3000\n\n", token);
             onStatus(engine.GetStatus());
+            if (publishing is not null)
+            {
+                messages.Writer.TryWrite(Frame("publish", PublishRoutes.ViewOf(publishing.Publisher.GetStatus(), publishing.Redactor)));
+            }
+
             await FlushPendingAsync(context, messages.Reader, token);
 
             // Una sola attesa pendente alla volta: si ricrea solo dopo che e' stata completata.
@@ -80,6 +97,36 @@ internal static class EventStream
         {
             engine.StatusChanged -= onStatus;
             engine.FrameProduced -= onFrame;
+            if (publishing is not null && onPublish is not null)
+            {
+                Unsubscribe(publishing, onPublish);
+            }
+        }
+    }
+
+    /// <summary>Si iscrive agli stati della pubblicazione. Un errore non deve chiudere lo stream: si prosegue senza.</summary>
+    private static void Subscribe(PublishServices publishing, Action<PublishStatus> handler)
+    {
+        try
+        {
+            publishing.Publisher.StatusChanged += handler;
+        }
+        catch (Exception)
+        {
+            // Nessun evento publish su questa connessione: lo stato resta leggibile da GET /api/publish/status.
+        }
+    }
+
+    /// <summary>Annulla l'iscrizione alla chiusura dello stream.</summary>
+    private static void Unsubscribe(PublishServices publishing, Action<PublishStatus> handler)
+    {
+        try
+        {
+            publishing.Publisher.StatusChanged -= handler;
+        }
+        catch (Exception)
+        {
+            // Il publisher non deve far cadere la chiusura della connessione.
         }
     }
 

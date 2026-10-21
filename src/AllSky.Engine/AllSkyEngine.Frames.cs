@@ -4,6 +4,7 @@ using AllSky.Astro;
 using AllSky.Capture;
 using AllSky.Core;
 using AllSky.Products;
+using AllSky.Publish;
 
 namespace AllSky.Engine;
 
@@ -83,6 +84,8 @@ public sealed partial class AllSkyEngine
             return Task.CompletedTask;
         }
 
+        OfferToPublisher(raw, processed);
+
         AccumulateFrame(raw, processed);
 
         DateTimeOffset timestamp = raw.Timestamp.ToUniversalTime();
@@ -100,6 +103,52 @@ public sealed partial class AllSkyEngine
         RaiseStatus();
         return Task.CompletedTask;
     }
+
+    /// <summary>
+    /// Offre il frame archiviato alla pubblicazione. Non lancia mai: un guasto della pubblicazione non deve fermare la cattura.
+    /// Si passa <see cref="ProcessedFrame.Rgb8"/> senza copia: e' l'immagine pulita (senza overlay) e
+    /// <c>FrameProcessor</c> la alloca nuova a ogni frame, quindi non viene riusata mentre il publisher la legge.
+    /// Un frame con fase sconosciuta non viene offerto (non e' possibile dire la modalita' del cielo).
+    /// </summary>
+    private void OfferToPublisher(RawFrame raw, ProcessedFrame processed)
+    {
+        IPublisher? publisher = _publisher;
+        if (publisher is null)
+        {
+            return;
+        }
+
+        try
+        {
+            PublishMode? mode = PublishModeOf(processed.Phase);
+            if (mode is null)
+            {
+                return;
+            }
+
+            publisher.Offer(new PublishFrame(
+                processed.Rgb8,
+                processed.Width,
+                processed.Height,
+                raw.Timestamp.ToUniversalTime(),
+                raw.ExposureMs,
+                raw.Gain,
+                mode.Value,
+                raw.SensorTempC));
+        }
+        catch (Exception ex)
+        {
+            _log("Offerta del frame alla pubblicazione non riuscita", ex);
+        }
+    }
+
+    private static PublishMode? PublishModeOf(string phase) => phase switch
+    {
+        "day" => PublishMode.Day,
+        "twilight" => PublishMode.Twilight,
+        "night" => PublishMode.Night,
+        _ => null,
+    };
 
     private void ReportFrameFailure(string what, Exception ex, string advice)
     {

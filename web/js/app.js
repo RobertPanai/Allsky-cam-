@@ -11,6 +11,7 @@ const ROUTES = {
   color: () => optionalView('color'),
   camera: () => import('./views/camera.js'),
   site: () => import('./views/site.js'),
+  publish: () => import('./views/publish.js'),
   wizard: () => import('./views/wizard.js'),
 };
 
@@ -36,6 +37,7 @@ const state = {
 const listeners = {
   status: new Set(),
   frame: new Set(),
+  publish: new Set(),
 };
 
 const viewEl = document.getElementById('view');
@@ -245,6 +247,10 @@ function onFrame(frame) {
   emit('frame', frame);
 }
 
+function onPublish(status) {
+  emit('publish', status);
+}
+
 // ----- Avvio -----
 
 async function boot() {
@@ -277,6 +283,7 @@ async function boot() {
   openEvents({
     onStatus,
     onFrame,
+    onPublish,
     onConnection: setOnline,
   });
 

@@ -583,8 +583,9 @@
     height: var(--nav-h);
   }
 
+  /* Le voci si dividono lo spazio in base alla loro etichetta, così «Pubblicazione» non viene tagliata. */
   .nav-list li {
-    flex: 1 1 0;
+    flex: 1 1 auto;
     min-width: 0;
   }
 
@@ -596,6 +597,7 @@
     padding: 6px 2px;
     border-radius: 0;
     font-size: var(--fs-12);
+    white-space: nowrap;
   }
 
   .nav-link[aria-current="page"] {

@@ -2,6 +2,7 @@ using AllSky.Archive;
 using AllSky.Astro;
 using AllSky.Capture;
 using AllSky.Core;
+using AllSky.Publish;
 using AllSky.Timelapse;
 
 namespace AllSky.Engine;
@@ -35,6 +36,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
     private readonly string _configPath;
     private readonly Action<string, Exception?> _log;
     private readonly Func<string?> _locateFfmpeg;
+    private readonly IPublisher? _publisher;
 
     // Serializza connessione, riavvio del ciclo e arresto. Mai tenuto durante l'emissione di eventi.
     private readonly SemaphoreSlim _control = new(1, 1);
@@ -106,6 +108,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
         _configPath = Path.GetFullPath(dependencies.ConfigPath);
         _log = dependencies.Log ?? ((_, _) => { });
         _locateFfmpeg = dependencies.LocateFfmpeg ?? (() => FfmpegLocator.Locate());
+        _publisher = dependencies.Publisher;
 
         AppConfig config;
         try

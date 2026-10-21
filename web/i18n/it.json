@@ -14,7 +14,8 @@
     "nights": "Notti",
     "color": "Colore",
     "camera": "Camera",
-    "site": "Sito"
+    "site": "Sito",
+    "publish": "Pubblicazione"
   },
   "phase": {
     "day": "Giorno",

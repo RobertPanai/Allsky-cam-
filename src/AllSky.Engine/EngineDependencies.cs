@@ -1,5 +1,6 @@
 using AllSky.Capture;
 using AllSky.Core;
+using AllSky.Publish;
 using AllSky.Timelapse;
 
 namespace AllSky.Engine;
@@ -14,6 +15,10 @@ namespace AllSky.Engine;
 /// <param name="ConfigPath">File JSON della configurazione.</param>
 /// <param name="Log">Logger: messaggio e, se presente, eccezione. Null = nessun log.</param>
 /// <param name="LocateFfmpeg">Percorso di ffmpeg; null usa <see cref="FfmpegLocator.Locate(string?, string?, string?)"/>.</param>
+/// <param name="Publisher">
+/// Publisher della pubblicazione periodica, facoltativo. Ogni frame elaborato gli viene offerto dopo l'archiviazione.
+/// Il ciclo di vita (avvio e arresto) non e' dell'Engine: lo gestisce l'Host. Null = nessuna pubblicazione.
+/// </param>
 public sealed record EngineDependencies(
     IClock Clock,
     ICameraProvider CameraProvider,
@@ -23,4 +28,5 @@ public sealed record EngineDependencies(
     IJpegEncoder JpegEncoder,
     string ConfigPath,
     Action<string, Exception?>? Log = null,
-    Func<string?>? LocateFfmpeg = null);
+    Func<string?>? LocateFfmpeg = null,
+    IPublisher? Publisher = null);

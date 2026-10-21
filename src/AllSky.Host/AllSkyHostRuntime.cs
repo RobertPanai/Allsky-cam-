@@ -14,17 +14,19 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
     private readonly AllSkyEngine _engine;
     private readonly CancellationTokenSource _shutdown;
     private readonly DailyFileLog _log;
+    private readonly PublishServices? _publishing;
     private readonly TaskCompletionSource _stopped = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly object _gate = new();
     private Task? _stopTask;
 
     /// <summary>Crea il runtime: usato solo da <see cref="AllSkyHost"/>.</summary>
-    internal AllSkyHostRuntime(WebApplication app, AllSkyEngine engine, CancellationTokenSource shutdown, DailyFileLog log, string url)
+    internal AllSkyHostRuntime(WebApplication app, AllSkyEngine engine, CancellationTokenSource shutdown, DailyFileLog log, string url, PublishServices? publishing = null)
     {
         _app = app;
         _engine = engine;
         _shutdown = shutdown;
         _log = log;
+        _publishing = publishing;
         Url = url;
     }
 
@@ -77,6 +79,12 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
                 _log.Write("Arresto del server HTTP non pulito", ex);
             }
 
+            // La pubblicazione si ferma prima del motore: l'ultimo invio non parte mentre la cattura si chiude.
+            if (_publishing is not null)
+            {
+                await HostPublishing.StopPublisherAsync(_publishing, _log);
+            }
+
             try
             {
                 await _engine.StopAsync();
@@ -84,6 +92,11 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 _log.Write("Arresto del motore non pulito", ex);
+            }
+
+            if (_publishing is not null)
+            {
+                await _publishing.DisposeAsync();
             }
 
             await _app.DisposeAsync();

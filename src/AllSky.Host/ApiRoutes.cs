@@ -27,9 +27,9 @@ internal static class ApiRoutes
     {
         IAllSkyService engine = host.Engine;
 
-        app.MapGet("/api/status", () => Json(engine.GetStatus()));
+        app.MapGet("/api/status", () => Json(host.FilterStatus(engine.GetStatus())));
 
-        app.MapGet("/api/events", (HttpContext context) => EventStream.ServeAsync(context, engine, host.Stopping));
+        app.MapGet("/api/events", (HttpContext context) => EventStream.ServeAsync(context, host));
 
         app.MapGet("/api/frame/latest.jpg", (HttpContext context) =>
         {
@@ -61,7 +61,7 @@ internal static class ApiRoutes
             ConnectResult result = await engine.ConnectCameraAsync(body.Id, context.RequestAborted);
             return result.Ok
                 ? Json(new { ok = true })
-                : Json(new { ok = false, error = result.Error });
+                : Json(new { ok = false, error = result.Error is null ? null : host.Clean(result.Error) });
         });
 
         app.MapGet("/api/config", () => Json(engine.GetConfig()));
@@ -181,7 +181,7 @@ internal static class ApiRoutes
             }
             catch (EngineException ex)
             {
-                return Fail(409, ex.Message);
+                return Fail(409, host.Clean(ex.Message));
             }
         });
     }

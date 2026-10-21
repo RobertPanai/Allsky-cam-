@@ -1,3 +1,5 @@
+using AllSky.Publish;
+
 namespace AllSky.Host;
 
 /// <summary>
@@ -18,4 +20,17 @@ public sealed record HostOptions(
     string DataFolder,
     string WebRoot,
     int? PortOverride = null,
-    bool AllowLanOverride = false);
+    bool AllowLanOverride = false)
+{
+    /// <summary>
+    /// Protezione dei segreti della pubblicazione. Null usa DPAPI su Windows; altrove la pubblicazione non parte.
+    /// Serve ai test per sostituire DPAPI con una protezione finta.
+    /// </summary>
+    public ISecretProtector? SecretProtector { get; init; }
+
+    /// <summary>
+    /// Gestore HTTP per la pubblicazione. Null crea un client di rete reale. Se indicato, non viene chiuso dall'Host
+    /// (lo gestisce chi l'ha creato). Serve ai test.
+    /// </summary>
+    public HttpMessageHandler? PublishHttpHandler { get; init; }
+}

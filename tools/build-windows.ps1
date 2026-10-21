@@ -3,4 +3,4 @@ $ErrorActionPreference = 'Stop'
 Set-Location (Split-Path $PSScriptRoot -Parent)
 dotnet publish src/AllSky.Tray/AllSky.Tray.csproj -c Release -r win-x64 --self-contained true `
   -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
-Write-Host "Fatto: publish\AllSky.Host.exe"
+Write-Host "Fatto: publish\AllSky.exe"

@@ -60,7 +60,10 @@ public static class AllSkyHost
         }
 
         string logFolder = Path.Combine(dataFolder, "logs");
-        var log = new DailyFileLog(logFolder);
+        // I segreti della pubblicazione sono filtrati da tutti i log dell'Host, anche dalle tracce delle eccezioni.
+        var secrets = new PublishSecrets();
+        Func<string, string> sanitize = text => SecretMask.Apply(text, secrets.Current());
+        var log = new DailyFileLog(logFolder, sanitize);
         log.Write($"Avvio di AllSky Host. Dati: '{dataFolder}'. Configurazione: '{configPath}'.");
 
         AppConfig initial = LoadOrCreateConfig(configPath, dataFolder, log);
@@ -73,6 +76,9 @@ public static class AllSkyHost
         }
 
         bool lan = options.AllowLanOverride || initial.Ui.AllowLan;
+
+        // Un guasto della pubblicazione non impedisce l'avvio: TryCreate restituisce null e l'Host parte senza.
+        PublishServices? publishing = HostPublishing.TryCreate(options, dataFolder, logFolder, secrets, log);
 
         AllSkyEngine? engine = null;
         WebApplication? app = null;
@@ -90,11 +96,18 @@ public static class AllSkyHost
                 CaptureDelay: new SystemCaptureDelay(),
                 JpegEncoder: encoder,
                 ConfigPath: configPath,
-                Log: log.Write));
+                Log: log.Write,
+                Publisher: publishing?.Publisher));
 
             await engine.StartAsync(cancellationToken);
 
-            var context = new HostContext(engine, log, shutdown.Token, logFolder, webRoot);
+            // Il publisher parte dopo il motore: il primo frame arriva quando la cattura e' gia' attiva.
+            if (publishing is not null)
+            {
+                await HostPublishing.StartPublisherAsync(publishing, log);
+            }
+
+            var context = new HostContext(engine, log, shutdown.Token, logFolder, webRoot, publishing, sanitize);
             app = await StartWebAsync(preferred, lan, context, log, cancellationToken);
 
             string bound = app.Urls.First();
@@ -111,7 +124,7 @@ public static class AllSkyHost
 
             log.Write($"AllSky Host in ascolto su {url}" + (lan ? " e sulla rete locale" : string.Empty) + ".");
             ready = true;
-            return new AllSkyHostRuntime(app, engine, shutdown, log, url);
+            return new AllSkyHostRuntime(app, engine, shutdown, log, url, publishing);
         }
         finally
         {
@@ -123,6 +136,12 @@ public static class AllSkyHost
                 if (app is not null)
                 {
                     await StopWebAfterFailureAsync(app, log);
+                }
+
+                if (publishing is not null)
+                {
+                    await HostPublishing.StopPublisherAsync(publishing, log);
+                    await publishing.DisposeAsync();
                 }
 
                 if (engine is not null)
@@ -204,6 +223,7 @@ public static class AllSkyHost
         });
 
         ApiRoutes.Map(app, context);
+        PublishRoutes.Map(app, context);
 
         RequestDelegate fallback = httpContext =>
         {
