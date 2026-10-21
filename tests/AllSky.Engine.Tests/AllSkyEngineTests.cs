@@ -44,6 +44,11 @@ public sealed class AllSkyEngineTests
         Assert.Equal(1, engine.ListNights().Count);
         Assert.True(night.Frames > 100);
 
+        // Ogni frame archiviato ha il sidecar <frame>.json accanto al JPEG.
+        string framesDir = Path.Combine(h.ArchiveFolder, "nights", "2026-10-19", "frames");
+        Assert.Equal(night.Frames, Directory.EnumerateFiles(framesDir, "*.jpg").Count());
+        Assert.Equal(night.Frames, Directory.EnumerateFiles(framesDir, "*.json").Count());
+
         IReadOnlyList<FrameDto> frames = engine.ListFrames("2026-10-19", 0, int.MaxValue);
         Assert.Equal(night.Frames, frames.Count);
         Assert.True(frames.All(f => f.Timestamp >= start && f.Timestamp <= end));

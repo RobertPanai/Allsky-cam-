@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.Json;
 using AllSky.Archive;
 using AllSky.Astro;
@@ -63,8 +62,8 @@ public sealed class FrameSidecarTests : IDisposable
         Assert.Equal(Cest, back.TimestampLocal.Offset);
         Assert.Equal("Europe/Rome", back.TimeZoneId);
         Assert.Equal("night", back.PhaseOfDay);
-        Assert.Equal(8000, back.ExposureMs);
-        Assert.Equal(250, back.Gain);
+        Assert.Equal(8000.0, back.ExposureMs);
+        Assert.Equal(250.0, back.Gain);
         Assert.Equal(-4.5, back.SensorTempC);
         Assert.NotNull(back.SunAltitudeDeg);
         Assert.NotNull(back.MoonIlluminationPercent);
@@ -116,7 +115,7 @@ public sealed class FrameSidecarTests : IDisposable
         archive.WriteSidecar(CaptureSidecar(NightFrame(), exposureMs: 1));
         archive.WriteSidecar(CaptureSidecar(NightFrame(), exposureMs: 2));
 
-        Assert.Equal(2, archive.ReadSidecar("2026-10-19", "20261019T210000Z")!.ExposureMs);
+        Assert.Equal(2.0, archive.ReadSidecar("2026-10-19", "20261019T210000Z")!.ExposureMs);
         Assert.Equal(string.Empty, ListTmp(_tmp));
     }
 
@@ -131,7 +130,7 @@ public sealed class FrameSidecarTests : IDisposable
         Directory.CreateDirectory(path + ".tmp");
         Assert.ThrowsAny<Exception>(() => archive.WriteSidecar(CaptureSidecar(NightFrame(), exposureMs: 2)));
 
-        Assert.Equal(1, archive.ReadSidecar("2026-10-19", "20261019T210000Z")!.ExposureMs);
+        Assert.Equal(1.0, archive.ReadSidecar("2026-10-19", "20261019T210000Z")!.ExposureMs);
     }
 
     [Fact]
@@ -177,8 +176,8 @@ public sealed class FrameSidecarTests : IDisposable
         Assert.NotNull(rebuilt);
         Assert.Equal(new DateTimeOffset(2026, 10, 19, 21, 0, 0, TimeSpan.Zero), rebuilt!.TimestampUtc);
         Assert.Equal("night", rebuilt.PhaseOfDay);
-        Assert.Equal(8000, rebuilt.ExposureMs);
-        Assert.Equal(250, rebuilt.Gain);
+        Assert.Equal(8000.0, rebuilt.ExposureMs);
+        Assert.Equal(250.0, rebuilt.Gain);
         Assert.Null(rebuilt.SensorTempC);
         Assert.Null(rebuilt.Weather);
         Assert.Null(rebuilt.Satellites);
@@ -240,7 +239,7 @@ public sealed class FrameSidecarTests : IDisposable
 
         FrameSidecar? got = archive.GetFrameSidecar("2026-10-19", "20261019T210000Z", Site);
 
-        Assert.Equal(99, got!.ExposureMs);
+        Assert.Equal(99.0, got!.ExposureMs);
     }
 
     // ---- Fabbrica da cattura ----
@@ -254,7 +253,7 @@ public sealed class FrameSidecarTests : IDisposable
 
         Assert.Equal("day", s.PhaseOfDay);
         Assert.Equal(12.5, s.ExposureMs);
-        Assert.Equal(100, s.Gain);
+        Assert.Equal(100.0, s.Gain);
         Assert.Equal(21.0, s.SensorTempC);
         Assert.NotNull(s.SunAltitudeDeg);
         Assert.NotNull(s.MoonAzimuthDeg);

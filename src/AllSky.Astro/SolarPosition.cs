@@ -52,7 +52,7 @@ public static class SolarPosition
 
         double altDeg = AstroTime.ToDeg(Math.Asin(sinAlt));
         double azDeg = AstroTime.AzimuthFromNorthDeg(haRad, decRad, latRad);
-        return new HorizontalPosition(altDeg, azDeg);
+        return new HorizontalPosition { AltitudeDeg = altDeg, AzimuthDeg = azDeg };
     }
 
     /// <summary>

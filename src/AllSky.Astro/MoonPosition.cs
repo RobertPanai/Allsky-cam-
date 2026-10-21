@@ -116,7 +116,7 @@ public static class MoonPosition
         double hTopo = hGeo - parallax * Math.Cos(hGeo);
 
         double azDeg = AstroTime.AzimuthFromNorthDeg(hourAngle, dec, phi);
-        return new HorizontalPosition(AstroTime.ToDeg(hTopo), azDeg);
+        return new HorizontalPosition { AltitudeDeg = AstroTime.ToDeg(hTopo), AzimuthDeg = azDeg };
     }
 
     /// <summary>

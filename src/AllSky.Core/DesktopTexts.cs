@@ -1,4 +1,5 @@
 using System.Globalization;
+using AllSky.Core.Shell;
 
 namespace AllSky.Core;
 
@@ -102,6 +103,105 @@ public sealed record DesktopTexts
     /// <summary>Pulsante "Riavvia per aggiornare".</summary>
     public required string Restart { get; init; }
 
+    /// <summary>Cultura per numeri e orari della barra di stato (non è un testo).</summary>
+    public required CultureInfo Culture { get; init; }
+
+    /// <summary>Valore di un dato non disponibile.</summary>
+    public required string NotAvailable { get; init; }
+
+    /// <summary>Spiegazione al passaggio del mouse su un dato non disponibile.</summary>
+    public required string NotAvailableTooltip { get; init; }
+
+    /// <summary>Etichetta della fase del cielo nella barra di stato.</summary>
+    public required string PhaseLabel { get; init; }
+
+    /// <summary>Etichetta dell'altezza del Sole nella barra di stato.</summary>
+    public required string SunLabel { get; init; }
+
+    /// <summary>Etichetta dell'altezza della Luna nella barra di stato.</summary>
+    public required string MoonLabel { get; init; }
+
+    /// <summary>Etichetta dello spazio disco nella barra di stato.</summary>
+    public required string DiskLabel { get; init; }
+
+    /// <summary>Etichetta delle pubblicazioni nella barra di stato.</summary>
+    public required string PublicationsLabel { get; init; }
+
+    /// <summary>Valore della camera collegata quando il nome non è noto.</summary>
+    public required string CameraConnected { get; init; }
+
+    /// <summary>Fase "giorno".</summary>
+    public required string PhaseDay { get; init; }
+
+    /// <summary>Fase "crepuscolo".</summary>
+    public required string PhaseTwilight { get; init; }
+
+    /// <summary>Fase "notte".</summary>
+    public required string PhaseNight { get; init; }
+
+    /// <summary>Spazio libero sul disco; {0} è la quantità in GB.</summary>
+    public required string DiskFree { get; init; }
+
+    /// <summary>Pubblicazioni aggiornate.</summary>
+    public required string PublicationOk { get; init; }
+
+    /// <summary>Pubblicazione in coda.</summary>
+    public required string PublicationPending { get; init; }
+
+    /// <summary>Pubblicazione fallita.</summary>
+    public required string PublicationError { get; init; }
+
+    /// <summary>Pulsante della modalità notte rossa.</summary>
+    public required string NightMode { get; init; }
+
+    /// <summary>Titolo accessibile della barra laterale.</summary>
+    public required string SidebarLabel { get; init; }
+
+    /// <summary>Suggerimento di una voce della barra laterale; {0} è il nome della vista, {1} il numero della scorciatoia.</summary>
+    public required string NavTooltip { get; init; }
+
+    /// <summary>Voce "Stanotte".</summary>
+    public required string NavTonight { get; init; }
+
+    /// <summary>Voce "Live".</summary>
+    public required string NavLive { get; init; }
+
+    /// <summary>Voce "Camera".</summary>
+    public required string NavCamera { get; init; }
+
+    /// <summary>Voce "Notti".</summary>
+    public required string NavNights { get; init; }
+
+    /// <summary>Voce "Pubblicazione".</summary>
+    public required string NavPublication { get; init; }
+
+    /// <summary>Voce "Impostazioni".</summary>
+    public required string NavSettings { get; init; }
+
+    /// <summary>Voce "Log".</summary>
+    public required string NavLog { get; init; }
+
+    /// <summary>Stato vuoto della vista "Stanotte".</summary>
+    public required string EmptyTonight { get; init; }
+
+    /// <summary>Stato vuoto della vista "Live".</summary>
+    public required string EmptyLive { get; init; }
+
+    /// <summary>Stato vuoto della vista "Camera".</summary>
+    public required string EmptyCamera { get; init; }
+
+    /// <summary>Stato vuoto della vista "Notti".</summary>
+    public required string EmptyNights { get; init; }
+
+    /// <summary>Stato vuoto della vista "Pubblicazione".</summary>
+    public required string EmptyPublication { get; init; }
+
+    /// <summary>Stato vuoto della vista "Impostazioni".</summary>
+    public required string EmptySettings { get; init; }
+
+    /// <summary>Stato vuoto della vista "Log".</summary>
+    public required string EmptyLog { get; init; }
+
     /// <summary>Testi in italiano (lingua predefinita).</summary>
     public static DesktopTexts Italian { get; } = new()
     {
@@ -136,6 +236,39 @@ public sealed record DesktopTexts
         Download = "Scarica",
         Later = "Più tardi",
         Restart = "Riavvia per aggiornare",
+        Culture = new CultureInfo("it-IT"),
+        NotAvailable = "n/d",
+        NotAvailableTooltip = "Dato non disponibile in questo momento.",
+        PhaseLabel = "Fase",
+        SunLabel = "Sole",
+        MoonLabel = "Luna",
+        DiskLabel = "Disco",
+        PublicationsLabel = "Pubblicazioni",
+        CameraConnected = "collegata",
+        PhaseDay = "giorno",
+        PhaseTwilight = "crepuscolo",
+        PhaseNight = "notte",
+        DiskFree = "{0} GB liberi",
+        PublicationOk = "aggiornate",
+        PublicationPending = "in coda",
+        PublicationError = "errore",
+        NightMode = "Notte rossa",
+        SidebarLabel = "Navigazione",
+        NavTooltip = "{0} (Ctrl+{1})",
+        NavTonight = "Stanotte",
+        NavLive = "Live",
+        NavCamera = "Camera",
+        NavNights = "Notti",
+        NavPublication = "Pubblicazione",
+        NavSettings = "Impostazioni",
+        NavLog = "Log",
+        EmptyTonight = "Nessuna notte osservativa in corso. Il riepilogo di stanotte comparirà qui.",
+        EmptyLive = "Nessun frame ancora. L'immagine del cielo comparirà qui al primo frame archiviato.",
+        EmptyCamera = "Nessuna camera collegata. La ricerca e la connessione saranno disponibili in questa vista.",
+        EmptyNights = "Nessuna notte archiviata. Le notti con frame compariranno qui, con keogram e timelapse.",
+        EmptyPublication = "Nessuna pubblicazione ancora. Uplink e YouTube si gestiscono da questa vista.",
+        EmptySettings = "Posizione dell'osservatorio, lingua e avvio con Windows si trovano in questa vista.",
+        EmptyLog = "Nessuna riga di registro da mostrare.",
     };
 
     /// <summary>Testi in inglese.</summary>
@@ -172,6 +305,65 @@ public sealed record DesktopTexts
         Download = "Download",
         Later = "Later",
         Restart = "Restart to update",
+        Culture = new CultureInfo("en-US"),
+        NotAvailable = "n/a",
+        NotAvailableTooltip = "Data not available right now.",
+        PhaseLabel = "Phase",
+        SunLabel = "Sun",
+        MoonLabel = "Moon",
+        DiskLabel = "Disk",
+        PublicationsLabel = "Publishing",
+        CameraConnected = "connected",
+        PhaseDay = "day",
+        PhaseTwilight = "twilight",
+        PhaseNight = "night",
+        DiskFree = "{0} GB free",
+        PublicationOk = "up to date",
+        PublicationPending = "queued",
+        PublicationError = "error",
+        NightMode = "Red night",
+        SidebarLabel = "Navigation",
+        NavTooltip = "{0} (Ctrl+{1})",
+        NavTonight = "Tonight",
+        NavLive = "Live",
+        NavCamera = "Camera",
+        NavNights = "Nights",
+        NavPublication = "Publishing",
+        NavSettings = "Settings",
+        NavLog = "Log",
+        EmptyTonight = "No observing night in progress. Tonight's summary will appear here.",
+        EmptyLive = "No frame yet. The sky image will appear here with the first archived frame.",
+        EmptyCamera = "No camera connected. Search and connection will be available in this view.",
+        EmptyNights = "No archived night yet. Nights with frames will appear here, with keogram and timelapse.",
+        EmptyPublication = "Nothing published yet. Uplink and YouTube are managed from this view.",
+        EmptySettings = "Observatory location, language and start with Windows are in this view.",
+        EmptyLog = "No log lines to show.",
+    };
+
+    /// <summary>Nome della vista nella barra laterale e come titolo della schermata.</summary>
+    /// <param name="view">Vista da nominare.</param>
+    public string ViewName(ShellView view) => view switch
+    {
+        ShellView.Tonight => NavTonight,
+        ShellView.Live => NavLive,
+        ShellView.Camera => NavCamera,
+        ShellView.Nights => NavNights,
+        ShellView.Publication => NavPublication,
+        ShellView.Settings => NavSettings,
+        ShellView.Log => NavLog,
+    };
+
+    /// <summary>Stato vuoto curato di una vista segnaposto.</summary>
+    /// <param name="view">Vista di cui serve il testo.</param>
+    public string EmptyText(ShellView view) => view switch
+    {
+        ShellView.Tonight => EmptyTonight,
+        ShellView.Live => EmptyLive,
+        ShellView.Camera => EmptyCamera,
+        ShellView.Nights => EmptyNights,
+        ShellView.Publication => EmptyPublication,
+        ShellView.Settings => EmptySettings,
+        ShellView.Log => EmptyLog,
     };
 
     /// <summary>Traduce lo stato del servizio ("idle", "capturing", "error") nel testo della lingua corrente.</summary>
