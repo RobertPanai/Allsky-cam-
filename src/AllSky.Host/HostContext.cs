@@ -10,6 +10,7 @@ namespace AllSky.Host;
 /// <param name="WebRoot">Cartella dei file statici, completa.</param>
 /// <param name="Publishing">Servizi della pubblicazione; null se non sono disponibili.</param>
 /// <param name="Sanitize">Filtro dei segreti per i messaggi d'errore inviati alla UI. Null: nessun filtro.</param>
+/// <param name="Updates">Servizio degli aggiornamenti e impostazioni; null solo nei test che non ne hanno bisogno.</param>
 internal sealed record HostContext(
     IAllSkyService Engine,
     DailyFileLog Log,
@@ -17,7 +18,8 @@ internal sealed record HostContext(
     string LogFolder,
     string WebRoot,
     PublishServices? Publishing = null,
-    Func<string, string>? Sanitize = null)
+    Func<string, string>? Sanitize = null,
+    UpdateServices? Updates = null)
 {
     /// <summary>Testo destinato alla UI, con i segreti mascherati. Senza filtro restituisce il testo invariato.</summary>
     public string Clean(string text) => Sanitize is null ? text : Sanitize(text);

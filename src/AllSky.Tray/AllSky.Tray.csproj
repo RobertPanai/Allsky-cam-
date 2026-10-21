@@ -12,6 +12,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AllSky.Host\AllSky.Host.csproj" />
+    <ProjectReference Include="..\AllSky.Updates\AllSky.Updates.csproj" />
+  </ItemGroup>
+
+  <!--
+    Aggiornamento automatico (Velopack, licenza MIT). Solo Windows: per questo il riferimento sta nel Tray e non nell'Host.
+    TODO: verificare la versione stabile su nuget.org. Dichiarata 1.2.161: ultima stabile letta sulla pagina NuGet
+    del pacchetto il 21/10/2026 (1.2.158 risulta deprecata per bug critici).
+  -->
+  <ItemGroup>
+    <PackageReference Include="Velopack" Version="1.2.161" />
   </ItemGroup>
 
   <!--

@@ -1,4 +1,5 @@
 using AllSky.Engine;
+using AllSky.Updates;
 using Microsoft.AspNetCore.Builder;
 
 namespace AllSky.Host;
@@ -15,23 +16,28 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
     private readonly CancellationTokenSource _shutdown;
     private readonly DailyFileLog _log;
     private readonly PublishServices? _publishing;
+    private readonly UpdateService _updates;
     private readonly TaskCompletionSource _stopped = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly object _gate = new();
     private Task? _stopTask;
 
     /// <summary>Crea il runtime: usato solo da <see cref="AllSkyHost"/>.</summary>
-    internal AllSkyHostRuntime(WebApplication app, AllSkyEngine engine, CancellationTokenSource shutdown, DailyFileLog log, string url, PublishServices? publishing = null)
+    internal AllSkyHostRuntime(WebApplication app, AllSkyEngine engine, CancellationTokenSource shutdown, DailyFileLog log, string url, PublishServices? publishing, UpdateService updates)
     {
         _app = app;
         _engine = engine;
         _shutdown = shutdown;
         _log = log;
         _publishing = publishing;
+        _updates = updates;
         Url = url;
     }
 
     /// <summary>Indirizzo locale per aprire la UI, per esempio <c>http://127.0.0.1:5810</c> (porta reale, anche se diversa da quella richiesta).</summary>
     public string Url { get; }
+
+    /// <summary>Servizio degli aggiornamenti: il Tray lo usa per la voce di menu. Resta valido fino all'arresto dell'Host.</summary>
+    public UpdateService Updates => _updates;
 
     /// <summary>
     /// Attende l'arresto dell'Host. Se <paramref name="cancellationToken"/> viene annullato, l'Host si arresta
@@ -69,6 +75,7 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
         {
             _log.Write("Arresto di AllSky Host in corso.");
             _shutdown.Cancel();
+            _updates.Dispose();
 
             try
             {

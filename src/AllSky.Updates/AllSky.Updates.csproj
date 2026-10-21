@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AllSky.Updates</RootNamespace>
+    <AssemblyName>AllSky.Updates</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Solo logica pura: nessuna dipendenza da Velopack. L'adapter Velopack sta nel Tray (solo Windows). -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="AllSky.Updates.Tests" />
+  </ItemGroup>
+
+</Project>

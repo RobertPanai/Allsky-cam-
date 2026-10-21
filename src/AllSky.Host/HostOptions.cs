@@ -1,4 +1,5 @@
 using AllSky.Publish;
+using AllSky.Updates;
 
 namespace AllSky.Host;
 
@@ -33,4 +34,10 @@ public sealed record HostOptions(
     /// (lo gestisce chi l'ha creato). Serve ai test.
     /// </summary>
     public HttpMessageHandler? PublishHttpHandler { get; init; }
+
+    /// <summary>
+    /// Sorgente degli aggiornamenti. Su Windows il Tray passa il backend Velopack; null (o un'installazione non aggiornabile)
+    /// lascia gli aggiornamenti disabilitati. Il Tray la crea, non l'Host, perché Velopack è solo Windows.
+    /// </summary>
+    public IUpdateBackend? UpdateBackend { get; init; }
 }

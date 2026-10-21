@@ -2,6 +2,8 @@ using System.Text;
 using System.Text.Json;
 using System.Windows.Forms;
 using AllSky.Host;
+using AllSky.Tray.Updates;
+using Velopack;
 
 namespace AllSky.Tray;
 
@@ -43,6 +45,9 @@ internal static class Program
     [STAThread]
     private static int Main()
     {
+        // Velopack deve essere la prima istruzione: gestisce qui installazione, disinstallazione e riavvio dopo un aggiornamento.
+        VelopackApp.Build().Run();
+
         // Mutex senza proprietà: serve solo a sapere se un'altra istanza esiste già.
         using var mutex = new Mutex(initiallyOwned: false, SingleInstanceMutexName, out bool createdNew);
         if (!createdNew)
@@ -81,7 +86,10 @@ internal static class Program
                 throw new DirectoryNotFoundException($"Cartella web non trovata: {paths.WebRoot}");
             }
 
-            var options = new HostOptions(paths.ConfigPath, paths.DataFolder, paths.WebRoot);
+            var options = new HostOptions(paths.ConfigPath, paths.DataFolder, paths.WebRoot)
+            {
+                UpdateBackend = VelopackBackend.Create(),
+            };
             using var startCts = new CancellationTokenSource(StartTimeout);
 
             // Nessun SynchronizationContext è ancora attivo su questo thread: il blocco non può bloccare l'UI.

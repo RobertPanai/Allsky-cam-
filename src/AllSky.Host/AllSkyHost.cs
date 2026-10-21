@@ -80,6 +80,9 @@ public static class AllSkyHost
         // Un guasto della pubblicazione non impedisce l'avvio: TryCreate restituisce null e l'Host parte senza.
         PublishServices? publishing = HostPublishing.TryCreate(options, dataFolder, logFolder, secrets, log);
 
+        // Aggiornamenti: il servizio nasce qui ma il timer parte solo a Host pronto (vedi Start piu' sotto).
+        UpdateServices updates = UpdateServices.Create(options.UpdateBackend, dataFolder);
+
         AllSkyEngine? engine = null;
         WebApplication? app = null;
         var shutdown = new CancellationTokenSource();
@@ -107,7 +110,7 @@ public static class AllSkyHost
                 await HostPublishing.StartPublisherAsync(publishing, log);
             }
 
-            var context = new HostContext(engine, log, shutdown.Token, logFolder, webRoot, publishing, sanitize);
+            var context = new HostContext(engine, log, shutdown.Token, logFolder, webRoot, publishing, sanitize, updates);
             app = await StartWebAsync(preferred, lan, context, log, cancellationToken);
 
             string bound = app.Urls.First();
@@ -124,7 +127,8 @@ public static class AllSkyHost
 
             log.Write($"AllSky Host in ascolto su {url}" + (lan ? " e sulla rete locale" : string.Empty) + ".");
             ready = true;
-            return new AllSkyHostRuntime(app, engine, shutdown, log, url, publishing);
+            updates.Service.Start();
+            return new AllSkyHostRuntime(app, engine, shutdown, log, url, publishing, updates.Service);
         }
         finally
         {
@@ -224,6 +228,7 @@ public static class AllSkyHost
 
         ApiRoutes.Map(app, context);
         PublishRoutes.Map(app, context);
+        UpdateRoutes.Map(app, context);
 
         RequestDelegate fallback = httpContext =>
         {

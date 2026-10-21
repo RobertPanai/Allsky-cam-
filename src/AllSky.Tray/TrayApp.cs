@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using AllSky.Host;
+using AllSky.Updates;
 using Microsoft.Win32;
 
 namespace AllSky.Tray;
@@ -32,6 +33,7 @@ public sealed class TrayContext : ApplicationContext
     private readonly NotifyIcon _notifyIcon;
     private readonly ContextMenuStrip _menu;
     private readonly ToolStripMenuItem _autostartItem;
+    private readonly ToolStripMenuItem _updateItem;
     private bool _stopped;
 
     /// <summary>Crea l'icona nell'area di notifica e il relativo menu.</summary>
@@ -58,12 +60,16 @@ public sealed class TrayContext : ApplicationContext
         };
         _autostartItem.Click += (_, _) => SetAutostart(_autostartItem.Checked);
 
+        _updateItem = new ToolStripMenuItem(_texts.CheckForUpdates);
+        _updateItem.Click += OnCheckForUpdatesClick;
+
         var exitItem = new ToolStripMenuItem(_texts.Exit);
         exitItem.Click += (_, _) => ExitApplication();
 
         _menu = new ContextMenuStrip();
         _menu.Items.Add(openItem);
         _menu.Items.Add(_autostartItem);
+        _menu.Items.Add(_updateItem);
         _menu.Items.Add(new ToolStripSeparator());
         _menu.Items.Add(exitItem);
 
@@ -142,6 +148,108 @@ public sealed class TrayContext : ApplicationContext
         }
     }
 
+    /// <summary>
+    /// Voce "Controlla aggiornamenti". Il controllo è async: la UI resta libera e la risposta torna sul thread dell'interfaccia.
+    /// Un aggiornamento si installa solo se l'utente sceglie "Riavvia per aggiornare".
+    /// </summary>
+    private async void OnCheckForUpdatesClick(object? sender, EventArgs e)
+    {
+        _updateItem.Enabled = false;
+        try
+        {
+            UpdateStatus status = await _runtime.Updates.CheckNowAsync();
+            switch (status.State)
+            {
+                case UpdateState.Available:
+                    if (ChooseWithButtons(string.Format(_texts.UpdateAvailable, status.AvailableVersion), _texts.Download, _texts.Later))
+                    {
+                        await DownloadUpdateAsync();
+                    }
+
+                    break;
+                case UpdateState.UpToDate:
+                    ShowMessage(string.Format(_texts.UpdateUpToDate, status.CurrentVersion), MessageBoxIcon.Information);
+                    break;
+                case UpdateState.Disabled:
+                    ShowMessage(_texts.UpdateDisabled, MessageBoxIcon.Information);
+                    break;
+                case UpdateState.Error:
+                    ShowMessage(ErrorText(status), MessageBoxIcon.Warning);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Il servizio non lancia eccezioni: questa rete evita che un errore imprevisto chiuda la UI. Nel log solo il tipo.
+            AppLog.Append(_paths.CrashLog, $"Controllo degli aggiornamenti non riuscito: {ex.GetType().Name}");
+            ShowMessage(_texts.UpdateGenericError, MessageBoxIcon.Error);
+        }
+        finally
+        {
+            if (!_stopped)
+            {
+                _updateItem.Enabled = true;
+            }
+        }
+    }
+
+    /// <summary>Scarica l'aggiornamento e, a download completato, chiede se installarlo subito.</summary>
+    private async Task DownloadUpdateAsync()
+    {
+        UpdateStatus status = await _runtime.Updates.DownloadAsync();
+        if (status.State == UpdateState.Error)
+        {
+            ShowMessage(ErrorText(status), MessageBoxIcon.Warning);
+            return;
+        }
+
+        if (status.State == UpdateState.ReadyToInstall
+            && ChooseWithButtons(string.Format(_texts.UpdateReady, status.AvailableVersion), _texts.Restart, _texts.Later))
+        {
+            InstallAndRestart();
+        }
+    }
+
+    /// <summary>
+    /// Programma l'installazione e chiude AllSky. Il programma di aggiornamento attende l'uscita, poi installa e riavvia.
+    /// </summary>
+    private void InstallAndRestart()
+    {
+        UpdateStatus applied = _runtime.Updates.ApplyLater();
+        if (applied.State == UpdateState.Error)
+        {
+            ShowMessage(ErrorText(applied), MessageBoxIcon.Warning);
+            return;
+        }
+
+        ExitApplication();
+    }
+
+    /// <summary>Testo dell'errore di aggiornamento nella lingua del menu. Il codice sceglie il testo: il messaggio del servizio è in italiano.</summary>
+    private string ErrorText(UpdateStatus status) =>
+        status.ErrorCode == UpdateErrorCodes.Network ? _texts.UpdateNetworkError : _texts.UpdateGenericError;
+
+    private static void ShowMessage(string text, MessageBoxIcon icon) =>
+        MessageBox.Show(text, "AllSky", MessageBoxButtons.OK, icon);
+
+    /// <summary>
+    /// Finestra con due pulsanti dal testo scelto: MessageBox non permette etichette personalizzate.
+    /// Restituisce true se si preme il pulsante di conferma.
+    /// </summary>
+    private static bool ChooseWithButtons(string text, string confirmText, string cancelText)
+    {
+        var confirm = new TaskDialogButton(confirmText);
+        var cancel = new TaskDialogButton(cancelText);
+        var page = new TaskDialogPage
+        {
+            Caption = "AllSky",
+            Text = text,
+            Buttons = { confirm, cancel },
+        };
+
+        return TaskDialog.ShowDialog(page) == confirm;
+    }
+
     /// <summary>Chiude l'applicazione dal menu "Esci".</summary>
     private void ExitApplication()
     {
@@ -205,12 +313,32 @@ public sealed class TrayContext : ApplicationContext
     /// <param name="Exit">Voce "Esci".</param>
     /// <param name="BrowserError">Messaggio con l'indirizzo da aprire a mano; {0} è l'URL.</param>
     /// <param name="AutostartError">Messaggio di errore sull'avvio automatico; {0} è il dettaglio.</param>
+    /// <param name="CheckForUpdates">Voce "Controlla aggiornamenti".</param>
+    /// <param name="UpdateUpToDate">Messaggio "AllSky è aggiornato"; {0} è la versione installata.</param>
+    /// <param name="UpdateAvailable">Domanda con la versione disponibile; {0} è la versione.</param>
+    /// <param name="UpdateReady">Domanda di riavvio dopo il download; {0} è la versione.</param>
+    /// <param name="UpdateDisabled">Messaggio per le installazioni non aggiornabili.</param>
+    /// <param name="UpdateNetworkError">Errore di rete durante il controllo o il download.</param>
+    /// <param name="UpdateGenericError">Errore di aggiornamento non classificato.</param>
+    /// <param name="Download">Pulsante "Scarica".</param>
+    /// <param name="Later">Pulsante "Più tardi".</param>
+    /// <param name="Restart">Pulsante "Riavvia per aggiornare".</param>
     private sealed record MenuTexts(
         string OpenPanel,
         string StartWithWindows,
         string Exit,
         string BrowserError,
-        string AutostartError)
+        string AutostartError,
+        string CheckForUpdates,
+        string UpdateUpToDate,
+        string UpdateAvailable,
+        string UpdateReady,
+        string UpdateDisabled,
+        string UpdateNetworkError,
+        string UpdateGenericError,
+        string Download,
+        string Later,
+        string Restart)
     {
         /// <summary>Testi in italiano (lingua predefinita).</summary>
         public static MenuTexts Italian { get; } = new(
@@ -218,7 +346,17 @@ public sealed class TrayContext : ApplicationContext
             StartWithWindows: "Avvia con Windows",
             Exit: "Esci",
             BrowserError: "Impossibile aprire il browser. Apri questo indirizzo a mano: {0}",
-            AutostartError: "Impossibile modificare l'avvio automatico con Windows.\n\n{0}");
+            AutostartError: "Impossibile modificare l'avvio automatico con Windows.\n\n{0}",
+            CheckForUpdates: "Controlla aggiornamenti",
+            UpdateUpToDate: "AllSky è aggiornato (versione {0}).",
+            UpdateAvailable: "È disponibile la versione {0} di AllSky. Scaricarla ora?",
+            UpdateReady: "La versione {0} è pronta. Riavviare AllSky per installarla?",
+            UpdateDisabled: "Gli aggiornamenti automatici non sono disponibili in questa installazione.",
+            UpdateNetworkError: "Impossibile contattare il server degli aggiornamenti. Controllare la connessione e riprovare.",
+            UpdateGenericError: "Aggiornamento non riuscito. Riprovare più tardi.",
+            Download: "Scarica",
+            Later: "Più tardi",
+            Restart: "Riavvia per aggiornare");
 
         /// <summary>Testi in inglese.</summary>
         public static MenuTexts English { get; } = new(
@@ -226,6 +364,16 @@ public sealed class TrayContext : ApplicationContext
             StartWithWindows: "Start with Windows",
             Exit: "Exit",
             BrowserError: "Could not open the browser. Open this address manually: {0}",
-            AutostartError: "Could not change the start-with-Windows setting.\n\n{0}");
+            AutostartError: "Could not change the start-with-Windows setting.\n\n{0}",
+            CheckForUpdates: "Check for updates",
+            UpdateUpToDate: "AllSky is up to date (version {0}).",
+            UpdateAvailable: "Version {0} of AllSky is available. Download it now?",
+            UpdateReady: "Version {0} is ready. Restart AllSky to install it?",
+            UpdateDisabled: "Automatic updates are not available in this installation.",
+            UpdateNetworkError: "Could not reach the update server. Check your connection and try again.",
+            UpdateGenericError: "Update failed. Try again later.",
+            Download: "Download",
+            Later: "Later",
+            Restart: "Restart to update");
     }
 }

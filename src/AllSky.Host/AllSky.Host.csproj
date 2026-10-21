@@ -27,6 +27,7 @@
     <ProjectReference Include="..\AllSky.Imaging.Overlay\AllSky.Imaging.Overlay.csproj" />
     <ProjectReference Include="..\AllSky.Products\AllSky.Products.csproj" />
     <ProjectReference Include="..\AllSky.Publish\AllSky.Publish.csproj" />
+    <ProjectReference Include="..\AllSky.Updates\AllSky.Updates.csproj" />
   </ItemGroup>
 
   <ItemGroup>
