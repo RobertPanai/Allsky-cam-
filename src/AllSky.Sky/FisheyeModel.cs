@@ -13,9 +13,9 @@ namespace AllSky.Sky;
 ///   <item><description>Lo zenit cade al centro (<see cref="CenterX"/>, <see cref="CenterY"/>).</description></item>
 ///   <item><description>
 ///     z e' la distanza zenitale in gradi (z = 90 - altezza). Il raggio in pixel e':
-///     r(z) = HorizonRadiusPx * t * (1 + K2 * t^2), con t = z / 90.
+///     r(z) = ScaleRadiusPx * t * (1 + K2 * t^2), con t = z / 90.
 ///     Con K2 = 0 la proiezione e' equidistante: r e' proporzionale a z.
-///     Il raggio dell'orizzonte effettivo (z = 90, t = 1) e' HorizonRadiusPx * (1 + K2),
+///     Il raggio dell'orizzonte effettivo (z = 90, t = 1) e' ScaleRadiusPx * (1 + K2),
 ///     ed e' esposto da <see cref="HorizonRadius"/>.
 ///   </description></item>
 ///   <item><description>A e' l'azimut in gradi, misurato da Nord verso Est (0 = N, 90 = E).</description></item>
@@ -38,14 +38,14 @@ namespace AllSky.Sky;
 /// </summary>
 /// <param name="CenterX">Coordinata x del centro (zenit), in pixel.</param>
 /// <param name="CenterY">Coordinata y del centro (zenit), in pixel.</param>
-/// <param name="HorizonRadiusPx">Parametro di scala del raggio, in pixel: r(z=90) = HorizonRadiusPx * (1 + K2).</param>
+/// <param name="ScaleRadiusPx">Raggio di scala in pixel: e' il raggio a z = 90 gradi con K2 = 0. Con K2 diverso da zero l'orizzonte effettivo e' ScaleRadiusPx * (1 + K2), esposto da <see cref="HorizonRadius"/>.</param>
 /// <param name="NorthRotationDeg">Rotazione oraria dell'immagine, in gradi: direzione del Nord rispetto al "su".</param>
 /// <param name="Mirrored">Se true, l'Est cade a destra invece che a sinistra.</param>
 /// <param name="K2">Coefficiente della correzione radiale. Zero per la proiezione equidistante pura.</param>
 public record FisheyeModel(
     double CenterX,
     double CenterY,
-    double HorizonRadiusPx,
+    double ScaleRadiusPx,
     double NorthRotationDeg,
     bool Mirrored,
     double K2 = 0)
@@ -70,8 +70,8 @@ public record FisheyeModel(
     /// <summary>Coordinata y del centro (zenit), in pixel. Deve essere finita.</summary>
     public double CenterY { get; init; } = RequireFinite(CenterY, nameof(CenterY));
 
-    /// <summary>Scala del raggio in pixel: r(z=90) = HorizonRadiusPx * (1 + K2). Deve essere finita e maggiore di zero.</summary>
-    public double HorizonRadiusPx { get; init; } = RequirePositiveFinite(HorizonRadiusPx, nameof(HorizonRadiusPx));
+    /// <summary>Raggio di scala in pixel (raggio a z = 90 gradi con K2 = 0). Non coincide con l'orizzonte se K2 e' diverso da zero: per quello usare <see cref="HorizonRadius"/>. Deve essere finita e maggiore di zero.</summary>
+    public double ScaleRadiusPx { get; init; } = RequirePositiveFinite(ScaleRadiusPx, nameof(ScaleRadiusPx));
 
     /// <summary>Rotazione oraria dell'immagine in gradi. Deve essere finita.</summary>
     public double NorthRotationDeg { get; init; } = RequireFinite(NorthRotationDeg, nameof(NorthRotationDeg));
@@ -79,8 +79,8 @@ public record FisheyeModel(
     /// <summary>Correzione radiale K2. Deve essere finita e maggiore di -1/3.</summary>
     public double K2 { get; init; } = RequireK2(K2);
 
-    /// <summary>Raggio dell'orizzonte effettivo in pixel (z = 90 gradi): HorizonRadiusPx * (1 + K2).</summary>
-    public double HorizonRadius => HorizonRadiusPx * (1.0 + K2);
+    /// <summary>Raggio dell'orizzonte effettivo in pixel (z = 90 gradi): ScaleRadiusPx * (1 + K2). Usare questo valore, non ScaleRadiusPx, per il bordo del cielo.</summary>
+    public double HorizonRadius => ScaleRadiusPx * (1.0 + K2);
 
     /// <summary>
     /// Proietta un punto del cielo sull'immagine.
@@ -188,7 +188,7 @@ public record FisheyeModel(
 
     /// <summary>
     /// Scala sul cielo, in arcosecondi per pixel, nella direzione radiale a una data altezza.
-    /// Ricavata dalla derivata dr/dz: scala = 3600 / (dr/dz), con dr/dz = HorizonRadiusPx * (1 + 3*K2*t^2) / 90.
+    /// Ricavata dalla derivata dr/dz: scala = 3600 / (dr/dz), con dr/dz = ScaleRadiusPx * (1 + 3*K2*t^2) / 90.
     /// Approssimazione sulla sola componente radiale: la scala tangenziale non e' considerata.
     /// </summary>
     public double PixelScaleArcsecPerPx(double altDeg)
@@ -202,7 +202,7 @@ public record FisheyeModel(
         }
 
         double t = (90.0 - altDeg) / 90.0;
-        double drDz = HorizonRadiusPx * (1.0 + 3.0 * K2 * t * t) / 90.0;
+        double drDz = ScaleRadiusPx * (1.0 + 3.0 * K2 * t * t) / 90.0;
         return 3600.0 / drDz;
     }
 
@@ -210,14 +210,14 @@ public record FisheyeModel(
     private double RadiusForZenithDistance(double zDeg)
     {
         double t = zDeg / 90.0;
-        return HorizonRadiusPx * t * (1.0 + K2 * t * t);
+        return ScaleRadiusPx * t * (1.0 + K2 * t * t);
     }
 
     /// <summary>Distanza zenitale in gradi per un raggio in pixel, con Newton sulla variabile t = z / 90.</summary>
     private double ZenithDistanceForRadius(double rPx)
     {
-        // Risolve t + K2 * t^3 = s, con s = r / HorizonRadiusPx.
-        double s = rPx / HorizonRadiusPx;
+        // Risolve t + K2 * t^3 = s, con s = r / ScaleRadiusPx.
+        double s = rPx / ScaleRadiusPx;
         double t = s;
         for (int i = 0; i < MaxNewtonIterations; i++)
         {

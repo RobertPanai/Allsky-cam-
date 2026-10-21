@@ -9,14 +9,14 @@ public class FisheyeModelTests
 {
     private const double CenterX = 600.0;
     private const double CenterY = 500.0;
-    private const double HorizonRadiusPx = 480.0;
+    private const double ScaleRadiusPx = 480.0;
 
     private const double RoundTripToleranceDeg = 0.01;
     private const double RoundTripTolerancePx = 0.01;
     private const double ExactTolerance = 1e-9;
 
     private static FisheyeModel Model(double k2, bool mirrored, double rotationDeg)
-        => new(CenterX, CenterY, HorizonRadiusPx, rotationDeg, mirrored, k2);
+        => new(CenterX, CenterY, ScaleRadiusPx, rotationDeg, mirrored, k2);
 
     [Theory]
     [InlineData(0.0, false, 0.0)]
@@ -130,12 +130,34 @@ public class FisheyeModelTests
             "Un punto appena oltre l'orizzonte non deve essere dentro il cielo.");
     }
 
+    [Theory]
+    [InlineData(0.0)]
+    [InlineData(0.1)]
+    [InlineData(-0.1)]
+    public void ScaleRadius_IsRadiusAtZenithDistance90_OnlyWithK2Zero(double k2)
+    {
+        // Con K2 = 0 lo scale radius coincide con il raggio a z = 90 gradi; con K2 != 0 no.
+        var model = Model(k2, mirrored: false, rotationDeg: 0.0);
+
+        Assert.True(model.TryAltAzToPixel(0.0, 0.0, out _, out double y));
+        double distance = Math.Abs(y - CenterY);
+        Assert.Equal(model.HorizonRadius, distance, 1e-6);
+        if (k2 == 0.0)
+        {
+            Assert.Equal(ScaleRadiusPx, distance, 1e-6);
+        }
+        else
+        {
+            Assert.NotEqual(ScaleRadiusPx, distance);
+        }
+    }
+
     [Fact]
     public void HorizonRadius_IncludesK2()
     {
         var model = Model(0.1, mirrored: false, rotationDeg: 0.0);
 
-        Assert.Equal(HorizonRadiusPx * 1.1, model.HorizonRadius, ExactTolerance);
+        Assert.Equal(ScaleRadiusPx * 1.1, model.HorizonRadius, ExactTolerance);
     }
 
     [Theory]
@@ -155,10 +177,10 @@ public class FisheyeModelTests
     {
         var model = Model(0.0, mirrored: false, rotationDeg: 0.0);
 
-        Assert.False(model.TryPixelToAltAz(CenterX + HorizonRadiusPx + 1.0, CenterY, out _, out _));
-        Assert.False(model.TryPixelToAltAz(CenterX, CenterY - HorizonRadiusPx - 0.5, out _, out _));
-        Assert.False(model.IsInsideSky(CenterX + HorizonRadiusPx + 1.0, CenterY));
-        Assert.True(model.TryPixelToAltAz(CenterX + HorizonRadiusPx - 1.0, CenterY, out _, out _));
+        Assert.False(model.TryPixelToAltAz(CenterX + ScaleRadiusPx + 1.0, CenterY, out _, out _));
+        Assert.False(model.TryPixelToAltAz(CenterX, CenterY - ScaleRadiusPx - 0.5, out _, out _));
+        Assert.False(model.IsInsideSky(CenterX + ScaleRadiusPx + 1.0, CenterY));
+        Assert.True(model.TryPixelToAltAz(CenterX + ScaleRadiusPx - 1.0, CenterY, out _, out _));
     }
 
     [Fact]
@@ -219,11 +241,11 @@ public class FisheyeModelTests
     [Fact]
     public void NaN_IsRejectedInConstructor()
     {
-        var ex1 = Assert.Throws<ArgumentOutOfRangeException>(() => _ = new FisheyeModel(double.NaN, CenterY, HorizonRadiusPx, 0.0, false));
+        var ex1 = Assert.Throws<ArgumentOutOfRangeException>(() => _ = new FisheyeModel(double.NaN, CenterY, ScaleRadiusPx, 0.0, false));
         Assert.Contains("NaN", ex1.Message);
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => _ = new FisheyeModel(CenterX, CenterY, HorizonRadiusPx, double.PositiveInfinity, false));
-        Assert.Throws<ArgumentOutOfRangeException>(() => _ = new FisheyeModel(CenterX, CenterY, HorizonRadiusPx, 0.0, false, double.NaN));
+        Assert.Throws<ArgumentOutOfRangeException>(() => _ = new FisheyeModel(CenterX, CenterY, ScaleRadiusPx, double.PositiveInfinity, false));
+        Assert.Throws<ArgumentOutOfRangeException>(() => _ = new FisheyeModel(CenterX, CenterY, ScaleRadiusPx, 0.0, false, double.NaN));
     }
 
     [Fact]
@@ -239,7 +261,7 @@ public class FisheyeModelTests
     [Fact]
     public void K2AtOrBelowLimit_IsRejectedInConstructor()
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => _ = new FisheyeModel(CenterX, CenterY, HorizonRadiusPx, 0.0, false, -1.0 / 3.0));
+        Assert.Throws<ArgumentOutOfRangeException>(() => _ = new FisheyeModel(CenterX, CenterY, ScaleRadiusPx, 0.0, false, -1.0 / 3.0));
     }
 
     [Fact]
@@ -263,7 +285,7 @@ public class FisheyeModelTests
 
         // Con K2 = 0.1 all'orizzonte (t = 1) dr/dz = R * (1 + 0.3) / 90.
         var corrected = Model(0.1, mirrored: false, rotationDeg: 0.0);
-        Assert.Equal(324000.0 / (HorizonRadiusPx * 1.3), corrected.PixelScaleArcsecPerPx(0.0), 1e-9);
+        Assert.Equal(324000.0 / (ScaleRadiusPx * 1.3), corrected.PixelScaleArcsecPerPx(0.0), 1e-9);
     }
 
     [Fact]
