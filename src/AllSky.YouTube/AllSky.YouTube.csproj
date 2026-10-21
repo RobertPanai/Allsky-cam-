@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AllSky.YouTube</RootNamespace>
+    <AssemblyName>AllSky.YouTube</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Solo logica pura: nessun pacchetto NuGet e nessun riferimento ad altri progetti. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="AllSky.YouTube.Tests" />
+  </ItemGroup>
+
+</Project>
