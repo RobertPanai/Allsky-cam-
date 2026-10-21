@@ -34,11 +34,12 @@ Sei l'orchestratore (Sonnet 5.5) del progetto All Sky Brain. Per le parti di int
    Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
    ```
    Poi `git push origin ralph/desktop-v1`. Poi termina l'iterazione: il loop ti richiamerà.
-9. Quando tutti i task sono `[x]` o `[B]` e hai completato P8.3 e P8.4, stampa esattamente `<promise>PIANO COMPLETATO</promise>`. P8.4 può essere `[x]` (rilascio fatto) oppure `[B]` con il motivo.
+9. Quando tutti i task sono `[x]` o `[B]`, comprese P8.4 e P10.2, stampa esattamente `<promise>PIANO COMPLETATO</promise>`. Le release possono essere `[x]` (rilascio fatto) oppure `[B]` con il motivo.
    Non stamparlo in nessun altro caso, nemmeno per uscire da un blocco.
 
 ## Divieti
-- Niente push, merge o rebase su `main`, e niente tag, release o workflow `release-stable`, **tranne nel task P8.4**. In P8.4 segui alla lettera il cancello e i passi del piano: è l'unico punto in cui si rilascia, per far arrivare l'aggiornamento al PC di Robert. Niente modifiche a `.github/workflows` oltre a quanto chiesto in P1.1 e P1.10.
+- Niente push, merge o rebase su `main`, e niente tag, release o workflow `release-stable`, **tranne nei task P8.4 e P10.2**. Lì segui alla lettera il cancello e i passi del piano: sono gli unici punti in cui si rilascia, per far arrivare l'aggiornamento al PC di Robert. Dopo P8.4 torna a lavorare su `ralph/desktop-v1`.
+- Il SafetyMonitor Alpaca (P9.5) è l'unica eccezione alla regola "nessun server": è spento per default e ascolta solo su 127.0.0.1, salvo scelta esplicita dell'utente. Gli unici altri listener ammessi sono il login OAuth (P7.2), su loopback e solo per la durata del login, e l'"Accesso dal browser" (P1.8), spento per default. Nessun altro. Niente modifiche a `.github/workflows` oltre a quanto chiesto in P1.1 e P1.10.
 - Non cambiare `packId` (`AllSkyBrain`), il nome dell'exe (`AllSkyBrain.exe`) né la cartella dati: romperebbero l'aggiornamento automatico. Il nome visibile è "All Sky Brain".
 - Non toccare l'installazione esistente di All Sky Brain né `%LOCALAPPDATA%\AllSky`. Prove sempre con `--data-folder` in una cartella temporanea, dopo P0.2.
 - Non usare la camera reale per più di uno smoke test breve, e solo se non sta già catturando. I test si fanno con la camera Sim.

@@ -2,7 +2,9 @@
 
 Nome ufficiale del prodotto: **All Sky Brain** (con gli spazi) in tutto ciò che l'utente vede.
 Branch di lavoro: `ralph/desktop-v1`, partito da `main` @ 885535f. Si lavora sempre sul branch; su `main` si va **solo** nel task finale P8.4.
-Versione obiettivo: **0.3.0**. A fine piano, se tutte le verifiche sono verdi, il loop la **rilascia in automatico** (P8.4), così il PC che ha la 0.2.x riceve la richiesta di aggiornamento.
+Il piano prevede due rilasci automatici, ciascuno solo se il suo cancello di verifica è verde:
+- **0.3.0** in P8.4, con le funzioni di base (P0–P7), così il PC che ha la 0.2.x riceve presto la richiesta di aggiornamento;
+- **0.4.0** in P10.2, con le funzioni avanzate di P9.
 
 Legenda stato: `[ ]` da fare · `[x]` fatto (test verdi) · `[B]` bloccato (motivo in NOTES.md) · `[~]` parziale.
 Legenda modello: **[H]** codice scritto da subagent Haiku 5.5 (`model: "haiku"`) con contratto e criteri dati dal loop ·
@@ -23,7 +25,8 @@ Legenda fatti: **[V]** verificato con fonte (21/10/2026) · **[NV]** da verifica
 6. **Maschera informativa ai bordi del timelapse**, con questi elementi, ognuno attivabile e disattivabile dall'utente: data e ora, satelliti in transito in quel momento, altezza del Sole, altezza della Luna, loghi, meteo.
 7. **Nome ufficiale "All Sky Brain"** ovunque sia visibile.
 8. **Immagini e stile futuristico** in tutta l'app, curati come farebbe un esperto di UI/UX con competenze di astronomia (vedi §5).
-9. **Rilascio automatico** a fine implementazione (P8.4), così l'altro PC riceve l'aggiornamento.
+9. **Rilascio automatico** a fine implementazione (P8.4 e P10.2), così l'altro PC riceve l'aggiornamento.
+10. **Funzioni avanzate** (richiesta del 21/10 alle 23:17), in P9: SafetyMonitor Alpaca, SQM stimato, allerte aurora, calibrazione fotometrica sulle stelle note, mappa di costellazioni e pianeti, report via Telegram o email, rete di camere, archivio ricercabile.
 
 Vincoli che restano in vigore:
 - solo richieste HTTPS in uscita e nessun server esposto;
@@ -174,7 +177,7 @@ Se un comando fallisce per motivi d'ambiente (SDK, rete, NuGet), scrivi il motiv
 - [ ] **P7.3 [S] Upload resumable + pianificazione**: ogni giorno all'ora scelta carica il timelapse dell'ultima notte completata (con maschera se attiva); privacy predefinita **private** (scelta utente: private/unlisted/public), tag, categoria (ID **[NV]**), descrizione dal modello; idempotenza per notte (stato salvato: mai due upload della stessa notte, anche dopo un crash); retry con backoff su 5xx/rete, nessun retry su 4xx (eccetto 401 → refresh una volta); quota: ≤ 1 upload/giorno di default. Se il PC era spento all'ora prevista, carica all'avvio successivo (finestra configurabile). *Test:* orologio finto e handler finto (sessione resumable, interruzione a metà, 401, 403 quota, 500). *Dip.:* P7.1, P7.2.
 - [ ] **P7.4 [H] Vista YouTube** (in "Pubblicazione"): login/logout, stato (ultimo upload con link al video, prossimo upload, ultimo errore), impostazioni, "Carica ora la notte scorsa". *Dip.:* P7.3, P1.7.
 
-### P8 — Chiusura
+### P8 — Verifica e rilascio 0.3.0
 - [ ] **P8.1 [H] Documentazione**: README (desktop, maschera, satelliti, meteore, YouTube, meteo), `docs/FUNZIONI.md` aggiornato, guida "Configurare YouTube" passo-passo (Google Cloud Console, credenziali Desktop, stato In production), note sui limiti noti.
 - [ ] **P8.2 [S] Verifica finale**: build + test completi, smoke test con camera Sim e `--data-folder` temporanea (1 notte simulata accelerata se l'Engine lo consente: timelapse con maschera, almeno un evento sintetico); controllo segreti (`grep` del token di prova su cartella dati e log); revisione del diff complessivo. Scrivi in NOTES.md cosa è verificato e cosa no.
 - [ ] **P8.3 [S] Riepilogo per Robert** in NOTES.md: cosa è fatto, cosa è bloccato e perché, decisioni prese da confermare, prossimi passi.
@@ -194,7 +197,87 @@ Se un comando fallisce per motivi d'ambiente (SDK, rete, NuGet), scrivi il motiv
     5. Attendi la fine del workflow.
     6. Verifica con `gh api repos/RobertPanai/Allsky-cam-/releases` che la release `v0.3.0` non sia pre-release e contenga `AllSkyBrain-win-Setup.exe`, `releases.win.json` e i `.nupkg` full e delta.
   - **Se il cancello non è soddisfatto o il workflow fallisce:** non rilasciare né riprovare in modo diverso. Scrivi tutto in NOTES.md e marca `[B]`. Un rilascio sbagliato arriverebbe all'altro PC, e Velopack di default non torna indietro: la correzione sarebbe solo una 0.3.1.
-  - Solo dopo P8.4, che sia `[x]` o `[B]` con motivo, puoi chiudere il loop.
+  - Dopo P8.4, che sia `[x]` o `[B]` con il motivo, prosegui con P9. Il loop **non** si chiude qui.
+
+### P9 — Funzioni avanzate (dopo P8.4; ogni task include la sua parte di UI secondo §5)
+Fatti da verificare prima di ciascun task: tutti [NV] finché non hai letto la fonte ufficiale e non l'hai annotata in NOTES.md.
+
+- [ ] **P9.1 [S] Catalogo stellare e raffinamento astrometrico.**
+  - **Catalogo:** stelle luminose fino a circa mag 6, per esempio il Yale Bright Star Catalogue. **Prima verifica e annota la licenza.** Se non è di pubblico dominio o permissiva (CC0, CC-BY, BSD, MIT), cerca un'alternativa permissiva. Niente dati GPL o share-alike senza una nota per Robert.
+  - **Dati:** copia ridotta nel repository (RA, Dec, mag V, B−V), con un file che ne documenta fonte e licenza.
+  - **Precessione a J2000→data:** usa un algoritmo standard, per esempio di Meeus. Annota la fonte della formula.
+  - **Raffinamento:** usa le stelle per rifinire la calibrazione fisheye di P3: identificazione delle stelle vicino alla posizione prevista e fit ai minimi quadrati con un termine radiale.
+  - *Test:* stelle sintetiche proiettate con parametri noti, che il fit deve ritrovare.
+  - *Dip.:* P3.2.
+- [ ] **P9.2 [S] Calibrazione fotometrica sulle stelle note.**
+  - Su frame notturni senza nuvole: fotometria d'apertura delle stelle identificate in P9.1, con il fondo misurato in un anello.
+  - Fit del **punto zero** in funzione della massa d'aria (estinzione) e dei **termini di colore** per canale da B−V.
+  - Ne derivano una **matrice di correzione colore** e i guadagni del bilanciamento del bianco, per colori coerenti tra notti diverse. È opzionale e sostituisce il bilanciamento automatico solo se l'utente lo attiva.
+  - Fornisce anche **magnitudine limite** e **indice di cielo sereno**: stelle rilevate diviso stelle attese per settore. Questo indice alimenta la carta "Condizioni" di P1.11.
+  - *Test:* campo stellare sintetico con punto zero ed estinzione noti, che il fit deve ritrovare entro la tolleranza.
+  - *Dip.:* P9.1.
+- [ ] **P9.3 [S] SQM stimato.**
+  - Stima la brillanza del fondo allo zenit in mag/arcsec² dalla luminanza del fondo, una volta tolte le stelle.
+  - Servono l'area del pixel in arcsec² (dal modello fisheye allo zenit), l'esposizione e il punto zero di P9.2.
+  - **Offset di calibrazione** facoltativo, inseribile dall'utente confrontando una sera con un SQM reale.
+  - In UI va etichettato "stimato". Mostra un grafico della notte e un valore nel sidecar (P2.1), così la maschera lo può mostrare.
+  - *Test:* fondo sintetico con brillanza nota.
+  - *Dip.:* P9.2.
+- [ ] **P9.4 [H] Mappa di costellazioni e pianeti.**
+  - **Pianeti** (Mercurio–Nettuno) con algoritmi a bassa precisione da fonte citata, per esempio Meeus o gli elementi orbitali approssimati JPL. Annota la fonte e la precisione attesa.
+  - **Linee delle costellazioni** solo da un dataset con licenza permissiva verificata. Se non lo trovi, fai solo i pianeti e le stelle principali con nome e marca le linee `[B]`.
+  - **Overlay sul Live** attivabile con il tasto `C`: nomi, linee, pianeti, eclittica ed equatore opzionali.
+  - *Test:* posizioni dei pianeti confrontate con valori di riferimento per una data, da fonte citata. Se la fonte non è raggiungibile, [NV].
+  - *Dip.:* P9.1, P1.4.
+- [ ] **P9.5 [S] SafetyMonitor Alpaca, opt-in.**
+  - **Server Alpaca minimo** come dispositivo SafetyMonitor: endpoint di management e `issafe`, con discovery facoltativa.
+  - **Leggi la specifica Alpaca ufficiale** e implementa esattamente: endpoint, parametri `ClientID` e `ClientTransactionID`, formato delle risposte, codici d'errore. Annota la fonte.
+  - **Spento per default.** Se attivo, ascolta **solo su 127.0.0.1**. La rete locale si apre solo su scelta esplicita, con un avviso in UI, perché in quel caso l'app espone un servizio.
+  - **Regola "sicuro":** configurabile.
+    - Default: indice di cielo sereno di P9.2 sopra la soglia per N minuti consecutivi, nessuna pioggia (dal meteo, se disponibile), dati non più vecchi di X minuti.
+    - Se mancano i dati, il risultato è **non sicuro** (fail-safe).
+  - *Test:* richieste HTTP reali su loopback, regola con dati finti, fail-safe.
+  - **Conformità:** se ConformU di ASCOM è disponibile sul PC, eseguilo e annota l'esito; altrimenti [NV].
+  - *Dip.:* P9.2.
+- [ ] **P9.6 [H] Allerte aurora.**
+  - **Indice Kp e previsione** da una fonte ufficiale, per esempio NOAA SWPC. Verifica URL, formato, licenza e frequenza di aggiornamento, e annotali.
+  - Al massimo una richiesta ogni 15 minuti, con cache e stop sugli errori.
+  - **Soglia dipendente dalla latitudine dell'osservatorio**, configurabile. Alle medie latitudini serve un Kp alto: il valore predefinito va giustificato con una fonte.
+  - **Conferma nell'immagine:** eccesso di verde (557,7 nm) o di rosso (630 nm) nel settore verso il polo vicino all'orizzonte, rispetto alle notti precedenti.
+  - **Notifica:** nell'app e tramite P9.7.
+  - *Test:* dati Kp finti e immagini sintetiche colorate.
+  - *Dip.:* P3.1.
+- [ ] **P9.7 [H] Report e notifiche via Telegram o email.**
+  - **Telegram:** Bot API con token del bot e chat ID dell'utente. Verifica i metodi `sendMessage` e `sendPhoto`/`sendVideo` e il **limite di dimensione** dei file inviati dai bot, e annotalo.
+  - **Email:** SMTP con TLS. Verifica sulla documentazione Microsoft se `System.Net.Mail.SmtpClient` è sconsigliato. In quel caso usa MailKit (licenza da verificare) oppure solo Telegram.
+  - **Report del mattino** a un'ora configurabile: keogram, startrails, link YouTube se caricato, meteore, transiti, ore di cielo sereno, SQM.
+  - **Allerte immediate:** bolide, aurora, ISS confermata.
+  - Segreti cifrati con DPAPI, mai nei log. Limite di messaggi al giorno.
+  - *Test:* handler finti; nessun segreto nei log.
+  - *Dip.:* P5.3, P4.5.
+- [ ] **P9.8 [S] Archivio ricercabile.**
+  - **Indice locale** di notti, frame (dai sidecar) ed eventi. Deve essere un indice su file o un database embedded con licenza permissiva verificata (es. `Microsoft.Data.Sqlite`), da annotare.
+  - **Ricostruibile** da zero dai file e aggiornato in modo incrementale.
+  - **Ricerca** con filtri combinabili: intervallo di date, tipo di evento, altezza, luminosità, classe, satellite, indice di cielo sereno, fase della Luna, SQM, meteo. Ricerche salvate.
+  - **Vista "Archivio"** con risultati a griglia e anteprime.
+  - *Test:* indicizzazione, ricostruzione e query su un archivio sintetico; prestazioni su 10.000 frame da annotare.
+  - *Dip.:* P2.1, P5.3.
+- [ ] **P9.9 [S] Rete di camere (v1: scambio di file, nessun server).**
+  - **Formato di scambio** versionato e documentato in `docs/RETE.md`. Contiene: stazione (ID, lat, lon, quota), qualità della calibrazione (residuo RMS) ed evento, cioè l'istante UTC con precisione al millisecondo e la traccia alt/az nel tempo.
+  - **Export e import** di eventi tramite cartella o file.
+  - **Abbinamento** degli eventi di due o più stazioni per finestra temporale. La sincronizzazione dell'orologio è da segnalare: mostra lo scarto NTP se misurabile.
+  - **Triangolazione:** intersezione dei piani di vista delle tracce con un metodo standard da fonte citata, per ottenere traiettoria, quote di inizio e fine e velocità. Se i dati lo consentono, aggiungi un'estrapolazione **indicativa** della zona di caduta, marcata come tale.
+  - **Mappa** semplice disegnata dall'app, senza tile di terzi, con le stazioni e la traccia al suolo.
+  - **Sincronizzazione automatica** tramite il sito con Uplink: **non** implementarla, perché il contratto non esiste. Scrivi una proposta in `docs/RETE.md`.
+  - *Test:* due stazioni sintetiche che osservano una traiettoria nota; la triangolazione deve ritrovarla entro la tolleranza.
+  - *Dip.:* P9.1, P5.3.
+
+### P10 — Verifica e rilascio 0.4.0
+- [ ] **P10.1 [S] Verifica finale P9.** Come P8.2, più:
+  - **test SafetyMonitor su loopback;**
+  - **controllo d'esposizione:** con SafetyMonitor e "Accesso dal browser" spenti e nessun login OAuth in corso, il processo non ha porte in ascolto. Verificalo elencando le porte in ascolto del processo.
+  - **riepilogo per Robert** in NOTES.md.
+- [ ] **P10.2 [S] Rilascio automatico 0.4.0.** Stesso cancello e stessi passi di P8.4, con la versione 0.4.0. Il cancello include anche P10.1 `[x]`. Una release 0.3.0 già fatta non è un requisito: se P8.4 era `[B]`, questa release porta tutto.
 
 ---
 
