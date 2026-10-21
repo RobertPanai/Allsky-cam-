@@ -37,12 +37,18 @@ Sei l'orchestratore (Sonnet 5.5) del progetto All Sky Brain. Per le parti di int
 9. Quando tutti i task sono `[x]` o `[B]`, comprese P8.4 e P10.2, stampa esattamente `<promise>PIANO COMPLETATO</promise>`. Le release possono essere `[x]` (rilascio fatto) oppure `[B]` con il motivo.
    Non stamparlo in nessun altro caso, nemmeno per uscire da un blocco.
 
+## Ambiente di esecuzione
+Il loop gira su un PC Windows con **il simulatore, senza camera reale** (camera Sim dell'app; se sono installati gli ASCOM OmniSim, anche quelli).
+- Tutto ciò che dipende da hardware o driver reali (ZWO, DPAPI su un altro utente, conformità SafetyMonitor con NINA, qualità astrometrica sul cielo vero, soglie di meteore con immagini reali) **non è verificabile lì**: implementalo con test sintetici e marcalo "non provato su camera reale".
+- In P8.3 e P10.1 aggiungi a NOTES.md una sezione **"Da provare sul PC con la ZWO"** con l'elenco preciso di questi punti.
+- L'aggiornamento arriva poi al PC con la camera tramite il rilascio automatico.
+
 ## Divieti
 - Niente push, merge o rebase su `main`, e niente tag, release o workflow `release-stable`, **tranne nei task P8.4 e P10.2**. Lì segui alla lettera il cancello e i passi del piano: sono gli unici punti in cui si rilascia, per far arrivare l'aggiornamento al PC di Robert. Dopo P8.4 torna a lavorare su `ralph/desktop-v1`.
 - Il SafetyMonitor Alpaca (P9.5) è l'unica eccezione alla regola "nessun server": è spento per default e ascolta solo su 127.0.0.1, salvo scelta esplicita dell'utente. Gli unici altri listener ammessi sono il login OAuth (P7.2), su loopback e solo per la durata del login, e l'"Accesso dal browser" (P1.8), spento per default. Nessun altro. Niente modifiche a `.github/workflows` oltre a quanto chiesto in P1.1 e P1.10.
 - Non cambiare `packId` (`AllSkyBrain`), il nome dell'exe (`AllSkyBrain.exe`) né la cartella dati: romperebbero l'aggiornamento automatico. Il nome visibile è "All Sky Brain".
 - Non toccare l'installazione esistente di All Sky Brain né `%LOCALAPPDATA%\AllSky`. Prove sempre con `--data-folder` in una cartella temporanea, dopo P0.2.
-- Non usare la camera reale per più di uno smoke test breve, e solo se non sta già catturando. I test si fanno con la camera Sim.
+- Usa solo la camera Sim (o gli OmniSim). Non collegarti a camere reali.
 - Non scaricare cataloghi satellitari in blocco e non violare la usage policy di CelesTrak. Non chiamare API esterne nei test: usa handler finti.
 - Non inserire credenziali, token, client secret o dati personali nel codice, nei test o nei log.
 - Non inventare fatti, numeri NORAD, limiti di API o unità: verifica o marca [NV].
