@@ -40,6 +40,12 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
     public UpdateService Updates => _updates;
 
     /// <summary>
+    /// Servizio applicativo del motore (stato, frame, configurazione, notti), usato in-process dall'app desktop per la finestra.
+    /// Resta valido fino all'arresto dell'Host; dopo <see cref="StopAsync"/> non si devono più chiamarne i membri.
+    /// </summary>
+    public IAllSkyService Service => _engine;
+
+    /// <summary>
     /// Attende l'arresto dell'Host. Se <paramref name="cancellationToken"/> viene annullato, l'Host si arresta
     /// in modo pulito (equivale a <see cref="StopAsync"/>) e il metodo termina.
     /// </summary>

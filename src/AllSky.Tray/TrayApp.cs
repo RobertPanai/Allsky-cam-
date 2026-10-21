@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using AllSky.Core;
 using AllSky.Host;
 using AllSky.Updates;
 using Microsoft.Win32;

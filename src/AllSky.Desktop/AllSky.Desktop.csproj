@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- WinForms serve solo per l'icona nell'area di notifica (NotifyIcon). -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AllSky.Desktop</RootNamespace>
+    <AssemblyName>AllSkyBrain</AssemblyName>
+    <Product>All Sky Brain</Product>
+    <AssemblyTitle>All Sky Brain</AssemblyTitle>
+    <!-- Nessun App.xaml: l'entry point è Program.Main e l'applicazione è la classe App scritta in C#. -->
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+    <!-- Nessun .ico nel repository: senza ApplicationIcon l'exe usa l'icona predefinita di Windows. -->
+  </PropertyGroup>
+
+  <!--
+    Il SDK WPF/WinForms aggiunge namespace impliciti che collidono con i nomi usati qui (Path, Application, MessageBox...).
+    Si rimuovono quelli non necessari; WinForms è importato con un alias solo nel file del tray (TrayIcon.cs).
+  -->
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+    <Using Remove="System.Windows.Shapes" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AllSky.Host\AllSky.Host.csproj" />
+    <ProjectReference Include="..\AllSky.Updates\AllSky.Updates.csproj" />
+  </ItemGroup>
+
+  <!--
+    Aggiornamento automatico (Velopack, licenza MIT). Stessa versione del Tray (1.2.161), stesso pacchetto vpk nei workflow.
+    Il backend Velopack è in AllSky.Tray/Updates/VelopackBackend.cs e viene riusato qui tramite Compile Include, senza copie.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Velopack" Version="1.2.161" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\AllSky.Tray\Updates\VelopackBackend.cs" Link="Shared\VelopackBackend.cs" />
+  </ItemGroup>
+
+  <!--
+    Cartella web accanto all'eseguibile. Stesso blocco del Tray: la UI web resta disponibile dall'host
+    (apri pannello nel browser), finché non viene rimossa.
+  -->
+  <ItemGroup>
+    <None Include="..\..\web\**"
+          Exclude="..\..\web\mock\**;..\..\web\_dev\**;..\..\web\_shots\**"
+          LinkBase="web"
+          CopyToOutputDirectory="PreserveNewest"
+          CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

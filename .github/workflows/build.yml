@@ -30,7 +30,7 @@ jobs:
           if-no-files-found: warn
       - name: Publish (self-contained, win-x64, cartella)
         run: >
-          dotnet publish src/AllSky.Tray/AllSky.Tray.csproj -c Release -r win-x64
+          dotnet publish src/AllSky.Desktop/AllSky.Desktop.csproj -c Release -r win-x64
           --self-contained true -p:PublishSingleFile=false
           -o publish/AllSkyBrain
       - name: Zip e checksum

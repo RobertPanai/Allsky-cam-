@@ -7,7 +7,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>AllSky.Tray</RootNamespace>
-    <AssemblyName>AllSkyBrain</AssemblyName>
+    <!-- Non più l'exe pubblicato (lo è AllSky.Desktop, AssemblyName AllSkyBrain). Nome diverso per non avere due AllSkyBrain.exe. -->
+    <AssemblyName>AllSkyBrain.TrayLegacy</AssemblyName>
     <Product>All Sky Brain</Product>
     <AssemblyTitle>All Sky Brain</AssemblyTitle>
   </PropertyGroup>
