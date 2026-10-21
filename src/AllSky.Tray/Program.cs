@@ -41,7 +41,7 @@ internal static class Program
     /// <summary>Impedisce di mostrare più finestre di crash se un'eccezione ne genera altre.</summary>
     private static int _inCrashReport;
 
-    /// <summary>Avvia AllSky. Restituisce 0 in uscita normale, 1 se l'host non parte.</summary>
+    /// <summary>Avvia AllSky Brain. Restituisce 0 in uscita normale, 1 se l'host non parte.</summary>
     [STAThread]
     private static int Main()
     {
@@ -52,11 +52,13 @@ internal static class Program
         using var mutex = new Mutex(initiallyOwned: false, SingleInstanceMutexName, out bool createdNew);
         if (!createdNew)
         {
-            MessageBox.Show("AllSky è già in esecuzione (icona nella barra in basso).", "AllSky",
+            MessageBox.Show("AllSky Brain è già in esecuzione (icona nella barra in basso).", "AllSky Brain",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return 0;
         }
 
+        // cartella dati "AllSky" (non "AllSkyBrain"): il nome del prodotto è cambiato, ma il percorso resta
+        // quello delle installazioni precedenti, così config.json, log e dati non vanno migrati.
         string dataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AllSky");
         var paths = new AppPaths(
             DataFolder: dataFolder,
@@ -98,7 +100,7 @@ internal static class Program
         catch (Exception ex)
         {
             AppLog.Append(paths.StartupLog, ex.ToString());
-            MessageBox.Show(BuildStartupMessage(port, paths.StartupLog, ex), "AllSky",
+            MessageBox.Show(BuildStartupMessage(port, paths.StartupLog, ex), "AllSky Brain",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             return 1;
         }
@@ -110,7 +112,7 @@ internal static class Program
     /// <summary>Testo dell'errore mostrato quando l'host non parte. La causa più comune è la porta occupata.</summary>
     private static string BuildStartupMessage(int port, string logPath, Exception ex)
     {
-        return $"Impossibile avviare AllSky: la porta {port} potrebbe essere occupata. " +
+        return $"Impossibile avviare AllSky Brain: la porta {port} potrebbe essere occupata. " +
                "Chiudi l'altro programma o cambia la porta in Impostazioni.\n\n" +
                $"Dettagli: {ex.Message}\n\nRegistro: {logPath}";
     }
@@ -173,8 +175,8 @@ internal static class Program
 
         AppLog.Append(paths.CrashLog, ex.ToString());
         MessageBox.Show(
-            $"AllSky ha riscontrato un errore imprevisto e potrebbe chiudersi.\n\nDettagli: {ex.Message}\n\nRegistro: {paths.CrashLog}",
-            "AllSky", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            $"AllSky Brain ha riscontrato un errore imprevisto e potrebbe chiudersi.\n\nDettagli: {ex.Message}\n\nRegistro: {paths.CrashLog}",
+            "AllSky Brain", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 }
 

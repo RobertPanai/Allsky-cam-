@@ -32,20 +32,20 @@ jobs:
         run: >
           dotnet publish src/AllSky.Tray/AllSky.Tray.csproj -c Release -r win-x64
           --self-contained true -p:PublishSingleFile=false
-          -o publish/AllSky
+          -o publish/AllSkyBrain
       - name: Zip e checksum
         shell: pwsh
         run: |
-          Compress-Archive -Path publish/AllSky/* -DestinationPath AllSky-win-x64.zip
-          $h = (Get-FileHash AllSky-win-x64.zip -Algorithm SHA256).Hash.ToLower()
-          "$h  AllSky-win-x64.zip" | Out-File -Encoding ascii AllSky-win-x64.zip.sha256
+          Compress-Archive -Path publish/AllSkyBrain/* -DestinationPath AllSkyBrain-win-x64.zip
+          $h = (Get-FileHash AllSkyBrain-win-x64.zip -Algorithm SHA256).Hash.ToLower()
+          "$h  AllSkyBrain-win-x64.zip" | Out-File -Encoding ascii AllSkyBrain-win-x64.zip.sha256
           Write-Host "SHA256 $h"
       - uses: actions/upload-artifact@v4
         with:
-          name: AllSky-win-x64
+          name: AllSkyBrain-win-x64
           path: |
-            AllSky-win-x64.zip
-            AllSky-win-x64.zip.sha256
+            AllSkyBrain-win-x64.zip
+            AllSkyBrain-win-x64.zip.sha256
 
   release:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
@@ -56,17 +56,17 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: AllSky-win-x64
+          name: AllSkyBrain-win-x64
       - name: Aggiorna la Release "latest" con lo zip e il checksum
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          NOTE="Ultima build di AllSky per Windows 10/11 x64 (generata da main ad ogni push). Non firmata: Windows e Chrome possono mostrare un avviso. Verifica il file con il SHA-256 nel file .sha256. Estrai lo zip e avvia AllSky.exe."
+          NOTE="Ultima build di AllSky Brain per Windows 10/11 x64 (generata da main ad ogni push). Non firmata: Windows e Chrome possono mostrare un avviso. Verifica il file con il SHA-256 nel file .sha256. Estrai lo zip e avvia AllSkyBrain.exe."
           if gh release view latest >/dev/null 2>&1; then
-            gh release upload latest AllSky-win-x64.zip AllSky-win-x64.zip.sha256 --clobber
+            gh release upload latest AllSkyBrain-win-x64.zip AllSkyBrain-win-x64.zip.sha256 --clobber
             gh release edit latest --notes "$NOTE"
           else
-            gh release create latest AllSky-win-x64.zip AllSky-win-x64.zip.sha256 \
-              --prerelease --title "AllSky - ultima build" --notes "$NOTE"
+            gh release create latest AllSkyBrain-win-x64.zip AllSkyBrain-win-x64.zip.sha256 \
+              --prerelease --title "AllSky Brain - ultima build" --notes "$NOTE"
           fi

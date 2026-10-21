@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "All-sky",
+    "title": "AllSky Brain",
     "loading": "Carico…",
     "offline": "Il motore non risponde. Riprovo da solo ogni pochi secondi.",
     "retry": "Riprova"

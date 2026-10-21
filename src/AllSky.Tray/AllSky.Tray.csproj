@@ -7,7 +7,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>AllSky.Tray</RootNamespace>
-    <AssemblyName>AllSky</AssemblyName>
+    <AssemblyName>AllSkyBrain</AssemblyName>
+    <Product>AllSky Brain</Product>
+    <AssemblyTitle>AllSky Brain</AssemblyTitle>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,7 +28,7 @@
 
   <!--
     Cartella web accanto all'eseguibile. CopyToPublishDirectory copia nel publish (anche single-file,
-    dove AppContext.BaseDirectory è la cartella dell'exe, quindi web\ resta accanto ad AllSky.exe).
+    dove AppContext.BaseDirectory è la cartella dell'exe, quindi web\ resta accanto ad AllSkyBrain.exe).
     CopyToOutputDirectory serve a far funzionare anche dotnet run / build locale.
     Nessun EmbeddedResource: i file restano leggibili dal disco, come si aspetta il server web.
   -->

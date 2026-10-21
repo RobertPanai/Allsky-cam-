@@ -39,7 +39,7 @@ jobs:
         run: >
           dotnet publish src/AllSky.Tray/AllSky.Tray.csproj -c Release -r win-x64
           --self-contained true -p:PublishSingleFile=false -p:Version=${{ steps.ver.outputs.version }}
-          -o publish/AllSky
+          -o publish/AllSkyBrain
 
       # vpk con la stessa versione del pacchetto Velopack in AllSky.Tray.csproj (1.2.161).
       - name: Installa vpk
@@ -51,5 +51,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           vpk download github --repoUrl "https://github.com/${{ github.repository }}" --token $env:GH_TOKEN
-          vpk pack --packId AllSky --packVersion ${{ steps.ver.outputs.version }} --packDir publish/AllSky --mainExe AllSky.exe --packTitle AllSky
-          vpk upload github --repoUrl "https://github.com/${{ github.repository }}" --token $env:GH_TOKEN --publish --releaseName "AllSky ${{ steps.ver.outputs.version }}" --tag "${{ steps.ver.outputs.tag }}"
+          vpk pack --packId AllSkyBrain --packVersion ${{ steps.ver.outputs.version }} --packDir publish/AllSkyBrain --mainExe AllSkyBrain.exe --packTitle "AllSky Brain"
+          vpk upload github --repoUrl "https://github.com/${{ github.repository }}" --token $env:GH_TOKEN --publish --releaseName "AllSky Brain ${{ steps.ver.outputs.version }}" --tag "${{ steps.ver.outputs.tag }}"

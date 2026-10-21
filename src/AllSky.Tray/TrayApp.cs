@@ -13,7 +13,7 @@ namespace AllSky.Tray;
 /// </summary>
 /// <remarks>
 /// Scelta: "Avvia con Windows" registra <c>Environment.ProcessPath</c>. Se l'app è lanciata con
-/// <c>dotnet AllSky.dll</c> quel percorso è dotnet.exe, quindi la voce è utile solo per l'exe pubblicato.
+/// <c>dotnet AllSkyBrain.dll</c> quel percorso è dotnet.exe, quindi la voce è utile solo per l'exe pubblicato.
 /// Le etichette della lingua sono fissate all'avvio: un cambio di lingua in config.json richiede un riavvio.
 /// </remarks>
 public sealed class TrayContext : ApplicationContext
@@ -22,7 +22,10 @@ public sealed class TrayContext : ApplicationContext
     private const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
 
     /// <summary>Nome del valore di avvio automatico.</summary>
-    private const string RunValueName = "AllSky";
+    private const string RunValueName = "AllSkyBrain";
+
+    /// <summary>Nome del valore di avvio automatico usato prima del cambio di nome in "AllSky Brain". Va rimosso se presente.</summary>
+    private const string LegacyRunValueName = "AllSky";
 
     /// <summary>Tempo massimo concesso all'arresto dell'host prima di uscire comunque.</summary>
     private static readonly TimeSpan StopTimeout = TimeSpan.FromSeconds(10);
@@ -76,7 +79,7 @@ public sealed class TrayContext : ApplicationContext
         _notifyIcon = new NotifyIcon
         {
             Icon = SystemIcons.Application,
-            Text = "AllSky",
+            Text = "AllSky Brain",
             ContextMenuStrip = _menu,
             Visible = true,
         };
@@ -100,7 +103,7 @@ public sealed class TrayContext : ApplicationContext
         }
         catch (Exception)
         {
-            MessageBox.Show(string.Format(_texts.BrowserError, _runtime.Url), "AllSky",
+            MessageBox.Show(string.Format(_texts.BrowserError, _runtime.Url), "AllSky Brain",
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
@@ -129,6 +132,9 @@ public sealed class TrayContext : ApplicationContext
             using RegistryKey key = Registry.CurrentUser.OpenSubKey(RunKeyPath, writable: true)
                 ?? throw new InvalidOperationException("La chiave di avvio di Windows non è accessibile.");
 
+            // Voce creata dalle versioni col vecchio nome: la rimuoviamo, così non resta un doppio avvio.
+            key.DeleteValue(LegacyRunValueName, throwOnMissingValue: false);
+
             if (enable)
             {
                 string exePath = Environment.ProcessPath
@@ -143,7 +149,7 @@ public sealed class TrayContext : ApplicationContext
         catch (Exception ex)
         {
             _autostartItem.Checked = IsAutostartEnabled();
-            MessageBox.Show(string.Format(_texts.AutostartError, ex.Message), "AllSky",
+            MessageBox.Show(string.Format(_texts.AutostartError, ex.Message), "AllSky Brain",
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
@@ -230,7 +236,7 @@ public sealed class TrayContext : ApplicationContext
         status.ErrorCode == UpdateErrorCodes.Network ? _texts.UpdateNetworkError : _texts.UpdateGenericError;
 
     private static void ShowMessage(string text, MessageBoxIcon icon) =>
-        MessageBox.Show(text, "AllSky", MessageBoxButtons.OK, icon);
+        MessageBox.Show(text, "AllSky Brain", MessageBoxButtons.OK, icon);
 
     /// <summary>
     /// Finestra con due pulsanti dal testo scelto: MessageBox non permette etichette personalizzate.
@@ -242,7 +248,7 @@ public sealed class TrayContext : ApplicationContext
         var cancel = new TaskDialogButton(cancelText);
         var page = new TaskDialogPage
         {
-            Caption = "AllSky",
+            Caption = "AllSky Brain",
             Text = text,
             Buttons = { confirm, cancel },
         };
@@ -314,7 +320,7 @@ public sealed class TrayContext : ApplicationContext
     /// <param name="BrowserError">Messaggio con l'indirizzo da aprire a mano; {0} è l'URL.</param>
     /// <param name="AutostartError">Messaggio di errore sull'avvio automatico; {0} è il dettaglio.</param>
     /// <param name="CheckForUpdates">Voce "Controlla aggiornamenti".</param>
-    /// <param name="UpdateUpToDate">Messaggio "AllSky è aggiornato"; {0} è la versione installata.</param>
+    /// <param name="UpdateUpToDate">Messaggio "AllSky Brain è aggiornato"; {0} è la versione installata.</param>
     /// <param name="UpdateAvailable">Domanda con la versione disponibile; {0} è la versione.</param>
     /// <param name="UpdateReady">Domanda di riavvio dopo il download; {0} è la versione.</param>
     /// <param name="UpdateDisabled">Messaggio per le installazioni non aggiornabili.</param>
@@ -348,9 +354,9 @@ public sealed class TrayContext : ApplicationContext
             BrowserError: "Impossibile aprire il browser. Apri questo indirizzo a mano: {0}",
             AutostartError: "Impossibile modificare l'avvio automatico con Windows.\n\n{0}",
             CheckForUpdates: "Controlla aggiornamenti",
-            UpdateUpToDate: "AllSky è aggiornato (versione {0}).",
-            UpdateAvailable: "È disponibile la versione {0} di AllSky. Scaricarla ora?",
-            UpdateReady: "La versione {0} è pronta. Riavviare AllSky per installarla?",
+            UpdateUpToDate: "AllSky Brain è aggiornato (versione {0}).",
+            UpdateAvailable: "È disponibile la versione {0} di AllSky Brain. Scaricarla ora?",
+            UpdateReady: "La versione {0} è pronta. Riavviare AllSky Brain per installarla?",
             UpdateDisabled: "Gli aggiornamenti automatici non sono disponibili in questa installazione.",
             UpdateNetworkError: "Impossibile contattare il server degli aggiornamenti. Controllare la connessione e riprovare.",
             UpdateGenericError: "Aggiornamento non riuscito. Riprovare più tardi.",
@@ -366,9 +372,9 @@ public sealed class TrayContext : ApplicationContext
             BrowserError: "Could not open the browser. Open this address manually: {0}",
             AutostartError: "Could not change the start-with-Windows setting.\n\n{0}",
             CheckForUpdates: "Check for updates",
-            UpdateUpToDate: "AllSky is up to date (version {0}).",
-            UpdateAvailable: "Version {0} of AllSky is available. Download it now?",
-            UpdateReady: "Version {0} is ready. Restart AllSky to install it?",
+            UpdateUpToDate: "AllSky Brain is up to date (version {0}).",
+            UpdateAvailable: "Version {0} of AllSky Brain is available. Download it now?",
+            UpdateReady: "Version {0} is ready. Restart AllSky Brain to install it?",
             UpdateDisabled: "Automatic updates are not available in this installation.",
             UpdateNetworkError: "Could not reach the update server. Check your connection and try again.",
             UpdateGenericError: "Update failed. Try again later.",
