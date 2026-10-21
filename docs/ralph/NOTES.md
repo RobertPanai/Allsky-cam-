@@ -37,3 +37,17 @@ Una voce per iterazione, la più recente in fondo. Formato:
   - `--data-folder` seguito da un valore che inizia con `--` viene preso come valore.
   - L'HttpClient di `CelesTrakTleSource` va creato con `AllowAutoRedirect = false`.
 - Prossimi: P0.3, P1.x (desktop), P3.2, P4.2 (SGP4: SGP.NET non scaricabile qui), P5.1, P6.1.
+
+## 2026-10-22 00:20 — P0.3, P5.1, P6.1, P6.2
+- Fatto:
+  - P0.3: nome "All Sky Brain" nei testi visibili; invarianti rispettati; CI Windows del branch verde (run 39680009587).
+  - P5.1: `AllSky.Detection`, rilevatore di scie. Dati sintetici: richiamo 420/420 su 6 seed (SNR 5-10, lunghezza 40-200 px), 0 falsi positivi su 500 frame puri, ~4.6 ms/frame a 960x720.
+  - P6.1: `AllSky.Weather` con sorgente ASCOM ObservingConditions (unità verificate sulle pagine ufficiali ASCOM, 21/10/2026: °C, %, hPa, mm/h, m/s, gradi, mag/arcsec²).
+  - P6.2: sorgente Open-Meteo opt-in, 15 min di cache, backoff, attribuzione CC BY 4.0 e avviso "solo uso non commerciale".
+- Test: runner shim sull'intera solution.
+- Non verificato:
+  - Dati sintetici idealizzati: nessuna immagine reale. Le soglie del rilevatore vanno tarate sul cielo vero.
+  - Open-Meteo: le stringhe di `current_units` non sono confermate con una risposta reale; la sorgente scarta i valori con unità diversa dall'attesa.
+  - Elenco dei driver ObservingConditions dal registro ASCOM: lasciato come TODO (chiave non verificata).
+  - SkyBrightness e StarFWHM non letti (nessun campo nel record).
+- Decisioni: pressione da `surface_pressure` (non `pressure_msl`).
