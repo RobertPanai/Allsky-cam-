@@ -60,6 +60,7 @@ jobs:
       - name: Aggiorna la Release "latest" con lo zip e il checksum
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           NOTE="Ultima build di AllSky per Windows 10/11 x64 (generata da main ad ogni push). Non firmata: Windows e Chrome possono mostrare un avviso. Verifica il file con il SHA-256 nel file .sha256. Estrai lo zip e avvia AllSky.exe."
           if gh release view latest >/dev/null 2>&1; then
@@ -67,5 +68,5 @@ jobs:
             gh release edit latest --notes "$NOTE"
           else
             gh release create latest AllSky-win-x64.zip AllSky-win-x64.zip.sha256 \
-              --target "$GITHUB_SHA" --prerelease --title "AllSky - ultima build" --notes "$NOTE"
+              --prerelease --title "AllSky - ultima build" --notes "$NOTE"
           fi
