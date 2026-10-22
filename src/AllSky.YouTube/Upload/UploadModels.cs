@@ -31,7 +31,7 @@ public static class YouTubePrivacyApi
 
 /// <summary>
 /// Impostazioni del caricamento automatico. <see cref="CategoryId"/> e' un valore configurabile: l'ID categoria
-/// non e' verificato nella documentazione ufficiale (vedi docs/ralph/NOTES-P7.3.md), quindi l'utente puo' cambiarlo.
+/// non e' verificato nella documentazione ufficiale letta il 2026-10-22, quindi l'utente puo' cambiarlo.
 /// </summary>
 /// <param name="DailyTime">Ora locale del caricamento giornaliero.</param>
 /// <param name="CatchUpWindow">Se il PC era spento all'ora prevista, il caricamento parte all'avvio successivo solo entro questa finestra.</param>

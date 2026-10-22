@@ -7,7 +7,7 @@ using System.Text.Json;
 namespace AllSky.YouTube;
 
 /// <summary>
-/// Client del protocollo di upload resumable di YouTube Data API v3 (vedi docs/ralph/NOTES-P7.3.md, fonte e data).
+/// Client del protocollo di upload resumable di YouTube Data API v3 (fonte: guida ufficiale "Resumable upload", letta il 2026-10-22).
 /// Passi: POST di inizializzazione con uploadType=resumable (la URI di sessione arriva nell'header Location),
 /// PUT dei chunk con Content-Range "bytes first-last/total", PUT vuoto con "bytes */total" per sapere da dove riprendere.
 /// Risposte: 308 = caricamento incompleto (Range indica i byte ricevuti), 200/201 = completato, altro = errore.
