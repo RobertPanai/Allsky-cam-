@@ -122,8 +122,40 @@ public sealed class ConfigStore
         ValidateDetection(config.Detection, errors);
         ValidateWeather(config.Weather ?? new(), errors);
         ValidateNina(config.Nina ?? new(), errors);
+        ValidateMonitor(config.Monitor ?? new(), errors);
 
         return errors;
+    }
+
+    /// <summary>
+    /// Avviso che non blocca il salvataggio: <c>monitor.enabled</c> vero senza alcuna voce attiva. Il monitoraggio
+    /// non pubblicherebbe nulla. Non restituisce errori. Il chiamante lo scrive nel log.
+    /// </summary>
+    public IReadOnlyList<ValidationError> ValidateMonitorWarnings(AppConfig config)
+    {
+        ArgumentNullException.ThrowIfNull(config);
+
+        AppConfig.MonitorConfig monitor = config.Monitor ?? new();
+        var warnings = new List<ValidationError>();
+        if (monitor.Enabled && !(monitor.Voices ?? new()).AnyEnabled())
+        {
+            warnings.Add(new ValidationError("monitor.voices", "Il monitoraggio è acceso ma nessuna voce è attiva: non verrà pubblicato nulla."));
+        }
+
+        return warnings;
+    }
+
+    /// <summary>
+    /// Vincoli della sezione <c>monitor</c>. Solo la versione è un errore: senza voci attive il caso è un avviso
+    /// (vedi <see cref="ValidateMonitorWarnings"/>), come per le altre sezioni con interruttore.
+    /// </summary>
+    private static void ValidateMonitor(AppConfig.MonitorConfig monitor, List<ValidationError> errors)
+    {
+        const string root = "monitor";
+        if (monitor.Version < 1 || monitor.Version > AppConfig.MonitorConfig.CurrentVersion)
+        {
+            errors.Add(new ValidationError(root + ".version", "Versione della sezione monitoraggio non supportata."));
+        }
     }
 
     /// <summary>

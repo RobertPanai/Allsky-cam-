@@ -96,6 +96,14 @@ public sealed record AppConfig
     /// </summary>
     public NinaConfig Nina { get; init; } = new();
 
+    /// <summary>
+    /// Pubblicazione del monitoraggio (sezione <c>monitor</c>, P12.1). Spenta di default: con <c>enabled</c> falso
+    /// non viene costruito alcun payload. Ogni dato ha la sua voce, tutte spente di default. La posizione
+    /// dell'osservatorio non può essere pubblicata: non esiste né una voce né un'opzione per essa.
+    /// Le configurazioni precedenti non hanno la sezione e leggono i valori predefiniti.
+    /// </summary>
+    public MonitorConfig Monitor { get; init; } = new();
+
     public sealed record SiteConfig
     {
         public string Name { get; init; } = "Osservatorio";
@@ -378,6 +386,65 @@ public sealed record AppConfig
         /// Correzione manuale dell'orologio tra il PC di NINA e All Sky Brain, in secondi, da -600 a 600. Predefinito 0.
         /// </summary>
         public double ClockOffsetSeconds { get; init; } = 0;
+    }
+
+    /// <summary>
+    /// Sezione <c>monitor</c>: quali dati il monitoraggio pubblico può inviare (strada A, sola lettura).
+    /// Elenco chiuso: le voci sono quelle della classe <see cref="MonitorVoices"/>, nessun campo libero.
+    /// Nessun segreto e nessuna posizione. Vincoli in <see cref="ConfigStore"/>.
+    /// </summary>
+    public sealed record MonitorConfig
+    {
+        /// <summary>Versione dello schema di questo sotto-oggetto.</summary>
+        public const int CurrentVersion = 1;
+
+        /// <summary>Versione dello schema. Le configurazioni precedenti non la hanno: si legge come 1.</summary>
+        public int Version { get; init; } = CurrentVersion;
+
+        /// <summary>Interruttore generale «Pubblica il monitoraggio». Predefinito: spento.</summary>
+        public bool Enabled { get; init; } = false;
+
+        /// <summary>Voci pubblicabili, una per dato. Tutte spente di default.</summary>
+        public MonitorVoices Voices { get; init; } = new();
+
+        /// <summary>Interruttori delle singole voci del monitoraggio. Ogni proprietà è un dato pubblicabile.</summary>
+        public sealed record MonitorVoices
+        {
+            /// <summary>Ultima immagine all-sky.</summary>
+            public bool AllSkyImage { get; init; } = false;
+
+            /// <summary>Fase della notte (giorno, crepuscolo, notte).</summary>
+            public bool NightPhase { get; init; } = false;
+
+            /// <summary>Altezza del Sole e della Luna.</summary>
+            public bool SunMoonAltitude { get; init; } = false;
+
+            /// <summary>Nome del soggetto in ripresa in NINA.</summary>
+            public bool NinaTarget { get; init; } = false;
+
+            /// <summary>Stato di park del telescopio.</summary>
+            public bool NinaParkState { get; init; } = false;
+
+            /// <summary>Grafico dell'altezza del soggetto nel tempo.</summary>
+            public bool TargetAltitudeChart { get; init; } = false;
+
+            /// <summary>Distanza angolare tra il soggetto e la Luna.</summary>
+            public bool MoonDistance { get; init; } = false;
+
+            /// <summary>Ultimo timelapse (solo nome file).</summary>
+            public bool LatestTimelapse { get; init; } = false;
+
+            /// <summary>Keogram (solo nome file).</summary>
+            public bool Keogram { get; init; } = false;
+
+            /// <summary>Start trails (solo nome file).</summary>
+            public bool StartTrails { get; init; } = false;
+
+            /// <summary>True se almeno una voce è attiva. Metodo, non proprietà: la serializzazione non deve vederlo.</summary>
+            public bool AnyEnabled() =>
+                AllSkyImage || NightPhase || SunMoonAltitude || NinaTarget || NinaParkState
+                || TargetAltitudeChart || MoonDistance || LatestTimelapse || Keogram || StartTrails;
+        }
     }
 
     public sealed record UiConfig
