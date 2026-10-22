@@ -95,7 +95,8 @@ internal sealed class ShellControl : Grid
     /// <summary>Crea la shell con le viste segnaposto e la barra di stato. Va creata sul thread dell'interfaccia.</summary>
     /// <param name="texts">Testi nella lingua scelta.</param>
     /// <param name="theme">Gestore del tema, per la modalità notte rossa.</param>
-    public ShellControl(DesktopTexts texts, ThemeManager theme, AllSky.Engine.IAllSkyService? service = null)
+    public ShellControl(DesktopTexts texts, ThemeManager theme, AllSky.Engine.IAllSkyService? service = null,
+        AllSky.Host.AllSkyHostRuntime? runtime = null, AllSky.Core.AppPaths? paths = null)
     {
         ArgumentNullException.ThrowIfNull(texts);
         ArgumentNullException.ThrowIfNull(theme);
@@ -148,11 +149,8 @@ internal sealed class ShellControl : Grid
 
         foreach (ShellView view in ShellNavigation.SidebarOrder)
         {
-            _views[view] = service is not null && view == ShellView.Live
-                ? new AllSky.Desktop.Views.Live.LiveView(service, texts)
-                : service is not null && view == ShellView.Camera
-                    ? new AllSky.Desktop.Views.Camera.CameraView(service, texts)
-                    : new PlaceholderView(texts.ViewName(view), texts.EmptyText(view));
+            _views[view] = CreateView(view, texts, theme, service, runtime, paths)
+                ?? new PlaceholderView(texts.ViewName(view), texts.EmptyText(view));
         }
 
         var centre = new Grid();
@@ -350,4 +348,18 @@ internal sealed class ShellControl : Grid
         LastFrameTimestamp: status.LastFrame?.Timestamp,
         DiskFreeGb: status.Disk?.FreeGb,
         Publication: PublicationStatus.Unknown);
+
+    private static UIElement? CreateView(ShellView view, DesktopTexts texts, ThemeManager theme,
+        AllSky.Engine.IAllSkyService? service, AllSky.Host.AllSkyHostRuntime? runtime, AllSky.Core.AppPaths? paths)
+    {
+        return view switch
+        {
+            ShellView.Live when service is not null => new AllSky.Desktop.Views.Live.LiveView(service, texts),
+            ShellView.Camera when service is not null => new AllSky.Desktop.Views.Camera.CameraView(service, texts),
+            ShellView.Nights when service is not null => new AllSky.Desktop.Views.Nights.NightsView(service, texts),
+            ShellView.Settings when runtime is not null && paths is not null => new AllSky.Desktop.Views.Settings.SettingsView(runtime, paths, texts, theme),
+            ShellView.Log when paths is not null => new AllSky.Desktop.Views.Log.LogView(paths, texts),
+            _ => null,
+        };
+    }
 }

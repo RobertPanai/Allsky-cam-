@@ -41,9 +41,13 @@ Il contratto è la sola dipendenza fra la UI e il motore: la UI si sviluppa cont
   "capture": { "intervalSeconds": 30, "dayCapture": true },
   "products": { "timelapse": true, "keogram": true, "startrails": true, "timelapseFps": 25 },
   "storage": { "folder": "C:\\Users\\...\\AllSky", "keepNights": 30 },
-  "ui": { "theme": "auto | day | night | red", "port": 5810, "allowLan": false }
+  "ui": { "theme": "auto | day | night | red", "port": 5810, "allowLan": false, "webEnabled": false, "lanPasswordHash": null }
 }
 ```
+
+`ui.webEnabled` (predefinito `false`) avvia il server per il browser: con `false` l'host non apre alcuna porta HTTP.
+`ui.allowLan` ha effetto solo con `webEnabled` attivo e con `lanPasswordHash` impostato (hash PBKDF2, mai la password in chiaro);
+le richieste dalla rete locale usano HTTP Basic. Modifiche a questi valori si applicano al riavvio.
 
 ## Notti e prodotti (timelapse, keogram, startrails)
 Una "notte" va da mezzogiorno locale a mezzogiorno locale; id = data di inizio `YYYY-MM-DD`.

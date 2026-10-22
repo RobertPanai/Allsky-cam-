@@ -27,7 +27,7 @@ internal sealed class MainWindow : System.Windows.Window
     /// <summary>Crea la finestra e legge subito lo stato corrente. Va creata sul thread dell'interfaccia.</summary>
     /// <param name="service">Servizio applicativo dell'host, in-process.</param>
     /// <param name="texts">Testi nella lingua scelta.</param>
-    public MainWindow(IAllSkyService service, DesktopTexts texts)
+    public MainWindow(IAllSkyService service, DesktopTexts texts, AllSky.Host.AllSkyHostRuntime? runtime = null, AllSky.Core.AppPaths? paths = null)
     {
         ArgumentNullException.ThrowIfNull(service);
         ArgumentNullException.ThrowIfNull(texts);
@@ -44,7 +44,7 @@ internal sealed class MainWindow : System.Windows.Window
 
         // La finestra ospita la shell (barra laterale, viste, barra di stato). Il tema è quello dell'applicazione.
         ThemeManager theme = ((App)System.Windows.Application.Current).Theme;
-        _shell = new ShellControl(texts, theme, service);
+        _shell = new ShellControl(texts, theme, service, runtime, paths);
         Content = _shell;
         PreviewKeyDown += OnPreviewKeyDown;
 

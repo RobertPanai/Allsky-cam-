@@ -71,7 +71,7 @@ public sealed class App : System.Windows.Application
         });
         ApplySavedTheme();
 
-        _window = new MainWindow(_runtime.Service, _texts);
+        _window = new MainWindow(_runtime.Service, _texts, _runtime, _paths);
         _tray = new TrayIcon(_runtime, _paths, _texts, ShowMainWindow, ExitApplication);
 
         if (_showGallery)
