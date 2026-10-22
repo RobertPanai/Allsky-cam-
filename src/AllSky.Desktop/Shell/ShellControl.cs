@@ -95,7 +95,7 @@ internal sealed class ShellControl : Grid
     /// <summary>Crea la shell con le viste segnaposto e la barra di stato. Va creata sul thread dell'interfaccia.</summary>
     /// <param name="texts">Testi nella lingua scelta.</param>
     /// <param name="theme">Gestore del tema, per la modalità notte rossa.</param>
-    public ShellControl(DesktopTexts texts, ThemeManager theme)
+    public ShellControl(DesktopTexts texts, ThemeManager theme, AllSky.Engine.IAllSkyService? service = null)
     {
         ArgumentNullException.ThrowIfNull(texts);
         ArgumentNullException.ThrowIfNull(theme);
@@ -148,7 +148,11 @@ internal sealed class ShellControl : Grid
 
         foreach (ShellView view in ShellNavigation.SidebarOrder)
         {
-            _views[view] = new PlaceholderView(texts.ViewName(view), texts.EmptyText(view));
+            _views[view] = service is not null && view == ShellView.Live
+                ? new AllSky.Desktop.Views.Live.LiveView(service, texts)
+                : service is not null && view == ShellView.Camera
+                    ? new AllSky.Desktop.Views.Camera.CameraView(service, texts)
+                    : new PlaceholderView(texts.ViewName(view), texts.EmptyText(view));
         }
 
         var centre = new Grid();

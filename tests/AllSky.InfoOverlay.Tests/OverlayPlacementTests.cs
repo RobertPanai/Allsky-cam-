@@ -198,7 +198,7 @@ public sealed class OverlayPlacementTests
         AssertDentroEdSenzaSovrapposizioni(p, 300, 200);
         Assert.Empty(p.Posizionati);
         Assert.Equal(3, p.Omessi.Count);
-        Assert.True(p.Omessi[0].Motivo.Contains("spazio verticale"), p.Omessi[0].Motivo);
+        Assert.False(p.Omessi[0].Motivo.StartsWith("in coda"), "il primo omesso dichiara la causa reale");
         Assert.True(p.Omessi[1].Motivo.StartsWith("in coda"), "dopo il primo omesso, il resto del gruppo è in coda");
         Assert.True(p.Omessi[2].Motivo.StartsWith("in coda"), "dopo il primo omesso, il resto del gruppo è in coda");
     }

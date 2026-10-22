@@ -44,7 +44,7 @@ internal sealed class MainWindow : System.Windows.Window
 
         // La finestra ospita la shell (barra laterale, viste, barra di stato). Il tema è quello dell'applicazione.
         ThemeManager theme = ((App)System.Windows.Application.Current).Theme;
-        _shell = new ShellControl(texts, theme);
+        _shell = new ShellControl(texts, theme, service);
         Content = _shell;
         PreviewKeyDown += OnPreviewKeyDown;
 
