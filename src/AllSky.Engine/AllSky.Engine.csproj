@@ -19,6 +19,8 @@
     <ProjectReference Include="..\AllSky.Sky\AllSky.Sky.csproj" />
     <ProjectReference Include="..\AllSky.Satellites\AllSky.Satellites.csproj" />
     <ProjectReference Include="..\AllSky.Transits\AllSky.Transits.csproj" />
+    <ProjectReference Include="..\AllSky.Detection\AllSky.Detection.csproj" />
+    <ProjectReference Include="..\AllSky.Events\AllSky.Events.csproj" />
   </ItemGroup>
 
 </Project>

@@ -402,7 +402,10 @@ public sealed record AppConfig
             /// <summary>Scarto angolare massimo tra frame consecutivi, in gradi. Predefinito 8.</summary>
             public double RepeatAngleDeg { get; init; } = 8.0;
 
-            /// <summary>Intervallo massimo, in secondi, tra due frame consecutivi. Predefinito 30.</summary>
+            /// <summary>
+            /// Intervallo massimo, in secondi, tra due frame consecutivi. Predefinito 30. Di fatto non scende sotto
+            /// 2,5 volte l'intervallo di cattura, altrimenti ogni frame sarebbe il primo di una sequenza.
+            /// </summary>
             public double MaxFrameGapSeconds { get; init; } = 30.0;
 
             /// <summary>Picco sopra il fondo oltre il quale la scia e' un bolide. Predefinito 200.</summary>

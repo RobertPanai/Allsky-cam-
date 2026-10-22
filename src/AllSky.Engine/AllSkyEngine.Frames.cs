@@ -102,6 +102,9 @@ public sealed partial class AllSkyEngine
 
         AccumulateFrame(raw, processed);
 
+        // Rilevamento di meteore e transiti (P5.5): solo accodamento, non blocca la cattura.
+        OfferDetection(raw, processed);
+
         DateTimeOffset timestamp = raw.Timestamp.ToUniversalTime();
         string id = FrameIdOf(timestamp);
         // Un valore non finito non va in JSON: la temperatura non valida diventa null.

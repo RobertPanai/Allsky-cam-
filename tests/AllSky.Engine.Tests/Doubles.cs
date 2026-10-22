@@ -2,6 +2,7 @@ using AllSky.Astro;
 using AllSky.Capture;
 using AllSky.Core;
 using AllSky.Engine;
+using AllSky.Satellites;
 using AllSky.Timelapse;
 
 namespace AllSky.Engine.Tests;
@@ -316,19 +317,25 @@ internal sealed class Harness : IDisposable
         IClock clock,
         ICameraProvider cameras,
         ICaptureDelay delay,
-        Func<AppConfig, IFrameOverlay?>? frameOverlayFactory = null)
+        Func<AppConfig, IFrameOverlay?>? frameOverlayFactory = null,
+        Func<AppConfig, IFrameProcessor>? processor = null,
+        Func<string?>? locateFfmpeg = null,
+        ITleFetcher? tle = null,
+        IOrbitPropagatorFactory? propagators = null)
     {
         return new EngineDependencies(
             clock,
             cameras,
-            config => new FakeProcessor(config),
+            processor ?? (config => new FakeProcessor(config)),
             Timelapses,
             delay,
             Encoder,
             ConfigPath,
             Log,
-            () => "/opt/test/ffmpeg",
-            FrameOverlayFactory: frameOverlayFactory);
+            locateFfmpeg ?? (() => "/opt/test/ffmpeg"),
+            FrameOverlayFactory: frameOverlayFactory,
+            TleFetcher: tle,
+            OrbitPropagators: propagators);
     }
 
     public void Log(string message, Exception? ex)

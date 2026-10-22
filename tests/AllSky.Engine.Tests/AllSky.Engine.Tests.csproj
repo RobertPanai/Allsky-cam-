@@ -21,6 +21,12 @@
     <ProjectReference Include="..\..\src\AllSky.Astro\AllSky.Astro.csproj" />
     <ProjectReference Include="..\..\src\AllSky.Archive\AllSky.Archive.csproj" />
     <ProjectReference Include="..\..\src\AllSky.Timelapse\AllSky.Timelapse.csproj" />
+    <ProjectReference Include="..\..\src\AllSky.Detection\AllSky.Detection.csproj" />
+    <ProjectReference Include="..\..\src\AllSky.Events\AllSky.Events.csproj" />
+    <ProjectReference Include="..\..\src\AllSky.Transits\AllSky.Transits.csproj" />
+    <ProjectReference Include="..\..\src\AllSky.Satellites\AllSky.Satellites.csproj" />
+    <ProjectReference Include="..\..\src\AllSky.Sky\AllSky.Sky.csproj" />
+    <ProjectReference Include="..\..\src\AllSky.Capture\AllSky.Capture.csproj" />
   </ItemGroup>
 
 </Project>

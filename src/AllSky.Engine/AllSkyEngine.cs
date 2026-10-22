@@ -218,6 +218,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
             _control.Release();
         }
 
+        await StopDetectionAsync();
         FlushPartialProducts();
         await WaitForBackgroundAsync();
         await StopTimelapseWorkerAsync();
@@ -583,7 +584,8 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
             OnFrameAsync,
             new TickingDelay(_delay, OnTick),
             autoExposure,
-            CaptureLoopOptions.FromConfig(config));
+            CaptureLoopOptions.FromConfig(config),
+            TransitPolicyFor(config));
         loop.OnError += OnLoopError;
 
         var cts = new CancellationTokenSource();

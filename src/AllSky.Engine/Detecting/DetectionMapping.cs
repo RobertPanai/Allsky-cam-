@@ -21,13 +21,17 @@ internal static class DetectionMapping
         MaxChangedFraction = s.MaxChangedFraction,
     };
 
-    public static StreakClassifierOptions ToClassifier(AppConfig.DetectionConfig.StreakSettings s) => new()
+    /// <summary>
+    /// Classificatore. L'intervallo tra frame consecutivi non puo' stare sotto 2,5 volte l'intervallo di cattura:
+    /// altrimenti ogni frame risulterebbe il primo di una nuova sequenza e le ripetizioni non si vedrebbero mai.
+    /// </summary>
+    public static StreakClassifierOptions ToClassifier(AppConfig.DetectionConfig.StreakSettings s, int captureIntervalSeconds) => new()
     {
         TrackDistancePx = s.TrackDistancePx,
         TrackAngleDeg = s.TrackAngleDeg,
         RepeatShiftPx = s.RepeatShiftPx,
         RepeatAngleDeg = s.RepeatAngleDeg,
-        MaxFrameGap = TimeSpan.FromSeconds(s.MaxFrameGapSeconds),
+        MaxFrameGap = TimeSpan.FromSeconds(Math.Max(s.MaxFrameGapSeconds, 2.5 * Math.Max(1, captureIntervalSeconds))),
         BolideSaturatedPeakLuma = s.BolideSaturatedPeakLuma,
         BolideIntegratedLuma = s.BolideIntegratedLuma,
         BolideLengthPx = s.BolideLengthPx,

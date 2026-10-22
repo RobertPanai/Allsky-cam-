@@ -3,6 +3,7 @@ using AllSky.Archive;
 using AllSky.Astro;
 using AllSky.Core;
 using AllSky.Core.Calibration;
+using AllSky.Core.Passes;
 using AllSky.Detection;
 using AllSky.Engine.Forecasting;
 using AllSky.Events;
@@ -164,7 +165,8 @@ internal sealed class DetectionPipeline
         int FullWidth,
         int FullHeight,
         int DetWidth,
-        int DetHeight);
+        int DetHeight,
+        int CaptureIntervalSeconds);
 
     /// <summary>Moduli di una sessione. Costruiti sul worker, usati solo lì.</summary>
     private sealed class Session
@@ -182,8 +184,6 @@ internal sealed class DetectionPipeline
         public required TransitConfirmer Confirmer { get; init; }
 
         public required SkyCalibrationResult? Calibration { get; init; }
-
-        public required EventArchive Events { get; init; }
 
         public required TimeSpan MaxGap { get; init; }
 
@@ -205,7 +205,8 @@ internal sealed class DetectionPipeline
             job.FullWidth,
             job.FullHeight,
             job.DetWidth,
-            job.DetHeight);
+            job.DetHeight,
+            config.Capture.IntervalSeconds);
 
         if (_session is { } current && current.Key == key)
         {
@@ -247,16 +248,14 @@ internal sealed class DetectionPipeline
         var site = new ObserverSite(config.Site.Latitude, config.Site.Longitude, config.Site.ElevationM);
         SkyCalibrationResult? calibration = SkyScaling.ForReducedFrame(config.Optics, job.FullWidth, job.FullHeight, job.DetWidth, job.DetHeight);
 
-        StreakClassifierOptions classifierOptions = DetectionMapping.ToClassifier(detection.Streak);
+        StreakClassifierOptions classifierOptions = DetectionMapping.ToClassifier(detection.Streak, config.Capture.IntervalSeconds);
         IPredictedTrackProvider? tracks = null;
         if (calibration is not null && _forecaster is not null)
         {
             PassForecastSettings settings = _passSettings(config);
-            IReadOnlyList<TrackedSatellite> satellites = settings.Enabled
-                ? _forecaster.TrackedSatellites(settings)
-                : Array.Empty<TrackedSatellite>();
-            tracks = new PredictedTrackProviderAdapter(
-                satellites,
+            tracks = new ForecastTrackProvider(
+                _forecaster,
+                settings,
                 site,
                 calibration,
                 new PredictedTrackOptions { Pass = settings.Options });
@@ -276,7 +275,6 @@ internal sealed class DetectionPipeline
             TransitSaver = new TransitEventSaver(events, _encoder, clip, overlay, DetectionMapping.ToTransitSave(detection)),
             Confirmer = new TransitConfirmer(DetectionMapping.ToConfirmation(detection.Transit)),
             Calibration = calibration,
-            Events = events,
             MaxGap = classifierOptions.MaxFrameGap,
             OverlayOn = overlay is not null,
         };
@@ -339,9 +337,8 @@ internal sealed class DetectionPipeline
         int detW = job.DetWidth;
         int detH = job.DetHeight;
         var frame = new LumaFrame(detW, detH, LumaReduction.Luma(job.ReducedRgb, detW, detH), ts);
-        Func<int, int, bool>? skyMask = session.Calibration is null
-            ? null
-            : (x, y) => session.Calibration.Model.IsInsideSky(x, y);
+        FisheyeModel? model = session.Calibration?.Model;
+        Func<int, int, bool>? skyMask = model is null ? null : (x, y) => model.IsInsideSky(x, y);
         (int X, int Y, int R)[] circles = MoonCircles(session, job.Config, ts);
 
         IReadOnlyList<Streak> streaks = session.Detector.Detect(frame, skyMask, circles);
@@ -445,8 +442,6 @@ internal sealed class DetectionPipeline
 
         public required NightArchive Archive { get; init; }
 
-        public required TimeZoneInfo TimeZone { get; init; }
-
         public List<StagedFrame> Staged { get; } = new();
     }
 
@@ -479,7 +474,6 @@ internal sealed class DetectionPipeline
                     Directory = Path.Combine(StagingRootOf(job.Config), key),
                     NightId = ObservingNight.GetNightId(pass.Item.StartUtc, job.TimeZone),
                     Archive = job.Archive,
-                    TimeZone = job.TimeZone,
                 };
                 _active[key] = active;
             }

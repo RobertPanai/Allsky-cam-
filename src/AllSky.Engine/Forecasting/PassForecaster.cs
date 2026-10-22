@@ -83,6 +83,7 @@ public sealed class PassForecaster
     private string? _fetchedTargetKey;
     private string? _computedKey;
     private Dictionary<int, TleSet> _tles = new();
+    private int _tleVersion;                                           // incrementato a ogni nuovo insieme di TLE
     private TleFetchStatus _tleStatus = TleFetchStatus.FromCache;
     private string? _tleMessage;
 
@@ -176,6 +177,7 @@ public sealed class PassForecaster
             _tles = result.Sets
                 .GroupBy(s => s.NoradId)
                 .ToDictionary(g => g.Key, g => g.First());
+            Interlocked.Increment(ref _tleVersion);
             _tleStatus = result.Status;
             _tleMessage = result.Message;
             recompute = true;
@@ -398,6 +400,9 @@ public sealed class PassForecaster
 
         return paths;
     }
+
+    /// <summary>Versione dell'insieme di TLE in uso: cambia a ogni download riuscito. Letta dal rilevamento per rifare le tracce.</summary>
+    internal int TleVersion => Volatile.Read(ref _tleVersion);
 
     /// <summary>Passaggio calcolato con il suo propagatore, per il rilevamento dei transiti (P5.5). Usare solo tramite <see cref="ProjectWatched"/>.</summary>
     internal sealed record WatchedPass(PassForecastItem Item, SatellitePass Pass, IOrbitPropagator Propagator);
