@@ -75,3 +75,7 @@ Una voce per iterazione, la più recente in fondo. Formato:
   - Soglie del classificatore non tarate su cielo reale.
 - Decisioni: la prima occorrenza di un oggetto che si ripete esce come Meteor, il frame successivo la riclassifica AereoOSatellite (P5.3 la tratta come provvisoria). Adattatore PassFinder → IPredictedTrackProvider rimandato a P4.4 (serve proiezione alt/az→pixel).
 - Warning CI: switch non esaustivo in DesktopTexts.cs (ViewName/EmptyText) con valore enum non coperto → da sistemare.
+
+## 2026-10-22 ~02:00 — Interruzione per limite di sessione
+- Gli agenti P1.4 (a441cf9512d35ee78), P1.5 (a3413d67d9ff43d5e), P2.2 (a9c57de049397a33e) si sono fermati per il limite di sessione (reset 03:50). Lavoro parziale salvato nel commit WIP, NON compilato, NON rivisto.
+- Alla ripresa: riprendere gli agenti con SendMessage (stesso contesto), poi suite shim, CI Windows, registrazione delle viste nella shell.
