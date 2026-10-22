@@ -9,12 +9,13 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using AllSky.Core;
 using AllSky.Core.Publication;
+using AllSky.Core.YouTube;
 
 namespace AllSky.Desktop.Views.Publication;
 
 /// <summary>
 /// Vista "Pubblicazione": impostazioni dell'Uplink (server, dispositivo, intervallo, qualità, token), stato della coda,
-/// prova di connessione e una zona YouTube segnaposto (P7.4).
+/// prova di connessione e il pannello YouTube (caricamento automatico, P7.4).
 /// </summary>
 /// <remarks>
 /// <para>
@@ -36,6 +37,7 @@ public class PublicationView : UserControl
     private static readonly TimeSpan StatusRefreshInterval = TimeSpan.FromSeconds(5);
 
     private readonly IPublishSettingsService _service;
+    private readonly IYouTubeService? _youTube;
     private readonly DesktopTexts _texts;
     private readonly DispatcherTimer _refreshTimer;
 
@@ -89,13 +91,15 @@ public class PublicationView : UserControl
     /// <summary>Crea la vista con i testi nella lingua scelta. Va creata sul thread dell'interfaccia.</summary>
     /// <param name="service">Accesso alla pubblicazione.</param>
     /// <param name="texts">Testi nella lingua scelta.</param>
-    public PublicationView(IPublishSettingsService service, DesktopTexts texts)
+    /// <param name="youTube">Servizio YouTube. Null: la vista non mostra il pannello YouTube.</param>
+    public PublicationView(IPublishSettingsService service, DesktopTexts texts, IYouTubeService? youTube = null)
     {
         ArgumentNullException.ThrowIfNull(service);
         ArgumentNullException.ThrowIfNull(texts);
 
         _service = service;
         _texts = texts;
+        _youTube = youTube;
         _refreshTimer = new DispatcherTimer { Interval = StatusRefreshInterval };
         _refreshTimer.Tick += (_, _) =>
         {
@@ -420,7 +424,10 @@ public class PublicationView : UserControl
         var body = new StackPanel();
         body.Children.Add(header);
         body.Children.Add(columns);
-        body.Children.Add(BuildYouTubePlaceholder());
+        if (_youTube is not null)
+        {
+            body.Children.Add(new YouTubePanel(_youTube, _texts));
+        }
 
         // Lo scorrimento evita tagli sulle finestre basse; la larghezza segue la vista.
         return new ScrollViewer
@@ -588,18 +595,6 @@ public class PublicationView : UserControl
         _extraHeaderStatusText.Text = PublicationStatusFormatter.SecretStatus(false, _texts);
         _clearTokenBox.IsEnabled = false;
         _clearExtraHeaderBox.IsEnabled = false;
-    }
-
-    private Border BuildYouTubePlaceholder()
-    {
-        // Segnaposto: P7.4 riempirà questa zona (login, stato dell'ultimo caricamento, impostazioni).
-        var stack = new StackPanel();
-        stack.Children.Add(BuildPanelTitle(_texts.PublicationYouTubeTitle));
-        stack.Children.Add(BuildBodyText(_texts.PublicationYouTubePlaceholder, "Brush.TextSecondary"));
-
-        var panel = BuildPanel(stack, _texts.PublicationYouTubeTitle);
-        panel.Margin = new Thickness(0, 16, 0, 0);
-        return panel;
     }
 
     // ---- Costruttori di controlli ----

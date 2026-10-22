@@ -1495,6 +1495,7 @@ public sealed record DesktopTexts
         MaskInvalidField = "Valore non valido: {0}",
         MaskMeteoNoField = "Scegli almeno un campo meteo.",
         MaskBusy = "Operazione in corso…",
+        YouTubeLogoutConfirm = "Scollegare l'account? Il token viene revocato e il caricamento automatico si spegne.",
     };
 
     /// <summary>Testi in inglese.</summary>
@@ -2136,6 +2137,7 @@ public sealed record DesktopTexts
         MaskInvalidField = "Invalid value: {0}",
         MaskMeteoNoField = "Choose at least one weather field.",
         MaskBusy = "Working…",
+        YouTubeLogoutConfirm = "Disconnect the account? The token is revoked and automatic upload turns off.",
     };
 
     /// <summary>Nome della vista nella barra laterale e come titolo della schermata.</summary>
@@ -3255,4 +3257,7 @@ public sealed record DesktopTexts
 
     /// <summary>Testo della maschera: MaskBusy.</summary>
     public required string MaskBusy { get; init; }
+
+    /// <summary>Conferma prima dello scollegamento dell'account.</summary>
+    public required string YouTubeLogoutConfirm { get; init; }
 }
