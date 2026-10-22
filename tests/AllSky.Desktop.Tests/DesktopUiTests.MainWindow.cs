@@ -29,11 +29,19 @@ public sealed partial class DesktopUiTests
     [MemberData(nameof(MainWindowCases))]
     public void Finestra_principale_misurata_e_disegnata(bool nightRed, int width, int height)
     {
-        string mode = ModeLabel(nightRed);
-        string title = $"{MainWindowName} | {mode} {width}x{height}";
-        CaseOutcome outcome = StaRunner.Run(() => RenderMainWindow(_fixture, nightRed, width, height));
-        Report(MainWindowName, mode, title, outcome);
-        Assert.True(outcome.Passed, outcome.Detail);
+        try
+        {
+            string mode = ModeLabel(nightRed);
+            string title = $"{MainWindowName} | {mode} {width}x{height}";
+            CaseOutcome outcome = StaRunner.Run(() => RenderMainWindow(_fixture, nightRed, width, height));
+            Report(MainWindowName, mode, title, outcome);
+            Assert.True(outcome.Passed, outcome.Detail);
+        }
+        catch (Exception ex)
+        {
+            CiReport.Fault($"{nameof(Finestra_principale_misurata_e_disegnata)} [{ModeLabel(nightRed)} {width}x{height}]", ex, _output);
+            throw;
+        }
     }
 
     /// <summary>

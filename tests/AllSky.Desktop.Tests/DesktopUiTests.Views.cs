@@ -49,11 +49,19 @@ public sealed partial class DesktopUiTests
     [MemberData(nameof(ViewCases))]
     public void Vista_costruita_misurata_e_disegnata(string view, bool nightRed, int width, int height)
     {
-        string mode = ModeLabel(nightRed);
-        string title = $"{view} | {mode} {width}x{height}";
-        CaseOutcome outcome = StaRunner.Run(() => RenderView(_fixture, view, nightRed, width, height));
-        Report(view, mode, title, outcome);
-        Assert.True(outcome.Passed, outcome.Detail);
+        try
+        {
+            string mode = ModeLabel(nightRed);
+            string title = $"{view} | {mode} {width}x{height}";
+            CaseOutcome outcome = StaRunner.Run(() => RenderView(_fixture, view, nightRed, width, height));
+            Report(view, mode, title, outcome);
+            Assert.True(outcome.Passed, outcome.Detail);
+        }
+        catch (Exception ex)
+        {
+            CiReport.Fault($"{nameof(Vista_costruita_misurata_e_disegnata)} [{view}, {ModeLabel(nightRed)} {width}x{height}]", ex, _output);
+            throw;
+        }
     }
 
     /// <summary>Costruisce la vista con il runtime reale, la dispone e la disegna. Gira sul thread STA.</summary>

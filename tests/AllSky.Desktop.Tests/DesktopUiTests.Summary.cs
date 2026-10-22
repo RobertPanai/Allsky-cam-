@@ -18,37 +18,59 @@ public sealed partial class DesktopUiTests
     [Fact]
     public void Riepilogo_viste()
     {
-        IReadOnlyList<CaseRecord> records = _fixture.Snapshot();
-        List<string> names = records.Select(record => record.View).Distinct().ToList();
-
-        var passed = new List<string>();
-        var failed = new List<string>();
-        foreach (string name in names)
+        try
         {
-            bool allPassed = records.Where(record => record.View == name).All(record => record.Passed);
-            (allPassed ? passed : failed).Add(name);
-        }
+            IReadOnlyList<CaseRecord> records = _fixture.Snapshot();
+            List<string> names = records.Select(record => record.View).Distinct().ToList();
 
-        List<string> notRun = ExpectedNames().Where(name => !names.Contains(name)).ToList();
-        string text = string.Join("\n",
-            $"Viste superate ({passed.Count}): {Join(passed)}",
-            $"Viste fallite ({failed.Count}): {Join(failed)}",
-            $"Viste non ancora eseguite ({notRun.Count}): {Join(notRun)}",
-            $"Casi registrati: {records.Count}");
+            var passed = new List<string>();
+            var failed = new List<string>();
+            foreach (string name in names)
+            {
+                bool allPassed = records.Where(record => record.View == name).All(record => record.Passed);
+                (allPassed ? passed : failed).Add(name);
+            }
 
-        CiReport.Notice("Riepilogo", text, _output);
+            List<string> notRun = ExpectedNames().Where(name => !names.Contains(name)).ToList();
+            string text = string.Join("\n",
+                $"Viste superate ({passed.Count}): {Join(passed)}",
+                $"Viste fallite ({failed.Count}): {Join(failed)}",
+                $"Viste non ancora eseguite ({notRun.Count}): {Join(notRun)}",
+                $"Casi registrati: {records.Count}");
 
-        IReadOnlyCollection<string> unhandled = StaRunner.UnhandledErrors;
-        if (unhandled.Count > 0)
-        {
-            CiReport.Error(
-                "Eccezioni del thread UI",
-                $"{unhandled.Count} eccezioni non gestite durante i test. Prima: {unhandled.First()}",
+            CiReport.Notice("Riepilogo", text, _output);
+            CiReport.Raw(
+                "notice",
+                $"Desktop UI: {records.Count} casi eseguiti, {records.Count(record => !record.Passed)} falliti, " +
+                $"{notRun.Count} viste non ancora eseguite",
                 _output);
-        }
 
-        CiReport.FlushIfRequested(_output);
+            foreach (CaseRecord record in records.Where(item => item.Passed))
+            {
+                CiReport.Raw("notice", $"Desktop UI: {record.Title} superata, {ShortDetail(record.Detail)}", _output);
+            }
+
+            IReadOnlyCollection<string> unhandled = StaRunner.UnhandledErrors;
+            if (unhandled.Count > 0)
+            {
+                CiReport.Error(
+                    "Eccezioni del thread UI",
+                    $"{unhandled.Count} eccezioni non gestite durante i test. Prima: {unhandled.First()}",
+                    _output);
+            }
+
+            CiReport.FlushIfRequested(_output);
+        }
+        catch (Exception ex)
+        {
+            CiReport.Fault(nameof(Riepilogo_viste), ex, _output);
+            throw;
+        }
     }
+
+    /// <summary>Prima parte del dettaglio di un caso superato: "OK: N pixel di contenuto" (o l'equivalente dei pennelli).</summary>
+    private static string ShortDetail(string detail) =>
+        detail.Split('\n')[0].Split(';')[0].Trim();
 
     private static string Join(IEnumerable<string> items)
     {

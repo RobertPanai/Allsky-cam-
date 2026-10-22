@@ -30,49 +30,48 @@ public sealed class DesktopFixture : IDisposable
     /// <summary>Crea l'ambiente. Può richiedere alcuni secondi: avvia il runtime dell'Host.</summary>
     public DesktopFixture()
     {
-        _root = Path.Combine(Path.GetTempPath(), "allsky-desktop-tests-" + Guid.NewGuid().ToString("N"));
-        string dataFolder = Path.Combine(_root, "data");
-        string webRoot = Path.Combine(_root, "web");
-        string configPath = Path.Combine(_root, "config.json");
-        Directory.CreateDirectory(dataFolder);
-        Directory.CreateDirectory(webRoot);
-        File.WriteAllText(Path.Combine(webRoot, "index.html"), "<!doctype html><title>AllSky test</title>");
-
-        new ConfigStore().Save(configPath, new AppConfig
-        {
-            Camera = new AppConfig.CameraConfig { Id = "sim-1" },
-            Storage = new AppConfig.StorageConfig { Folder = dataFolder },
-            Ui = new AppConfig.UiConfig { WebEnabled = false },
-        });
-
-        Paths = new AppPaths(dataFolder, configPath, webRoot);
-        ShotsFolder = Path.Combine(AppContext.BaseDirectory, "TestResults", "shots");
-        Directory.CreateDirectory(ShotsFolder);
-
         try
         {
+            _root = Path.Combine(Path.GetTempPath(), "allsky-desktop-tests-" + Guid.NewGuid().ToString("N"));
+            string dataFolder = Path.Combine(_root, "data");
+            string webRoot = Path.Combine(_root, "web");
+            string configPath = Path.Combine(_root, "config.json");
+            Directory.CreateDirectory(dataFolder);
+            Directory.CreateDirectory(webRoot);
+            File.WriteAllText(Path.Combine(webRoot, "index.html"), "<!doctype html><title>AllSky test</title>");
+
+            new ConfigStore().Save(configPath, new AppConfig
+            {
+                Camera = new AppConfig.CameraConfig { Id = "sim-1" },
+                Storage = new AppConfig.StorageConfig { Folder = dataFolder },
+                Ui = new AppConfig.UiConfig { WebEnabled = false },
+            });
+
+            Paths = new AppPaths(dataFolder, configPath, webRoot);
+            ShotsFolder = Path.Combine(AppContext.BaseDirectory, "TestResults", "shots");
+            Directory.CreateDirectory(ShotsFolder);
+
             using var startCts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             Runtime = AllSkyHost.StartAsync(new HostOptions(configPath, dataFolder, webRoot), startCts.Token)
                 .GetAwaiter().GetResult();
+
+            (WpfApp, Manager) = StaRunner.Run(() =>
+            {
+                var app = new App(Runtime, Paths, DesktopTexts.Italian);
+                var manager = new ThemeManager(app.Resources);
+                // Stessa sequenza di App.OnStartup: il tema per primo, poi gli stili, poi la modalità salvata (qui normale).
+                typeof(App).GetProperty(nameof(App.Theme), BindingFlags.Public | BindingFlags.Instance)!
+                    .GetSetMethod(nonPublic: true)!
+                    .Invoke(app, new object[] { manager });
+                app.Resources.MergedDictionaries.Add(LoadStyles());
+                return (app, manager);
+            });
         }
         catch (Exception ex)
         {
-            // Senza runtime nessun test di vista può girare: la diagnostica va comunque nel log della CI.
-            CiReport.Error("Avvio del runtime", $"{ex.GetType().Name}: {ex.Message}", output: null);
+            CiReport.Fault("DesktopFixture (costruttore)", ex, output: null);
             throw;
         }
-
-        (WpfApp, Manager) = StaRunner.Run(() =>
-        {
-            var app = new App(Runtime, Paths, DesktopTexts.Italian);
-            var manager = new ThemeManager(app.Resources);
-            // Stessa sequenza di App.OnStartup: il tema per primo, poi gli stili, poi la modalità salvata (qui normale).
-            typeof(App).GetProperty(nameof(App.Theme), BindingFlags.Public | BindingFlags.Instance)!
-                .GetSetMethod(nonPublic: true)!
-                .Invoke(app, new object[] { manager });
-            app.Resources.MergedDictionaries.Add(LoadStyles());
-            return (app, manager);
-        });
     }
 
     /// <summary>Percorsi dell'app nella cartella temporanea.</summary>
@@ -129,9 +128,10 @@ public sealed class DesktopFixture : IDisposable
                 await Runtime.DisposeAsync().ConfigureAwait(false);
             }).Wait(TimeSpan.FromSeconds(30));
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             // Arresto non completato: la cartella temporanea viene comunque tolta sotto, se possibile.
+            CiReport.Fault("DesktopFixture (Dispose, arresto del runtime)", ex, output: null);
         }
 
         try
@@ -142,8 +142,12 @@ public sealed class DesktopFixture : IDisposable
         {
             // Un file ancora aperto dal motore non fa fallire il test.
         }
+        catch (Exception ex)
+        {
+            CiReport.Fault("DesktopFixture (Dispose)", ex, output: null);
+        }
     }
 }
 
 /// <summary>Esito di un caso (vista, modalità, risoluzione) per il riepilogo.</summary>
-public sealed record CaseRecord(string View, string Mode, bool Passed, string Detail);
+public sealed record CaseRecord(string View, string Mode, string Title, bool Passed, string Detail);

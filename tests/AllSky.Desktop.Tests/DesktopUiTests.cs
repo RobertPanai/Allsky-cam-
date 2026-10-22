@@ -40,8 +40,16 @@ public sealed partial class DesktopUiTests : IClassFixture<DesktopFixture>
 
     public DesktopUiTests(DesktopFixture fixture, ITestOutputHelper output)
     {
-        _fixture = fixture;
-        _output = output;
+        try
+        {
+            _fixture = fixture;
+            _output = output;
+        }
+        catch (Exception ex)
+        {
+            CiReport.Fault("DesktopUiTests (costruttore)", ex, output);
+            throw;
+        }
     }
 
     /// <summary>Risoluzioni dei rendering: laptop e schermo full HD.</summary>
@@ -55,10 +63,18 @@ public sealed partial class DesktopUiTests : IClassFixture<DesktopFixture>
     [InlineData(true)]
     public void Risorse_tema_e_stili_caricati(bool nightRed)
     {
-        string mode = ModeLabel(nightRed);
-        CaseOutcome outcome = StaRunner.Run(() => CheckResources(nightRed));
-        Report("Risorse tema", mode, $"Risorse tema | {mode}", outcome);
-        Assert.True(outcome.Passed, outcome.Detail);
+        try
+        {
+            string mode = ModeLabel(nightRed);
+            CaseOutcome outcome = StaRunner.Run(() => CheckResources(nightRed));
+            Report("Risorse tema", mode, $"Risorse tema | {mode}", outcome);
+            Assert.True(outcome.Passed, outcome.Detail);
+        }
+        catch (Exception ex)
+        {
+            CiReport.Fault($"{nameof(Risorse_tema_e_stili_caricati)} [{ModeLabel(nightRed)}]", ex, _output);
+            throw;
+        }
     }
 
     /// <summary>
@@ -192,7 +208,7 @@ public sealed partial class DesktopUiTests : IClassFixture<DesktopFixture>
             CiReport.Error(title, text, _output);
         }
 
-        _fixture.Record(new CaseRecord(view, mode, outcome.Passed, outcome.Detail));
+        _fixture.Record(new CaseRecord(view, mode, title, outcome.Passed, outcome.Detail));
     }
 
     /// <summary>Esito di un caso: se è passato, il dettaglio, e l'anteprima ASCII del bitmap quando esiste.</summary>

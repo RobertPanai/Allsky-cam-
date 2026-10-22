@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
@@ -63,9 +64,22 @@ internal static class CiReport
         }
     }
 
-    private static void Write(string level, string title, string message, ITestOutputHelper? output)
+    /// <summary>Riga nel formato <c>::{livello}::{testo}</c>, senza titolo: l'errore o la notizia è il testo stesso.</summary>
+    public static void Raw(string level, string text, ITestOutputHelper? output) =>
+        WriteRaw($"::{level}::{EscapeData(text)}", output);
+
+    /// <summary>
+    /// Errore non gestito di un test o della fixture: <c>::error::{dove}: {tipo}: {prima riga} @ {file:riga}</c>.
+    /// Il chiamante deve poi rilanciare l'eccezione, salvo dove la fixture pulisce e non deve far fallire la sessione.
+    /// </summary>
+    public static void Fault(string where, Exception ex, ITestOutputHelper? output) =>
+        Raw("error", $"{where}: {ex.GetType().FullName}: {FirstLine(ex.Message)} @ {FirstFrame(ex)}", output);
+
+    private static void Write(string level, string title, string message, ITestOutputHelper? output) =>
+        WriteRaw($"::{level} title={EscapeProperty(title)}::{EscapeData(message)}", output);
+
+    private static void WriteRaw(string line, ITestOutputHelper? output)
     {
-        string line = $"::{level} title={EscapeProperty(title)}::{EscapeData(message)}";
         lock (Gate)
         {
             Lines.Add(line);
@@ -73,6 +87,33 @@ internal static class CiReport
 
         Console.Out.WriteLine(line);
         output?.WriteLine(line);
+    }
+
+    private static string FirstLine(string? text) =>
+        (text ?? string.Empty).Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? string.Empty;
+
+    /// <summary>
+    /// Prima riga dello stack con file e numero di riga (percorso completo); se nessun frame ha il file, il primo metodo.
+    /// </summary>
+    private static string FirstFrame(Exception ex)
+    {
+        var trace = new System.Diagnostics.StackTrace(ex, fNeedFileInfo: true);
+        if (trace.FrameCount == 0)
+        {
+            return "stack vuoto";
+        }
+
+        for (int i = 0; i < trace.FrameCount; i++)
+        {
+            System.Diagnostics.StackFrame? frame = trace.GetFrame(i);
+            string? file = frame?.GetFileName();
+            if (frame is not null && file is not null)
+            {
+                return $"{file}:{frame.GetFileLineNumber()}";
+            }
+        }
+
+        return trace.GetFrame(0)?.GetMethod()?.ToString() ?? "metodo sconosciuto";
     }
 
     private static string? FindRepositoryRoot()
