@@ -34,13 +34,20 @@ public sealed class ThemeManager
     public const string MonoFontKey = "Font.Mono";
 
     /// <summary>
-    /// Font dell'interfaccia. Inter sarà incluso nell'app in P1.10; fino ad allora si usano i font di sistema.
+    /// Cartella dei font incorporati nell'exe (src/AllSky.Desktop/Assets/Fonts, licenze OFL 1.1: vedi assets/brand/README.md).
     /// </summary>
+    public const string EmbeddedFontFolder = "/AllSkyBrain;component/Assets/Fonts/";
+
+    /// <summary>File del font incorporato per l'interfaccia (Inter, peso regolare).</summary>
+    public const string UiFontFile = "Inter-Regular.ttf";
+
+    /// <summary>Famiglia del font incorporato per l'interfaccia, usata con il fallback se il file manca.</summary>
     public const string UiFontFamily = "Inter, Segoe UI Variable Text, Segoe UI";
 
-    /// <summary>
-    /// Font monospaziato per i dati. JetBrains Mono sarà incluso in P1.10; fino ad allora si usano i font di sistema.
-    /// </summary>
+    /// <summary>File del font incorporato per i dati (JetBrains Mono, peso regolare).</summary>
+    public const string MonoFontFile = "JetBrainsMono-Regular.ttf";
+
+    /// <summary>Famiglia monospaziata di fallback se il file incorporato manca.</summary>
     public const string MonoFontFamily = "JetBrains Mono, Cascadia Mono, Consolas";
 
     /// <summary>Scala tipografica (§5.3): 12 / 14 / 16 / 20 / 28 / 40.</summary>
@@ -161,8 +168,8 @@ public sealed class ThemeManager
     /// <summary>Scrive le risorse che non cambiano con il tema: font, scala tipografica e di spaziatura.</summary>
     private void WriteFixedResources()
     {
-        _resources[UiFontKey] = new FontFamily(UiFontFamily);
-        _resources[MonoFontKey] = new FontFamily(MonoFontFamily);
+        _resources[UiFontKey] = EmbeddedOrSystemFont(UiFontFile, "Inter", UiFontFamily);
+        _resources[MonoFontKey] = EmbeddedOrSystemFont(MonoFontFile, "JetBrains Mono", MonoFontFamily);
 
         foreach (var (key, value) in Sizes)
         {
@@ -173,6 +180,29 @@ public sealed class ThemeManager
         {
             _resources[key] = value;
         }
+    }
+
+    /// <summary>
+    /// Font incorporato nell'exe se il file è presente nel pacchetto, altrimenti famiglia di sistema (fallback).
+    /// La scelta si fa una volta sola, alla creazione del tema.
+    /// </summary>
+    private static FontFamily EmbeddedOrSystemFont(string fileName, string embeddedFamily, string fallback)
+    {
+        try
+        {
+            var resource = new Uri(EmbeddedFontFolder + fileName, UriKind.Relative);
+            if (System.Windows.Application.GetResourceStream(resource) is not null)
+            {
+                var folder = new Uri("pack://application:,,," + EmbeddedFontFolder);
+                return new FontFamily(folder, "./#" + embeddedFamily);
+            }
+        }
+        catch (Exception)
+        {
+            // Font non leggibile: si usano i font di sistema sotto.
+        }
+
+        return new FontFamily(fallback);
     }
 
     private void RaiseThemeChanged() => ThemeChanged?.Invoke(this, EventArgs.Empty);

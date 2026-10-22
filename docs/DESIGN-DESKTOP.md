@@ -64,9 +64,19 @@ Il contrasto è garantito alla luminosità del 100%. Con la luminosità ridotta 
 
 - **Tipografia** (risorse `Size.*`, in pixel WPF): Caption 12, Body 14, Subtitle 16, Title 20, Display 28, Hero 40.
 - **Spaziatura** (risorse `Space.*`): 1 = 4, 2 = 8, 3 = 12, 4 = 16, 5 = 24, 6 = 32, 7 = 48.
-- **Font** (risorse `Font.Ui`, `Font.Mono`): Inter e JetBrains Mono non sono ancora inclusi. Fino a P1.10 si usano
+- **Font** (risorse `Font.Ui`, `Font.Mono`): Inter e JetBrains Mono sono incorporati in `src/AllSky.Desktop/Assets/Fonts/`
+  (licenza SIL OFL 1.1, fonte e SHA-256 in `assets/brand/README.md`). Se i file mancano nel pacchetto, si usano
   `Segoe UI Variable Text` / `Segoe UI` e `Cascadia Mono` / `Consolas`.
 - **Raggi:** pannelli 10 px, controlli 8 px, suggerimenti 6 px.
+
+## Identità visiva
+
+Marchio e icona sono in `assets/brand/` (SVG, `.ico` multi-risoluzione, README con origine e licenza). Le geometrie WPF
+sono in `src/AllSky.Desktop/Theme/Brand.xaml`; tutto si genera con `tools/brand/build_brand.py`.
+- Icona dell'exe: `ApplicationIcon` nel csproj. Icona del tray: risorsa incorporata (`TrayIcon.cs`). Installer: `--icon` in `release-stable.yml`.
+- Splash: `Views/SplashWindow.cs`, chiusa quando la finestra principale è caricata.
+- Sfondo stellare statico: `Theme/StarfieldBackground.cs` con la logica pura in `AllSky.Core/Design/StarfieldGenerator.cs`.
+- Illustrazioni degli stati vuoti: `Theme/Illustrations.cs` (testi `Illus*` in `DesktopTexts`).
 
 ## Stili e regole d'uso
 

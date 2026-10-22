@@ -354,6 +354,7 @@ internal sealed class ShellControl : Grid
     {
         return view switch
         {
+            ShellView.Tonight when service is not null => new AllSky.Desktop.Views.Tonight.TonightView(service, texts),
             ShellView.Live when service is not null => new AllSky.Desktop.Views.Live.LiveView(service, texts),
             ShellView.Camera when service is not null => new AllSky.Desktop.Views.Camera.CameraView(service, texts),
             ShellView.Nights when service is not null => new AllSky.Desktop.Views.Nights.NightsView(service, texts),

@@ -5,4 +5,11 @@
     <AssemblyName>AllSky.Core</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- Geometria del fisheye (FisheyeModel) per la calibrazione ottica: logica pura, senza dipendenze da WPF. -->
+    <ProjectReference Include="..\AllSky.Sky\AllSky.Sky.csproj" />
+    <!-- Posizione del Sole e della Luna, crepuscoli (vista "Stanotte", src/AllSky.Core/Tonight). -->
+    <ProjectReference Include="..\AllSky.Astro\AllSky.Astro.csproj" />
+  </ItemGroup>
+
 </Project>

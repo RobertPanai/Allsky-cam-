@@ -1030,6 +1030,70 @@ public sealed record DesktopTexts
         NightsFrameName = "Frame selezionato della notte",
         NightsFrameMissing = "Il file di questo frame non è più disponibile.",
         NightsNoFrames = "Nessun frame archiviato in questa notte.",
+        IllusNoNightTitle = "Nessuna notte ancora",
+        IllusNoNightBody = "Le immagini compariranno qui dopo il tramonto, quando inizia la cattura notturna.",
+        IllusNoEventsTitle = "Nessun evento",
+        IllusNoEventsBody = "Meteore, bolidi e transiti rilevati compariranno qui. Per ora non ce n'è nessuno.",
+        IllusCameraTitle = "Camera non collegata",
+        IllusCameraBody = "Collega una camera dalla vista Camera per vedere le immagini dal vivo.",
+        IllusYouTubeTitle = "YouTube non collegato",
+        IllusYouTubeBody = "Collega un account YouTube dalla vista Pubblicazione per caricare il timelapse in automatico.",
+        TonightNav = "Stanotte",
+        TonightTitle = "Stanotte",
+        TonightImageName = "Immagine del cielo di questa notte",
+        TonightNoImage = "Nessuna immagine ancora. Il primo frame comparirà qui.",
+        TonightComputing = "Calcolo in corso…",
+        TonightLoadError = "Impossibile calcolare la notte: {0}",
+        TonightSiteInvalid = "Posizione del sito non valida: controllare latitudine e longitudine nelle impostazioni.",
+        TonightTimelineTitle = "Linea temporale della notte",
+        TonightTimelineName = "Linea temporale da tramonto ad alba",
+        TonightSunset = "Tramonto",
+        TonightSunrise = "Alba",
+        TonightNoWindow = "Questa notte non ha tramonto né alba: il Sole resta sempre sopra o sempre sotto l'orizzonte.",
+        TonightNowMarker = "Adesso: {0}",
+        TonightNotInWindow = "Adesso siamo fuori dalla finestra tra tramonto e alba.",
+        TonightGeometricNote = "Altezze geometriche, senza rifrazione atmosferica.",
+        TonightSunCurve = "Sole",
+        TonightMoonCurve = "Luna",
+        TonightHorizon = "Orizzonte",
+        TonightCurveName = "Altezza di Sole e Luna durante la notte",
+        TonightSegmentLine = "{0}: da {1} a {2}",
+        TonightPhaseDay = "Giorno",
+        TonightPhaseCivil = "Crepuscolo civile",
+        TonightPhaseNautical = "Crepuscolo nautico",
+        TonightPhaseAstro = "Crepuscolo astronomico",
+        TonightPhaseNight = "Notte astronomica",
+        TonightConditionsTitle = "Condizioni",
+        TonightMoonGlyphName = "Fase lunare: {0}, illuminata al {1}",
+        TonightMoonNew = "Luna nuova",
+        TonightMoonWaxingCrescent = "Falce crescente",
+        TonightMoonFirstQuarter = "Primo quarto",
+        TonightMoonWaxingGibbous = "Gibbosa crescente",
+        TonightMoonFull = "Luna piena",
+        TonightMoonWaningGibbous = "Gibbosa calante",
+        TonightMoonLastQuarter = "Ultimo quarto",
+        TonightMoonWaningCrescent = "Falce calante",
+        TonightMoonAltitude = "Altezza Luna",
+        TonightSunAltitude = "Altezza Sole",
+        TonightSkyClarity = "Indice di cielo sereno",
+        TonightSkyClarityPending = "Non disponibile: arriverà con il rilevamento delle stelle.",
+        TonightWeather = "Meteo",
+        TonightWeatherPending = "Non disponibile: arriverà con la sorgente meteo.",
+        TonightEventsTitle = "Prossimi eventi",
+        TonightNextChange = "Prossimo cambio di fase",
+        TonightNextTransit = "Prossimo transito",
+        TonightNoTransit = "Nessun transito previsto",
+        TonightTransitPending = "Il calcolo dei transiti non è ancora attivo.",
+        TonightLastMeteor = "Ultima meteora",
+        TonightNoMeteor = "Nessuna meteora registrata",
+        TonightMeteorPending = "Il rilevamento delle meteore non è ancora attivo.",
+        TonightCaptureTitle = "Stato della cattura",
+        TonightCountdownIn = "tra {0}",
+        TonightCountdownMinutes = "{0} min",
+        TonightCountdownHoursMinutes = "{0} h {1} min",
+        TonightCountdownLessThanMinute = "meno di 1 min",
+        TonightNow = "adesso",
+        TonightAgo = "{0} fa",
         CameraDiscButton = "Scollega",
         SettingsTitle = "Impostazioni",
         SettingsObservatoryTitle = "Osservatorio",
@@ -1182,6 +1246,61 @@ public sealed record DesktopTexts
         PublicationReasonOther = "Errore non classificato: vedere il log della pubblicazione.",
         PublicationYouTubeTitle = "YouTube",
         PublicationYouTubePlaceholder = "Caricamento automatico su YouTube: in arrivo. Qui compariranno accesso, stato dell'ultimo caricamento e impostazioni.",
+        OvlSun = "Sole",
+        OvlMoon = "Luna",
+        OvlPhase = "fase",
+        OvlSatellites = "Satelliti",
+        OvlNone = "nessuno",
+        OvlMissing = "n/d",
+        OvlExposure = "esp",
+        OvlGain = "gain",
+        CalibTitle = "Calibrazione ottica",
+        CalibStatusCollecting = "Punti dal Sole raccolti: {0} su {1} necessari.",
+        CalibStatusCollectingHint = "Il Sole si cerca di giorno, quando è sopra i 10°. Servono punti in direzioni diverse del cielo.",
+        CalibFailureReason = "Ultimo tentativo: {0}",
+        CalibLastPoint = "Ultimo punto: {0}",
+        CalibStatusReview = "Proposta pronta: controllare la griglia sul frame, poi accettare o rifiutare.",
+        CalibStatusReviewManual = "Valori manuali in attesa: accettare per salvarli.",
+        CalibStatusReviewNotAcceptable = "Errore di {0} px, sopra la soglia dell'{1}% del raggio: la proposta non si può accettare. Raccogliere altri punti o usare la modalità manuale.",
+        CalibStatusCalibrated = "Calibrazione attiva: errore {0} px, {1}, del {2}.",
+        CalibSourceSun = "stimata dal Sole",
+        CalibSourceManual = "inserita a mano",
+        CalibResidualSummary = "Errore medio {0} px su {1} punti; {2} esclusi come outlier.",
+        CalibFrameTitle = "Anteprima",
+        CalibFrameEmpty = "Nessun frame ancora: la griglia compare al primo frame.",
+        CalibGridLegend = "Griglia alt/az: cerchi a 0°, 30° e 60°, meridiani ogni 30°. N, E, S, O sull'orizzonte.",
+        CalibObservedName = "Punti del Sole osservati",
+        CalibAccept = "Accetta",
+        CalibReject = "Rifiuta",
+        CalibAcceptedNotice = "Calibrazione salvata e applicata.",
+        CalibRejectedNotice = "Proposta scartata: la raccolta continua.",
+        CalibPointsTitle = "Punti raccolti",
+        CalibNoPoints = "Nessun punto ancora.",
+        CalibManualTitle = "Modalità manuale",
+        CalibManualHint = "I valori aggiornano l'anteprima subito. Il raggio è quello dell'orizzonte, in pixel del frame.",
+        CalibManualCenterX = "Centro X (px)",
+        CalibManualCenterY = "Centro Y (px)",
+        CalibManualRadius = "Raggio orizzonte (px)",
+        CalibManualK2 = "Correzione radiale K2",
+        CalibManualRotation = "Rotazione del Nord (°)",
+        CalibManualMirrored = "Est a destra (specchio)",
+        CalibManualPreviewOn = "Anteprima manuale: non ancora salvata.",
+        CalibManualUse = "Usa come proposta",
+        CalibManualReset = "Valori del frame",
+        CalibManualNoFrame = "Nessun frame: la modalità manuale richiede almeno un frame.",
+        CalibManualInvalid = "Correggere i campi evidenziati.",
+        CalibProblemEmpty = "Inserire un valore.",
+        CalibProblemNotNumber = "Inserire un numero.",
+        CalibProblemNotPositive = "Il raggio deve essere maggiore di zero.",
+        CalibProblemOutOfRange = "K2 deve essere maggiore di -0,33.",
+        CalibActionNoProposal = "Non c'è nessuna proposta da accettare.",
+        CalibActionNotAcceptable = "La proposta non rispetta la soglia di precisione.",
+        CalibActionNoFrame = "Nessun frame ricevuto: impossibile impostare la modalità manuale.",
+        CalibActionSaveFailed = "Salvataggio non riuscito. Controllare i permessi della cartella dati e riprovare.",
+        CalibCardinalNorth = "N",
+        CalibCardinalEast = "E",
+        CalibCardinalSouth = "S",
+        CalibCardinalWest = "O",
     };
 
     /// <summary>Testi in inglese.</summary>
@@ -1355,6 +1474,70 @@ public sealed record DesktopTexts
         NightsFrameName = "Selected night frame",
         NightsFrameMissing = "This frame file is no longer available.",
         NightsNoFrames = "No archived frames in this night.",
+        IllusNoNightTitle = "No night yet",
+        IllusNoNightBody = "Images will appear here after sunset, when night capture starts.",
+        IllusNoEventsTitle = "No events",
+        IllusNoEventsBody = "Detected meteors, fireballs and satellite passes will appear here. There are none yet.",
+        IllusCameraTitle = "Camera not connected",
+        IllusCameraBody = "Connect a camera from the Camera view to see live images.",
+        IllusYouTubeTitle = "YouTube not connected",
+        IllusYouTubeBody = "Connect a YouTube account from the Publication view to upload the timelapse automatically.",
+        TonightNav = "Tonight",
+        TonightTitle = "Tonight",
+        TonightImageName = "Sky image for tonight",
+        TonightNoImage = "No image yet. The first frame will appear here.",
+        TonightComputing = "Calculating…",
+        TonightLoadError = "Cannot compute tonight: {0}",
+        TonightSiteInvalid = "Invalid site position: check latitude and longitude in settings.",
+        TonightTimelineTitle = "Night timeline",
+        TonightTimelineName = "Timeline from sunset to sunrise",
+        TonightSunset = "Sunset",
+        TonightSunrise = "Sunrise",
+        TonightNoWindow = "This night has no sunset or sunrise: the Sun stays always above or always below the horizon.",
+        TonightNowMarker = "Now: {0}",
+        TonightNotInWindow = "Right now we are outside the window between sunset and sunrise.",
+        TonightGeometricNote = "Geometric altitudes, without atmospheric refraction.",
+        TonightSunCurve = "Sun",
+        TonightMoonCurve = "Moon",
+        TonightHorizon = "Horizon",
+        TonightCurveName = "Sun and Moon altitude during the night",
+        TonightSegmentLine = "{0}: from {1} to {2}",
+        TonightPhaseDay = "Day",
+        TonightPhaseCivil = "Civil twilight",
+        TonightPhaseNautical = "Nautical twilight",
+        TonightPhaseAstro = "Astronomical twilight",
+        TonightPhaseNight = "Astronomical night",
+        TonightConditionsTitle = "Conditions",
+        TonightMoonGlyphName = "Moon phase: {0}, {1} illuminated",
+        TonightMoonNew = "New moon",
+        TonightMoonWaxingCrescent = "Waxing crescent",
+        TonightMoonFirstQuarter = "First quarter",
+        TonightMoonWaxingGibbous = "Waxing gibbous",
+        TonightMoonFull = "Full moon",
+        TonightMoonWaningGibbous = "Waning gibbous",
+        TonightMoonLastQuarter = "Last quarter",
+        TonightMoonWaningCrescent = "Waning crescent",
+        TonightMoonAltitude = "Moon altitude",
+        TonightSunAltitude = "Sun altitude",
+        TonightSkyClarity = "Clear-sky index",
+        TonightSkyClarityPending = "Not available yet: it will arrive with star detection.",
+        TonightWeather = "Weather",
+        TonightWeatherPending = "Not available yet: it will arrive with the weather source.",
+        TonightEventsTitle = "Upcoming events",
+        TonightNextChange = "Next sky phase change",
+        TonightNextTransit = "Next transit",
+        TonightNoTransit = "No transit predicted",
+        TonightTransitPending = "Transit prediction is not active yet.",
+        TonightLastMeteor = "Last meteor",
+        TonightNoMeteor = "No meteor recorded",
+        TonightMeteorPending = "Meteor detection is not active yet.",
+        TonightCaptureTitle = "Capture status",
+        TonightCountdownIn = "in {0}",
+        TonightCountdownMinutes = "{0} min",
+        TonightCountdownHoursMinutes = "{0} h {1} min",
+        TonightCountdownLessThanMinute = "less than 1 min",
+        TonightNow = "now",
+        TonightAgo = "{0} ago",
         CameraDiscButton = "Disconnect",
         SettingsTitle = "Settings",
         SettingsObservatoryTitle = "Observatory",
@@ -1507,6 +1690,61 @@ public sealed record DesktopTexts
         PublicationReasonOther = "Unclassified error: see the publishing log.",
         PublicationYouTubeTitle = "YouTube",
         PublicationYouTubePlaceholder = "Automatic YouTube upload: coming soon. Sign-in, last upload status and settings will appear here.",
+        OvlSun = "Sun",
+        OvlMoon = "Moon",
+        OvlPhase = "phase",
+        OvlSatellites = "Satellites",
+        OvlNone = "none",
+        OvlMissing = "n/a",
+        OvlExposure = "exp",
+        OvlGain = "gain",
+        CalibTitle = "Optical calibration",
+        CalibStatusCollecting = "Sun points collected: {0} of {1} needed.",
+        CalibStatusCollectingHint = "The Sun is looked for by day, when it is above 10°. Points are needed in several directions of the sky.",
+        CalibFailureReason = "Last attempt: {0}",
+        CalibLastPoint = "Last point: {0}",
+        CalibStatusReview = "Proposal ready: check the grid on the frame, then accept or reject.",
+        CalibStatusReviewManual = "Manual values pending: accept to save them.",
+        CalibStatusReviewNotAcceptable = "Error of {0} px, above the {1}% of the radius threshold: this proposal cannot be accepted. Collect more points or use manual mode.",
+        CalibStatusCalibrated = "Calibration active: error {0} px, {1}, from {2}.",
+        CalibSourceSun = "estimated from the Sun",
+        CalibSourceManual = "entered manually",
+        CalibResidualSummary = "Mean error {0} px over {1} points; {2} excluded as outliers.",
+        CalibFrameTitle = "Preview",
+        CalibFrameEmpty = "No frame yet: the grid appears with the first frame.",
+        CalibGridLegend = "Alt/az grid: circles at 0°, 30° and 60°, meridians every 30°. N, E, S, W on the horizon.",
+        CalibObservedName = "Observed Sun points",
+        CalibAccept = "Accept",
+        CalibReject = "Reject",
+        CalibAcceptedNotice = "Calibration saved and applied.",
+        CalibRejectedNotice = "Proposal discarded: collection continues.",
+        CalibPointsTitle = "Points collected",
+        CalibNoPoints = "No points yet.",
+        CalibManualTitle = "Manual mode",
+        CalibManualHint = "Values update the preview at once. The radius is the horizon radius, in frame pixels.",
+        CalibManualCenterX = "Center X (px)",
+        CalibManualCenterY = "Center Y (px)",
+        CalibManualRadius = "Horizon radius (px)",
+        CalibManualK2 = "Radial correction K2",
+        CalibManualRotation = "North rotation (°)",
+        CalibManualMirrored = "East on the right (mirrored)",
+        CalibManualPreviewOn = "Manual preview: not saved yet.",
+        CalibManualUse = "Use as proposal",
+        CalibManualReset = "Frame values",
+        CalibManualNoFrame = "No frame: manual mode needs at least one frame.",
+        CalibManualInvalid = "Fix the highlighted fields.",
+        CalibProblemEmpty = "Enter a value.",
+        CalibProblemNotNumber = "Enter a number.",
+        CalibProblemNotPositive = "The radius must be greater than zero.",
+        CalibProblemOutOfRange = "K2 must be greater than -0.33.",
+        CalibActionNoProposal = "There is no proposal to accept.",
+        CalibActionNotAcceptable = "The proposal does not meet the precision threshold.",
+        CalibActionNoFrame = "No frame received: manual mode cannot be set.",
+        CalibActionSaveFailed = "Save failed. Check the permissions of the data folder and try again.",
+        CalibCardinalNorth = "N",
+        CalibCardinalEast = "E",
+        CalibCardinalSouth = "S",
+        CalibCardinalWest = "W",
     };
 
     /// <summary>Nome della vista nella barra laterale e come titolo della schermata.</summary>
@@ -1675,4 +1913,361 @@ public sealed record DesktopTexts
 
     /// <summary>Messaggio quando la notte selezionata non ha frame archiviati.</summary>
     public required string NightsNoFrames { get; init; }
+
+    /// <summary>Etichetta "Sole" nella maschera informativa del timelapse.</summary>
+    public required string OvlSun { get; init; }
+
+    /// <summary>Etichetta "Luna" nella maschera informativa del timelapse.</summary>
+    public required string OvlMoon { get; init; }
+
+    /// <summary>Etichetta della fase lunare nella maschera informativa.</summary>
+    public required string OvlPhase { get; init; }
+
+    /// <summary>Intestazione dei satelliti in transito nella maschera informativa.</summary>
+    public required string OvlSatellites { get; init; }
+
+    /// <summary>Valore quando nessun satellite e' in transito nel frame.</summary>
+    public required string OvlNone { get; init; }
+
+    /// <summary>Segnaposto per un dato mancante nella maschera informativa.</summary>
+    public required string OvlMissing { get; init; }
+
+    /// <summary>Abbreviazione di "esposizione" nella riga di esposizione della maschera.</summary>
+    public required string OvlExposure { get; init; }
+
+    /// <summary>Etichetta del gain nella riga di esposizione della maschera.</summary>
+    public required string OvlGain { get; init; }
+
+    /// <summary>Titolo del pannello di calibrazione ottica.</summary>
+    public required string CalibTitle { get; init; }
+
+    /// <summary>Stato della raccolta: punti raccolti su quelli necessari ({0} e {1}).</summary>
+    public required string CalibStatusCollecting { get; init; }
+
+    /// <summary>Suggerimento su quando e dove cercare il Sole.</summary>
+    public required string CalibStatusCollectingHint { get; init; }
+
+    /// <summary>Motivo dell'ultimo fit fallito ({0}).</summary>
+    public required string CalibFailureReason { get; init; }
+
+    /// <summary>Ora dell'ultimo punto raccolto ({0}).</summary>
+    public required string CalibLastPoint { get; init; }
+
+    /// <summary>Stato con una proposta del Sole pronta da accettare.</summary>
+    public required string CalibStatusReview { get; init; }
+
+    /// <summary>Stato con valori manuali in attesa di accettazione.</summary>
+    public required string CalibStatusReviewManual { get; init; }
+
+    /// <summary>Proposta del Sole sopra soglia: errore ({0}) e soglia in percentuale ({1}).</summary>
+    public required string CalibStatusReviewNotAcceptable { get; init; }
+
+    /// <summary>Calibrazione attiva: errore ({0}), origine ({1}), data ({2}).</summary>
+    public required string CalibStatusCalibrated { get; init; }
+
+    /// <summary>Origine "stimata dal Sole".</summary>
+    public required string CalibSourceSun { get; init; }
+
+    /// <summary>Origine "inserita a mano".</summary>
+    public required string CalibSourceManual { get; init; }
+
+    /// <summary>Riepilogo dei residui: errore medio ({0}), punti ({1}), outlier ({2}).</summary>
+    public required string CalibResidualSummary { get; init; }
+
+    /// <summary>Titolo dell'anteprima del frame.</summary>
+    public required string CalibFrameTitle { get; init; }
+
+    /// <summary>Messaggio dell'anteprima quando non c'e' ancora un frame.</summary>
+    public required string CalibFrameEmpty { get; init; }
+
+    /// <summary>Legenda della griglia alt/az sovrapposta.</summary>
+    public required string CalibGridLegend { get; init; }
+
+    /// <summary>Nome accessibile dei punti del Sole sovrapposti.</summary>
+    public required string CalibObservedName { get; init; }
+
+    /// <summary>Pulsante "Accetta".</summary>
+    public required string CalibAccept { get; init; }
+
+    /// <summary>Pulsante "Rifiuta".</summary>
+    public required string CalibReject { get; init; }
+
+    /// <summary>Conferma dell'accettazione.</summary>
+    public required string CalibAcceptedNotice { get; init; }
+
+    /// <summary>Conferma dello scarto della proposta.</summary>
+    public required string CalibRejectedNotice { get; init; }
+
+    /// <summary>Titolo dell'elenco dei punti raccolti.</summary>
+    public required string CalibPointsTitle { get; init; }
+
+    /// <summary>Messaggio quando non c'e' ancora nessun punto.</summary>
+    public required string CalibNoPoints { get; init; }
+
+    /// <summary>Titolo della sezione manuale.</summary>
+    public required string CalibManualTitle { get; init; }
+
+    /// <summary>Spiegazione della modalita' manuale.</summary>
+    public required string CalibManualHint { get; init; }
+
+    /// <summary>Etichetta del centro x.</summary>
+    public required string CalibManualCenterX { get; init; }
+
+    /// <summary>Etichetta del centro y.</summary>
+    public required string CalibManualCenterY { get; init; }
+
+    /// <summary>Etichetta del raggio dell'orizzonte.</summary>
+    public required string CalibManualRadius { get; init; }
+
+    /// <summary>Etichetta della correzione radiale K2.</summary>
+    public required string CalibManualK2 { get; init; }
+
+    /// <summary>Etichetta della rotazione del Nord.</summary>
+    public required string CalibManualRotation { get; init; }
+
+    /// <summary>Etichetta dello specchio (Est a destra).</summary>
+    public required string CalibManualMirrored { get; init; }
+
+    /// <summary>Avviso che l'anteprima manuale non e' ancora salvata.</summary>
+    public required string CalibManualPreviewOn { get; init; }
+
+    /// <summary>Pulsante che propone il modello manuale.</summary>
+    public required string CalibManualUse { get; init; }
+
+    /// <summary>Pulsante che riporta i valori manuali a quelli del frame.</summary>
+    public required string CalibManualReset { get; init; }
+
+    /// <summary>Messaggio quando la modalita' manuale non ha un frame.</summary>
+    public required string CalibManualNoFrame { get; init; }
+
+    /// <summary>Messaggio quando almeno un campo manuale non e' valido.</summary>
+    public required string CalibManualInvalid { get; init; }
+
+    /// <summary>Problema di campo: vuoto.</summary>
+    public required string CalibProblemEmpty { get; init; }
+
+    /// <summary>Problema di campo: non e' un numero.</summary>
+    public required string CalibProblemNotNumber { get; init; }
+
+    /// <summary>Problema di campo: il raggio non e' positivo.</summary>
+    public required string CalibProblemNotPositive { get; init; }
+
+    /// <summary>Problema di campo: K2 fuori dall'intervallo.</summary>
+    public required string CalibProblemOutOfRange { get; init; }
+
+    /// <summary>Esito: nessuna proposta da accettare.</summary>
+    public required string CalibActionNoProposal { get; init; }
+
+    /// <summary>Esito: proposta sopra soglia.</summary>
+    public required string CalibActionNotAcceptable { get; init; }
+
+    /// <summary>Esito: nessun frame per la modalita' manuale.</summary>
+    public required string CalibActionNoFrame { get; init; }
+
+    /// <summary>Esito: salvataggio non riuscito.</summary>
+    public required string CalibActionSaveFailed { get; init; }
+
+    /// <summary>Lettera del Nord sulla griglia.</summary>
+    public required string CalibCardinalNorth { get; init; }
+
+    /// <summary>Lettera dell'Est sulla griglia.</summary>
+    public required string CalibCardinalEast { get; init; }
+
+    /// <summary>Lettera del Sud sulla griglia.</summary>
+    public required string CalibCardinalSouth { get; init; }
+
+    /// <summary>Lettera dell'Ovest sulla griglia.</summary>
+    public required string CalibCardinalWest { get; init; }
+
+    /// <summary>Titolo dell'illustrazione "nessuna notte".</summary>
+    public required string IllusNoNightTitle { get; init; }
+
+    /// <summary>Testo dell'illustrazione "nessuna notte".</summary>
+    public required string IllusNoNightBody { get; init; }
+
+    /// <summary>Titolo dell'illustrazione "nessun evento".</summary>
+    public required string IllusNoEventsTitle { get; init; }
+
+    /// <summary>Testo dell'illustrazione "nessun evento".</summary>
+    public required string IllusNoEventsBody { get; init; }
+
+    /// <summary>Titolo dell'illustrazione "camera non collegata".</summary>
+    public required string IllusCameraTitle { get; init; }
+
+    /// <summary>Testo dell'illustrazione "camera non collegata".</summary>
+    public required string IllusCameraBody { get; init; }
+
+    /// <summary>Titolo dell'illustrazione "YouTube non collegato".</summary>
+    public required string IllusYouTubeTitle { get; init; }
+
+    /// <summary>Testo dell'illustrazione "YouTube non collegato".</summary>
+    public required string IllusYouTubeBody { get; init; }
+
+    /// <summary>Voce di menu della vista "Stanotte".</summary>
+    public required string TonightNav { get; init; }
+
+    /// <summary>Titolo della vista "Stanotte".</summary>
+    public required string TonightTitle { get; init; }
+
+    /// <summary>Nome dell'immagine del cielo per le tecnologie di accessibilità.</summary>
+    public required string TonightImageName { get; init; }
+
+    /// <summary>Messaggio quando non c'è ancora alcun frame da mostrare.</summary>
+    public required string TonightNoImage { get; init; }
+
+    /// <summary>Testo mentre la notte viene calcolata.</summary>
+    public required string TonightComputing { get; init; }
+
+    /// <summary>Errore di calcolo della notte; {0} è il dettaglio.</summary>
+    public required string TonightLoadError { get; init; }
+
+    /// <summary>Messaggio quando la posizione del sito non permette il calcolo.</summary>
+    public required string TonightSiteInvalid { get; init; }
+
+    /// <summary>Titolo della linea temporale della notte.</summary>
+    public required string TonightTimelineTitle { get; init; }
+
+    /// <summary>Nome della linea temporale per le tecnologie di accessibilità.</summary>
+    public required string TonightTimelineName { get; init; }
+
+    /// <summary>Etichetta del tramonto.</summary>
+    public required string TonightSunset { get; init; }
+
+    /// <summary>Etichetta dell'alba.</summary>
+    public required string TonightSunrise { get; init; }
+
+    /// <summary>Messaggio per una notte senza tramonto né alba.</summary>
+    public required string TonightNoWindow { get; init; }
+
+    /// <summary>Marcatore dell'ora corrente; {0} è l'orario locale.</summary>
+    public required string TonightNowMarker { get; init; }
+
+    /// <summary>Messaggio quando l'ora corrente non cade fra tramonto e alba.</summary>
+    public required string TonightNotInWindow { get; init; }
+
+    /// <summary>Nota sul tipo di altezze mostrate.</summary>
+    public required string TonightGeometricNote { get; init; }
+
+    /// <summary>Nome della curva del Sole.</summary>
+    public required string TonightSunCurve { get; init; }
+
+    /// <summary>Nome della curva della Luna.</summary>
+    public required string TonightMoonCurve { get; init; }
+
+    /// <summary>Nome della linea dell'orizzonte.</summary>
+    public required string TonightHorizon { get; init; }
+
+    /// <summary>Nome del grafico delle altezze, per le tecnologie di accessibilità.</summary>
+    public required string TonightCurveName { get; init; }
+
+    /// <summary>Riga di riepilogo di una fascia; {0} è la fase, {1} e {2} gli orari.</summary>
+    public required string TonightSegmentLine { get; init; }
+
+    /// <summary>Fase: giorno.</summary>
+    public required string TonightPhaseDay { get; init; }
+
+    /// <summary>Fase: crepuscolo civile.</summary>
+    public required string TonightPhaseCivil { get; init; }
+
+    /// <summary>Fase: crepuscolo nautico.</summary>
+    public required string TonightPhaseNautical { get; init; }
+
+    /// <summary>Fase: crepuscolo astronomico.</summary>
+    public required string TonightPhaseAstro { get; init; }
+
+    /// <summary>Fase: notte astronomica.</summary>
+    public required string TonightPhaseNight { get; init; }
+
+    /// <summary>Titolo della carta "Condizioni".</summary>
+    public required string TonightConditionsTitle { get; init; }
+
+    /// <summary>Nome del glifo lunare; {0} è la fase, {1} la percentuale illuminata.</summary>
+    public required string TonightMoonGlyphName { get; init; }
+
+    /// <summary>Fase lunare: luna nuova.</summary>
+    public required string TonightMoonNew { get; init; }
+
+    /// <summary>Fase lunare: falce crescente.</summary>
+    public required string TonightMoonWaxingCrescent { get; init; }
+
+    /// <summary>Fase lunare: primo quarto.</summary>
+    public required string TonightMoonFirstQuarter { get; init; }
+
+    /// <summary>Fase lunare: gibbosa crescente.</summary>
+    public required string TonightMoonWaxingGibbous { get; init; }
+
+    /// <summary>Fase lunare: luna piena.</summary>
+    public required string TonightMoonFull { get; init; }
+
+    /// <summary>Fase lunare: gibbosa calante.</summary>
+    public required string TonightMoonWaningGibbous { get; init; }
+
+    /// <summary>Fase lunare: ultimo quarto.</summary>
+    public required string TonightMoonLastQuarter { get; init; }
+
+    /// <summary>Fase lunare: falce calante.</summary>
+    public required string TonightMoonWaningCrescent { get; init; }
+
+    /// <summary>Etichetta dell'altezza della Luna.</summary>
+    public required string TonightMoonAltitude { get; init; }
+
+    /// <summary>Etichetta dell'altezza del Sole.</summary>
+    public required string TonightSunAltitude { get; init; }
+
+    /// <summary>Etichetta dell'indice di cielo sereno.</summary>
+    public required string TonightSkyClarity { get; init; }
+
+    /// <summary>Valore dell'indice di cielo sereno finché non è disponibile.</summary>
+    public required string TonightSkyClarityPending { get; init; }
+
+    /// <summary>Etichetta del meteo.</summary>
+    public required string TonightWeather { get; init; }
+
+    /// <summary>Valore del meteo finché non è disponibile.</summary>
+    public required string TonightWeatherPending { get; init; }
+
+    /// <summary>Titolo della carta "Prossimi eventi".</summary>
+    public required string TonightEventsTitle { get; init; }
+
+    /// <summary>Etichetta del prossimo cambio di fase.</summary>
+    public required string TonightNextChange { get; init; }
+
+    /// <summary>Etichetta del prossimo transito.</summary>
+    public required string TonightNextTransit { get; init; }
+
+    /// <summary>Segnaposto quando non c'è un transito previsto.</summary>
+    public required string TonightNoTransit { get; init; }
+
+    /// <summary>Spiegazione finché il calcolo dei transiti non è attivo.</summary>
+    public required string TonightTransitPending { get; init; }
+
+    /// <summary>Etichetta dell'ultima meteora.</summary>
+    public required string TonightLastMeteor { get; init; }
+
+    /// <summary>Segnaposto quando non ci sono meteore registrate.</summary>
+    public required string TonightNoMeteor { get; init; }
+
+    /// <summary>Spiegazione finché il rilevamento delle meteore non è attivo.</summary>
+    public required string TonightMeteorPending { get; init; }
+
+    /// <summary>Titolo della carta "Stato della cattura".</summary>
+    public required string TonightCaptureTitle { get; init; }
+
+    /// <summary>Conto alla rovescia con preposizione; {0} è la durata.</summary>
+    public required string TonightCountdownIn { get; init; }
+
+    /// <summary>Durata in minuti; {0} sono i minuti.</summary>
+    public required string TonightCountdownMinutes { get; init; }
+
+    /// <summary>Durata in ore e minuti; {0} sono le ore, {1} i minuti.</summary>
+    public required string TonightCountdownHoursMinutes { get; init; }
+
+    /// <summary>Durata inferiore al minuto.</summary>
+    public required string TonightCountdownLessThanMinute { get; init; }
+
+    /// <summary>Parola per un istante che coincide con l'ora corrente.</summary>
+    public required string TonightNow { get; init; }
+
+    /// <summary>Età di un dato; {0} è la durata.</summary>
+    public required string TonightAgo { get; init; }
 }

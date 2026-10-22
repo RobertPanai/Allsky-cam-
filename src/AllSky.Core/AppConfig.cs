@@ -58,6 +58,12 @@ public sealed record AppConfig
 
     public UiConfig Ui { get; init; } = new();
 
+    /// <summary>
+    /// Calibrazione ottica accettata (P3.3). Null se la camera non e' ancora calibrata; le configurazioni precedenti
+    /// non hanno la proprieta'. Il sotto-oggetto e' versionato, vedi <see cref="Calibration.OpticalCalibrationConfig"/>.
+    /// </summary>
+    public Calibration.OpticalCalibrationConfig? Optics { get; init; } = null;
+
     public sealed record SiteConfig
     {
         public string Name { get; init; } = "Osservatorio";

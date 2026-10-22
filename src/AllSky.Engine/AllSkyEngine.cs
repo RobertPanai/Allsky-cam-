@@ -18,7 +18,7 @@ namespace AllSky.Engine;
 /// del ciclo di cattura, arresto) sono serializzate da <c>_control</c>.
 /// </para>
 /// </summary>
-public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
+public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibration.ICalibrationService, IAsyncDisposable
 {
     /// <summary>Versione dell'applicazione, riportata in <see cref="StatusDto.Version"/>.</summary>
     public const string Version = "0.1.0";

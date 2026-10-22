@@ -71,6 +71,10 @@ public sealed class App : System.Windows.Application
         });
         ApplySavedTheme();
 
+        // Schermata d'avvio (P1.10): si chiude quando la finestra principale è caricata.
+        var splash = new SplashWindow(_texts);
+        splash.Show();
+
         _window = new MainWindow(_runtime.Service, _texts, _runtime, _paths);
         _tray = new TrayIcon(_runtime, _paths, _texts, ShowMainWindow, ExitApplication);
 
@@ -80,9 +84,11 @@ public sealed class App : System.Windows.Application
             // (non mostrata) così che l'icona nell'area di notifica continui a funzionare.
             _gallery = new ComponentGalleryWindow(Theme);
             _gallery.Show();
+            splash.CloseSplash();
         }
         else
         {
+            _window.Loaded += (_, _) => splash.CloseSplash();
             _window.Show();
         }
     }

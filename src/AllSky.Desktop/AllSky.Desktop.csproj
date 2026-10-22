@@ -14,7 +14,8 @@
     <AssemblyTitle>All Sky Brain</AssemblyTitle>
     <!-- Nessun App.xaml: l'entry point è Program.Main e l'applicazione è la classe App scritta in C#. -->
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
-    <!-- Nessun .ico nel repository: senza ApplicationIcon l'exe usa l'icona predefinita di Windows. -->
+    <!-- Icona dell'exe. Generata da tools/brand/build_brand.py (P1.10). -->
+    <ApplicationIcon>..\..\assets\brand\allsky-brain.ico</ApplicationIcon>
   </PropertyGroup>
 
   <!--
@@ -31,6 +32,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AllSky.Host\AllSky.Host.csproj" />
     <ProjectReference Include="..\AllSky.Updates\AllSky.Updates.csproj" />
+    <ProjectReference Include="..\AllSky.InfoOverlay\AllSky.InfoOverlay.csproj" />
   </ItemGroup>
 
   <!--
@@ -43,6 +45,16 @@
 
   <ItemGroup>
     <Compile Include="..\AllSky.Tray\Updates\VelopackBackend.cs" Link="Shared\VelopackBackend.cs" />
+  </ItemGroup>
+
+  <!--
+    Risorse del marchio: icona per l'area di notifica (TrayIcon.cs) e font inclusi (OFL, vedi assets/brand/README.md).
+    I file di licenza dei font vanno anche nella cartella dell'app.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\assets\brand\allsky-brain.ico" LogicalName="allsky-brain.ico" />
+    <Resource Include="Assets\Fonts\*.ttf" />
+    <None Include="Assets\Fonts\*.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!--

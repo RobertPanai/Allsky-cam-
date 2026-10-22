@@ -646,6 +646,12 @@ public class CameraView : UserControl
 
     private Border BuildCalibrationPanel()
     {
+        // L'Engine implementa anche ICalibrationService (P3.3): se il servizio non lo fa, resta il segnaposto.
+        if (_service is AllSky.Core.Calibration.ICalibrationService calibration)
+        {
+            return new CalibrationPanel(_service, calibration, _texts) { Margin = new Thickness(0, 16, 0, 0) };
+        }
+
         var stack = new StackPanel();
         stack.Children.Add(BuildPanelTitle(_texts.CameraCalibrationTitle));
         stack.Children.Add(BuildBodyText(_texts.CameraCalibrationEmpty, "Brush.TextSecondary"));

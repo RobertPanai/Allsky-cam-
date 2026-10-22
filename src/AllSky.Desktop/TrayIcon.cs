@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using AllSky.Core;
@@ -21,6 +23,9 @@ namespace AllSky.Desktop;
 /// </remarks>
 internal sealed class TrayIcon : IDisposable
 {
+    /// <summary>Nome logico della risorsa incorporata con l'icona del marchio (vedi AllSky.Desktop.csproj).</summary>
+    private const string TrayIconResourceName = "allsky-brain.ico";
+
     /// <summary>Chiave di avvio automatica dell'utente corrente.</summary>
     private const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
 
@@ -39,6 +44,8 @@ internal sealed class TrayIcon : IDisposable
     private readonly WinForms.ContextMenuStrip _menu;
     private readonly WinForms.ToolStripMenuItem _autostartItem;
     private readonly WinForms.ToolStripMenuItem _updateItem;
+    private readonly System.Drawing.Icon _trayIcon;
+    private readonly bool _ownsTrayIcon;
     private bool _disposed;
 
     /// <summary>Crea l'icona e il menu. Va creata sul thread dell'interfaccia.</summary>
@@ -92,9 +99,11 @@ internal sealed class TrayIcon : IDisposable
         _menu.Items.Add(new WinForms.ToolStripSeparator());
         _menu.Items.Add(exitItem);
 
+        (_trayIcon, _ownsTrayIcon) = LoadTrayIcon();
+
         _notifyIcon = new WinForms.NotifyIcon
         {
-            Icon = System.Drawing.SystemIcons.Application,
+            Icon = _trayIcon,
             Text = texts.WindowTitle,
             ContextMenuStrip = _menu,
             Visible = true,
@@ -116,6 +125,34 @@ internal sealed class TrayIcon : IDisposable
         _notifyIcon.Visible = false;
         _notifyIcon.Dispose();
         _menu.Dispose();
+
+        // L'icona di sistema è condivisa da Windows: si rilascia solo quella caricata dalla risorsa.
+        if (_ownsTrayIcon)
+        {
+            _trayIcon.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Icona del marchio incorporata nell'exe (allsky-brain.ico, P1.10). Se la risorsa manca o non si legge,
+    /// si ripiega sull'icona di sistema: l'area di notifica deve comunque avere un'icona.
+    /// </summary>
+    private static (System.Drawing.Icon Icon, bool Owned) LoadTrayIcon()
+    {
+        try
+        {
+            using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(TrayIconResourceName);
+            if (stream is not null)
+            {
+                return (new System.Drawing.Icon(stream), true);
+            }
+        }
+        catch (Exception)
+        {
+            // Icona del marchio non leggibile: si usa quella di sistema sotto.
+        }
+
+        return (System.Drawing.SystemIcons.Application, false);
     }
 
     /// <summary>Apre l'indirizzo del pannello nel browser predefinito. In caso di errore mostra l'indirizzo da aprire a mano.</summary>

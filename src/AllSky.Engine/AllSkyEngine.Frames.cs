@@ -115,6 +115,9 @@ public sealed partial class AllSkyEngine
             _error = null;
         }
 
+        // Calibrazione ottica (P3.3): raccolta dei punti del Sole. Non lancia e non blocca la cattura.
+        FeedCalibration(raw);
+
         Notify(FrameProduced, new FrameEvent(id, timestamp, sensorTemp));
         RaiseStatus();
         return Task.CompletedTask;
