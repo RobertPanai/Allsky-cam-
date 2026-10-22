@@ -133,3 +133,15 @@ Una voce per iterazione, la più recente in fondo. Formato:
   - Eventi: clip con ffmpeg reale e JPEG reale non provati; posizione alt/az solo come interfaccia `IPixelToSky`.
   - `WpfFrameOverlay` non compilato a runtime/budget 30 ms non misurato.
 - Da fare (cablaggio, non ancora assegnato): timer del pianificatore YouTube nell'Host (TickAsync all'avvio e ogni ~10 min); adattatore `ILatestTimelapseProvider` verso NightArchive (con variante con maschera); detection per frame nell'Engine che usa `StreakClassifier`/`EventSaver` (agganciare con finestra N−2..N+2, serve RGB a piena risoluzione); `Engine.WeatherProvider` da impostazioni; `IPixelToSky` dalla calibrazione.
+
+## 2026-10-22 13:00 — P2.5, P4.3, P4.5, P4.6, P7.4
+- Fatto: editor visivo della maschera (aperto da Impostazioni); previsioni dei passaggi (servizio nell'Engine, spento di default, UI in Stanotte/Live/barra di stato); salvataggio dei transiti (`TransitEventSaver`); modalità transito (policy di cadenza, spenta); vista YouTube + Host (provider ultima notte completa, worker ogni 10 min, store cifrato).
+- Test: runner shim 1918/1918. CI Windows run 39740242914 verde (una correzione: `MaskLogoStore.NomeBase` era internal, il runner shim compila tutto in un solo assembly e non lo segnala).
+- Nota metodo: il runner shim non rileva errori di visibilità `internal` tra assembly; la CI sì.
+- Decisioni da confermare:
+  - Ora predefinita dell'upload YouTube 12:30 (non 08:00): la notte osservativa finisce a mezzogiorno, alle 08:00 si caricherebbe la notte di due giorni prima.
+  - "Salva tutti i passaggi visibili" salva anche i NonIdentificato.
+  - `enabled` di YouTube si accende al collegamento e si spegne allo scollegamento (nessun interruttore nel pannello); fuso: la vista usa quello del PC, lo scheduler quello dell'osservatorio letto all'avvio.
+  - L'elenco passaggi mostra tutti quelli sopra soglia con marcatura di visibilità; le tracce su Live solo per passaggi in corso o entro 15 min.
+- Non verificato: tutto il WPF di questo gruppo; propagazione SGP4 della ISS contro fonte esterna [NV]; tempo di lettura camera di 2 s (modalità transito) stimato; `HostYouTubeService` (login/logout) senza test unitari.
+- Aggiunto al piano il task P5.5 (cablaggio rilevamento nell'Engine): meteore, transiti, modalità transito non sono ancora collegati all'Engine.
