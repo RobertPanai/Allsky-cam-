@@ -43,6 +43,7 @@ public sealed class CaptureLoop
     private readonly ICaptureDelay _delay;
     private readonly AutoExposure _autoExposure;
     private readonly CaptureLoopOptions _options;
+    private readonly TransitCadencePolicy? _transitPolicy;
 
     // Tutti i campi seguenti sono protetti da _lock. Il lock non viene mai tenuto durante chiamate esterne.
     private readonly object _lock = new();
@@ -63,6 +64,7 @@ public sealed class CaptureLoop
     /// <param name="delay">Attesa asincrona (reale o finta nei test).</param>
     /// <param name="autoExposure">Controller dell'esposizione. Il loop lo usa solo dal consumer e dal produttore, sotto lock.</param>
     /// <param name="options">Intervallo, cattura diurna e coordinate del sito.</param>
+    /// <param name="transitPolicy">Modalità transito (P4.6), o null per l'intervallo fisso. Con policy spenta il comportamento è identico.</param>
     /// <exception cref="ArgumentNullException">Se un argomento è null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Se le opzioni non sono valide.</exception>
     public CaptureLoop(
@@ -71,7 +73,8 @@ public sealed class CaptureLoop
         Func<RawFrame, CancellationToken, Task> onFrame,
         ICaptureDelay delay,
         AutoExposure autoExposure,
-        CaptureLoopOptions options)
+        CaptureLoopOptions options,
+        TransitCadencePolicy? transitPolicy = null)
     {
         ArgumentNullException.ThrowIfNull(camera);
         ArgumentNullException.ThrowIfNull(clock);
@@ -105,6 +108,7 @@ public sealed class CaptureLoop
         _delay = delay;
         _autoExposure = autoExposure;
         _options = options;
+        _transitPolicy = transitPolicy;
         _setting = autoExposure.Current;
     }
 
@@ -199,7 +203,9 @@ public sealed class CaptureLoop
                     // Con DropOldest la scrittura non si blocca mai.
                     await writer.WriteAsync(frame, ct);
 
-                    wait = Interval - (_clock.UtcNow - started);
+                    wait = _transitPolicy is null
+                        ? Interval - (_clock.UtcNow - started)
+                        : _transitPolicy.WaitAfterPose(started, _clock.UtcNow, Interval, TimeSpan.FromMilliseconds(setting.ExposureMs));
                     if (wait < TimeSpan.Zero)
                     {
                         wait = TimeSpan.Zero;

@@ -13,6 +13,7 @@
     <ProjectReference Include="..\AllSky.Detection\AllSky.Detection.csproj" />
     <ProjectReference Include="..\AllSky.Archive\AllSky.Archive.csproj" />
     <ProjectReference Include="..\AllSky.Timelapse\AllSky.Timelapse.csproj" />
+    <ProjectReference Include="..\AllSky.Transits\AllSky.Transits.csproj" />
   </ItemGroup>
 
 </Project>

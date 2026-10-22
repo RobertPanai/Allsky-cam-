@@ -248,7 +248,7 @@ public sealed class EventArchive
                 using (var zip = new ZipArchive(stream, ZipArchiveMode.Create))
                 {
                     AddEntry(zip, folder, eventId, EventFileName);
-                    foreach (string? name in new[] { record.Files.Crop, record.Files.Frame, record.Files.Clip })
+                    foreach (string? name in new[] { record.Files.Crop, record.Files.Frame, record.Files.Clip, record.Files.Composite })
                     {
                         if (name is not null && File.Exists(Path.Combine(folder, name)))
                         {
@@ -358,7 +358,7 @@ public sealed class EventArchive
 
     private static bool FileNamesAreSafe(EventRecord record)
     {
-        foreach (string? name in new[] { record.Files.Crop, record.Files.Frame, record.Files.Clip })
+        foreach (string? name in new[] { record.Files.Crop, record.Files.Frame, record.Files.Clip, record.Files.Composite })
         {
             if (name is not null && !SafeFileNameRegex.IsMatch(name))
             {

@@ -81,6 +81,9 @@ public sealed record EventFiles
 
     /// <summary>Mini-clip dei frame vicini (MP4).</summary>
     public string? Clip { get; init; }
+
+    /// <summary>Immagine composita dei frame di un transito (massimo per pixel, JPEG). Usata solo dai transiti.</summary>
+    public string? Composite { get; init; }
 }
 
 /// <summary>
@@ -152,6 +155,9 @@ public sealed record EventRecord
 
     /// <summary>Motivo dello stato (per esempio la riclassificazione), facoltativo.</summary>
     public string? StatusReason { get; init; }
+
+    /// <summary>Metadati del passaggio di un satellite. Null per meteore e bolidi.</summary>
+    public TransitDetails? TransitInfo { get; init; }
 }
 
 /// <summary>Filtro per <see cref="EventArchive.List"/>. Un campo null non filtra.</summary>

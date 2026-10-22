@@ -158,6 +158,33 @@ public sealed record AppConfig
         public int IntervalSeconds { get; init; } = 30;
 
         public bool DayCapture { get; init; } = true;
+
+        /// <summary>Modalità transito (P4.6): intervallo ridotto durante un passaggio previsto. Spenta di default.</summary>
+        public TransitModeConfig TransitMode { get; init; } = new();
+
+        /// <summary>
+        /// Modalità transito. Il sotto-oggetto e' versionato: le configurazioni precedenti non lo hanno e leggono i valori predefiniti.
+        /// Con <see cref="Enabled"/> falso il loop di cattura non cambia comportamento.
+        /// </summary>
+        public sealed record TransitModeConfig
+        {
+            /// <summary>Versione dello schema del sotto-oggetto. Le configurazioni precedenti non la hanno: si legge come 1.</summary>
+            public const int CurrentVersion = 1;
+
+            public int Version { get; init; } = CurrentVersion;
+
+            /// <summary>Attiva la modalità transito. Predefinito: spenta.</summary>
+            public bool Enabled { get; init; } = false;
+
+            /// <summary>Frazione dell'intervallo normale usata durante il passaggio (0,05 - 1). Predefinito 0,5 (metà). Non scende sotto il minimo fisico della camera.</summary>
+            public double IntervalFraction { get; init; } = 0.5;
+
+            /// <summary>Margine, in secondi, oltre la fine del passaggio prima di ripristinare l'intervallo normale. Predefinito 5.</summary>
+            public double RestoreMarginSeconds { get; init; } = 5;
+
+            /// <summary>Tempo di lettura e scarico dichiarato della camera, in secondi. Il minimo fisico e' esposizione + questo valore. Predefinito 2.</summary>
+            public double ReadoutSeconds { get; init; } = 2;
+        }
     }
 
     public sealed record ProductsConfig

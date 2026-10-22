@@ -27,6 +27,49 @@ public static class FrameRaster
     }
 
     /// <summary>
+    /// Massimo per pixel e per canale di una sequenza di frame RGB della stessa dimensione (immagine composita di un transito).
+    /// Il risultato e' un buffer nuovo; i frame in ingresso non vengono modificati.
+    /// </summary>
+    /// <param name="frames">Frame RGB 8 bit, riga per riga. Almeno uno.</param>
+    /// <param name="width">Larghezza comune dei frame.</param>
+    /// <param name="height">Altezza comune dei frame.</param>
+    public static byte[] MaxPerPixel(IEnumerable<byte[]> frames, int width, int height)
+    {
+        ArgumentNullException.ThrowIfNull(frames);
+        if (width <= 0 || height <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(width), "Il frame deve avere dimensioni positive.");
+        }
+
+        int length = checked(width * height * 3);
+        byte[]? output = null;
+        foreach (byte[] rgb in frames)
+        {
+            ArgumentNullException.ThrowIfNull(rgb);
+            if (rgb.Length != length)
+            {
+                throw new ArgumentException("Tutti i frame devono avere Width*Height*3 byte.", nameof(frames));
+            }
+
+            if (output is null)
+            {
+                output = (byte[])rgb.Clone();
+                continue;
+            }
+
+            for (int i = 0; i < length; i++)
+            {
+                if (rgb[i] > output[i])
+                {
+                    output[i] = rgb[i];
+                }
+            }
+        }
+
+        return output ?? throw new ArgumentException("Serve almeno un frame.", nameof(frames));
+    }
+
+    /// <summary>
     /// Quadrato centrato sulla scia (bounding box in pixel del frame), con margine e lato minimo.
     /// Il lato non supera il lato corto del frame e il quadrato resta dentro il frame.
     /// </summary>

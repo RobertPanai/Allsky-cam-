@@ -33,4 +33,21 @@ public static class EventIds
 
         return frameId + "-" + streakIndex.ToString("000", CultureInfo.InvariantCulture);
     }
+
+    /// <summary>
+    /// Id di un transito: "transit-&lt;NORAD&gt;-&lt;inizio UTC "yyyyMMddTHHmmssZ"&gt;". Stabile: lo stesso passaggio
+    /// (stesso satellite, stesso inizio) dà sempre lo stesso id, quindi non produce due eventi.
+    /// </summary>
+    /// <param name="noradId">Numero di catalogo NORAD, 1..999999999.</param>
+    /// <param name="startUtc">Inizio del passaggio.</param>
+    public static string ForTransit(int noradId, DateTimeOffset startUtc)
+    {
+        if (noradId < 1 || noradId > 999_999_999)
+        {
+            throw new ArgumentOutOfRangeException(nameof(noradId), noradId, "Il numero NORAD deve stare in 1..999999999.");
+        }
+
+        return "transit-" + noradId.ToString(CultureInfo.InvariantCulture) + "-"
+            + startUtc.ToUniversalTime().ToString("yyyyMMdd'T'HHmmss'Z'", CultureInfo.InvariantCulture);
+    }
 }
