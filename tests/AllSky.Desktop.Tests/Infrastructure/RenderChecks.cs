@@ -246,15 +246,15 @@ internal static class RenderChecks
     /// <summary>Elemento più in alto sotto il punto e fino a quattro antenati visuali, dal più vicino.</summary>
     private static string DescribeHit(DependencyObject? root, int x, int y)
     {
-        if (root is null)
+        if (root is not Visual visual)
         {
-            return "elemento radice assente";
+            return "elemento radice assente o non visuale";
         }
 
         HitTestResult? hit;
         try
         {
-            hit = VisualTreeHelper.HitTest(root, new Point(x + 0.5, y + 0.5));
+            hit = VisualTreeHelper.HitTest(visual, new Point(x + 0.5, y + 0.5));
         }
         catch (Exception ex)
         {
