@@ -58,7 +58,7 @@ public sealed class PublicationStatusFormatterTests
     [Fact]
     public void LastSuccess_Today_ShowsOnlyTheTime()
     {
-        DateTimeOffset when = Now.AddMinutes(-5);
+        DateTimeOffset when = Now;
         string expectedTime = when.ToLocalTime().ToString("HH:mm", CultureInfo.InvariantCulture);
 
         string text = PublicationStatusFormatter.LastSuccess(when, Now, DesktopTexts.English);
@@ -88,7 +88,7 @@ public sealed class PublicationStatusFormatterTests
         string? text = PublicationStatusFormatter.NextAttempt(Now.AddMinutes(1), Now, DesktopTexts.Italian);
 
         Assert.NotNull(text);
-        Assert.StartsWith("Prossimo tentativo: ", text);
+        Assert.StartsWith("Prossimo tentativo: ", text!);
     }
 
     [Fact]
@@ -106,9 +106,9 @@ public sealed class PublicationStatusFormatterTests
         string? text = PublicationStatusFormatter.LastError(status, Now, DesktopTexts.English);
 
         Assert.NotNull(text);
-        Assert.Contains(DesktopTexts.English.PublicationReasonAuth, text);
-        Assert.DoesNotContain("abc123", text);
-        Assert.DoesNotContain("Bearer", text);
+        Assert.Contains(DesktopTexts.English.PublicationReasonAuth, text!);
+        Assert.DoesNotContain("abc123", text!);
+        Assert.DoesNotContain("Bearer", text!);
     }
 
     [Theory]

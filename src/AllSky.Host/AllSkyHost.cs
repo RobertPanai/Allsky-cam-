@@ -22,6 +22,10 @@ public static class AllSkyHost
     /// <summary>Porta predefinita, usata se la configurazione non ne indica una valida.</summary>
     public const int DefaultPort = 5810;
 
+    private const string LanNoPasswordMessage =
+        "L'accesso dalla rete locale non ha una password. Impostarla nelle impostazioni di All Sky Brain.";
+    private const string LanWrongPasswordMessage = "Password non valida per l'accesso dalla rete locale.";
+
     /// <summary>Quante porte successive provare se quella richiesta e' occupata (5810 .. 5820).</summary>
     private const int PortSearchSpan = 10;
 
@@ -75,7 +79,16 @@ public static class AllSkyHost
             preferred = DefaultPort;
         }
 
-        bool lan = options.AllowLanOverride || initial.Ui.AllowLan;
+        // Interfaccia web spenta di default: senza ui.webEnabled l'Host non apre alcuna porta HTTP.
+        bool webEnabled = initial.Ui.WebEnabled;
+
+        // Rete locale solo se richiesta, con interfaccia web attiva e con una password impostata. Altrimenti si resta su 127.0.0.1.
+        bool lanRequested = options.AllowLanOverride || initial.Ui.AllowLan;
+        bool lan = webEnabled && lanRequested && !string.IsNullOrEmpty(initial.Ui.LanPasswordHash);
+        if (lanRequested && !lan)
+        {
+            log.Write("Accesso dalla rete locale richiesto ma non attivo: servono l'interfaccia web e una password (ui.lanPasswordHash).");
+        }
 
         // Un guasto della pubblicazione non impedisce l'avvio: TryCreate restituisce null e l'Host parte senza.
         PublishServices? publishing = HostPublishing.TryCreate(options, dataFolder, logFolder, secrets, log);
@@ -111,24 +124,28 @@ public static class AllSkyHost
             }
 
             var context = new HostContext(engine, log, shutdown.Token, logFolder, webRoot, publishing, sanitize, updates);
-            app = await StartWebAsync(preferred, lan, context, log, cancellationToken);
+            string? url = null;
+            if (webEnabled)
+            {
+                app = await StartWebAsync(preferred, lan, context, log, cancellationToken);
 
-            string bound = app.Urls.First();
-            string local = bound.Replace("://0.0.0.0", "://127.0.0.1", StringComparison.Ordinal)
-                .Replace("://[::]", "://127.0.0.1", StringComparison.Ordinal);
-            string url = $"http://127.0.0.1:{new Uri(local).Port}";
+                string bound = app.Urls.First();
+                string local = bound.Replace("://0.0.0.0", "://127.0.0.1", StringComparison.Ordinal)
+                    .Replace("://[::]", "://127.0.0.1", StringComparison.Ordinal);
+                url = $"http://127.0.0.1:{new Uri(local).Port}";
+            }
 
             if (lan)
             {
-                // TODO: la password per l'accesso dalla rete locale non e' ancora implementata: finche' manca,
-                // ui.allowLan espone la UI senza autenticazione. Va risolto prima di distribuire questa opzione.
-                log.Write("ATTENZIONE: accesso dalla rete locale attivo (ui.allowLan). La UI non ha ancora una password.");
+                log.Write("ATTENZIONE: accesso dalla rete locale attivo (ui.allowLan). Le richieste esterne chiedono la password.");
             }
 
-            log.Write($"AllSky Host in ascolto su {url}" + (lan ? " e sulla rete locale" : string.Empty) + ".");
+            log.Write(url is null
+                ? "AllSky Host avviato senza interfaccia web (ui.webEnabled = false)."
+                : $"AllSky Host in ascolto su {url}" + (lan ? " e sulla rete locale" : string.Empty) + ".");
             ready = true;
             updates.Service.Start();
-            return new AllSkyHostRuntime(app, engine, shutdown, log, url, publishing, updates.Service);
+            return new AllSkyHostRuntime(app, engine, shutdown, log, url, publishing, updates.Service, updates.Store);
         }
         finally
         {
@@ -224,6 +241,35 @@ public static class AllSkyHost
                 httpContext.Response.StatusCode = status;
                 await httpContext.Response.WriteAsJsonAsync(new ErrorBody(message), HostJson.Options);
             }
+        });
+
+        // Richieste dalla rete locale: serve la password (HTTP Basic). Quelle dal computer stesso passano sempre.
+        var lanAccess = new LanAccess();
+        app.Use(async (httpContext, next) =>
+        {
+            if (PublishRoutes.IsLocalRequest(httpContext.Connection.RemoteIpAddress))
+            {
+                await next();
+                return;
+            }
+
+            string? storedHash = context.Engine.GetConfig().Ui.LanPasswordHash;
+            if (string.IsNullOrEmpty(storedHash))
+            {
+                httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
+                await httpContext.Response.WriteAsJsonAsync(new ErrorBody(LanNoPasswordMessage), HostJson.Options);
+                return;
+            }
+
+            if (!lanAccess.IsAuthorized(httpContext.Request.Headers["Authorization"].ToString(), storedHash))
+            {
+                httpContext.Response.Headers["WWW-Authenticate"] = "Basic realm=\"All Sky Brain\", charset=\"UTF-8\"";
+                httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await httpContext.Response.WriteAsJsonAsync(new ErrorBody(LanWrongPasswordMessage), HostJson.Options);
+                return;
+            }
+
+            await next();
         });
 
         ApiRoutes.Map(app, context);

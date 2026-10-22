@@ -11,18 +11,19 @@ namespace AllSky.Host;
 /// </summary>
 public sealed class AllSkyHostRuntime : IAsyncDisposable
 {
-    private readonly WebApplication _app;
+    private readonly WebApplication? _app;
     private readonly AllSkyEngine _engine;
     private readonly CancellationTokenSource _shutdown;
     private readonly DailyFileLog _log;
     private readonly PublishServices? _publishing;
     private readonly UpdateService _updates;
+    private readonly UpdateSettingsStore _updateStore;
     private readonly TaskCompletionSource _stopped = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly object _gate = new();
     private Task? _stopTask;
 
     /// <summary>Crea il runtime: usato solo da <see cref="AllSkyHost"/>.</summary>
-    internal AllSkyHostRuntime(WebApplication app, AllSkyEngine engine, CancellationTokenSource shutdown, DailyFileLog log, string url, PublishServices? publishing, UpdateService updates)
+    internal AllSkyHostRuntime(WebApplication? app, AllSkyEngine engine, CancellationTokenSource shutdown, DailyFileLog log, string? url, PublishServices? publishing, UpdateService updates, UpdateSettingsStore updateStore)
     {
         _app = app;
         _engine = engine;
@@ -30,11 +31,29 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
         _log = log;
         _publishing = publishing;
         _updates = updates;
+        _updateStore = updateStore;
         Url = url;
     }
 
-    /// <summary>Indirizzo locale per aprire la UI, per esempio <c>http://127.0.0.1:5810</c> (porta reale, anche se diversa da quella richiesta).</summary>
-    public string Url { get; }
+    /// <summary>
+    /// Indirizzo locale per aprire la UI nel browser, per esempio <c>http://127.0.0.1:5810</c> (porta reale, anche se diversa da quella richiesta).
+    /// Null se l'interfaccia web è spenta (<c>ui.webEnabled</c> falso).
+    /// </summary>
+    public string? Url { get; }
+
+    /// <summary>Vero se l'interfaccia web (server HTTP) è in esecuzione in questa sessione.</summary>
+    public bool WebRunning => _app is not null;
+
+    /// <summary>
+    /// Attiva o disattiva il controllo automatico degli aggiornamenti: lo salva in <c>updates.json</c> e lo applica subito.
+    /// </summary>
+    /// <exception cref="IOException">Salvataggio non riuscito.</exception>
+    /// <exception cref="UnauthorizedAccessException">Permessi insufficienti sulla cartella dati.</exception>
+    public void SetUpdateAutoCheck(bool enabled)
+    {
+        _updateStore.Save(enabled);
+        _updates.SetAutoCheck(enabled);
+    }
 
     /// <summary>Servizio degli aggiornamenti: il Tray lo usa per la voce di menu. Resta valido fino all'arresto dell'Host.</summary>
     public UpdateService Updates => _updates;
@@ -83,13 +102,16 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
             _shutdown.Cancel();
             _updates.Dispose();
 
-            try
+            if (_app is not null)
             {
-                await _app.StopAsync();
-            }
-            catch (Exception ex) when (ex is not OperationCanceledException)
-            {
-                _log.Write("Arresto del server HTTP non pulito", ex);
+                try
+                {
+                    await _app.StopAsync();
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    _log.Write("Arresto del server HTTP non pulito", ex);
+                }
             }
 
             // La pubblicazione si ferma prima del motore: l'ultimo invio non parte mentre la cattura si chiude.
@@ -112,7 +134,11 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
                 await _publishing.DisposeAsync();
             }
 
-            await _app.DisposeAsync();
+            if (_app is not null)
+            {
+                await _app.DisposeAsync();
+            }
+
             _shutdown.Dispose();
             _log.Write("AllSky Host arrestato.");
         }

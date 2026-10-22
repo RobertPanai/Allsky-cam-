@@ -75,8 +75,8 @@ public sealed class PublicationFieldMessagesTests
         string? text = PublicationFieldMessages.ForNumber(PublicationNumberProblem.OutOfRange, 200, 2000, DesktopTexts.English);
 
         Assert.NotNull(text);
-        Assert.Contains("200", text);
-        Assert.Contains("2000", text);
+        Assert.Contains("200", text!);
+        Assert.Contains("2000", text!);
     }
 
     [Fact]

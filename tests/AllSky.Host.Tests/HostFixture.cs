@@ -22,6 +22,7 @@ internal sealed class HostFixture : IDisposable
         {
             Camera = new AppConfig.CameraConfig { Id = string.Empty },
             Storage = new AppConfig.StorageConfig { Folder = DataFolder },
+            Ui = new AppConfig.UiConfig { WebEnabled = true },
         };
         new ConfigStore().Save(ConfigPath, config);
     }
