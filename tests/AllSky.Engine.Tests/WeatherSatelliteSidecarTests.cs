@@ -81,7 +81,10 @@ public sealed class WeatherSatelliteSidecarTests
             propagatori: propagatori);
 
         Assert.True(sidecars.Count >= 3);
-        foreach (FrameSidecar sidecar in sidecars)
+
+        // Il primo fotogramma viene scritto prima che la previsione sia pronta (il ritardo di CatturaAsync la aspetta
+        // solo tra un fotogramma e l'altro): su un runner lento ha l'elenco vuoto. Dal secondo in poi e' garantita.
+        foreach (FrameSidecar sidecar in sidecars.Skip(1))
         {
             SatelliteInView visibile = Assert.Single(sidecar.Satellites!);
             Assert.Equal("ISS (ZARYA)", visibile.Name);
