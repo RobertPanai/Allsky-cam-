@@ -138,11 +138,13 @@ public sealed partial class DesktopUiTests
             problems.Add($"bitmap vuoto: solo {analysis.ContentPixels} pixel diversi dallo sfondo");
         }
 
+        string? tint = null;
         if (nightRed && analysis.TintViolationRatio > RenderChecks.NightViolationBudget)
         {
             problems.Add(
                 $"colore fuori dal rosso: {analysis.TintViolations} pixel con verde o blu oltre {RenderChecks.NightTolerance} " +
                 $"({analysis.TintViolationRatio:P3} del bitmap)");
+            tint = SafeDescribeTint(bitmap, measured);
         }
 
         string head = problems.Count == 0 ? "OK" : "FALLITO";
@@ -152,7 +154,28 @@ public sealed partial class DesktopUiTests
             detail += ". " + string.Join(". ", problems);
         }
 
+        if (tint is not null)
+        {
+            detail += "\n" + tint;
+        }
+
         return new CaseOutcome(problems.Count == 0, detail, analysis.Ascii);
+    }
+
+    /// <summary>
+    /// Diagnostica dei pixel fuori dal rosso. Gira solo dopo un fallimento: se qualcosa va storto qui, il messaggio
+    /// resta quello del controllo e l'errore della diagnostica ne occupa una riga.
+    /// </summary>
+    private static string SafeDescribeTint(RenderTargetBitmap bitmap, DependencyObject measured)
+    {
+        try
+        {
+            return RenderChecks.DescribeTintViolations(bitmap, measured);
+        }
+        catch (Exception ex)
+        {
+            return "Diagnostica fuori dal rosso non disponibile: " + ex.GetType().Name + " " + ex.Message;
+        }
     }
 
     /// <summary>Salva il PNG nella cartella dei test. Un errore di scrittura non fa fallire il caso.</summary>

@@ -89,7 +89,7 @@ internal static class RenderChecks
                     content++;
                 }
 
-                if (nightRed && Math.Max(g, b) > NightTolerance)
+                if (nightRed && IsOffNightRed(g, b))
                 {
                     violations++;
                 }
@@ -98,6 +98,190 @@ internal static class RenderChecks
 
         double ratio = width * height == 0 ? 0 : (double)violations / (width * height);
         return new PixelAnalysis(content, violations, ratio, Ascii(pixels, width, height, stride));
+    }
+
+    /// <summary>Regola del rosso in notte: verde e blu devono restare entro la tolleranza.</summary>
+    private static bool IsOffNightRed(byte g, byte b) => Math.Max(g, b) > NightTolerance;
+
+    /// <summary>
+    /// Diagnostica dei pixel fuori dal rosso, con la stessa regola di <see cref="Analyze"/>: riquadro, colori
+    /// quantizzati a 8 livelli per canale e, per quattro punti campione, l'elemento visuale sotto il punto.
+    /// Le coordinate sono in pixel del bitmap; a 96 dpi coincidono con i DIP dell'elemento radice.
+    /// </summary>
+    /// <param name="bitmap">Bitmap renderizzato dell'elemento radice.</param>
+    /// <param name="root">Elemento radice su cui si fa <c>VisualTreeHelper.HitTest</c> per i punti campione.</param>
+    public static string DescribeTintViolations(BitmapSource bitmap, DependencyObject? root)
+    {
+        int width = bitmap.PixelWidth;
+        int height = bitmap.PixelHeight;
+        int stride = width * 4;
+        var pixels = new byte[stride * height];
+        bitmap.CopyPixels(pixels, stride, 0);
+
+        int minX = int.MaxValue;
+        int minY = int.MaxValue;
+        int maxX = -1;
+        int maxY = -1;
+        long count = 0;
+        long sumX = 0;
+        long sumY = 0;
+        int firstX = -1;
+        int firstY = -1;
+        int lastX = -1;
+        int lastY = -1;
+        var colors = new Dictionary<int, int>();
+
+        for (int y = 0; y < height; y++)
+        {
+            int row = y * stride;
+            for (int x = 0; x < width; x++)
+            {
+                int i = row + x * 4;
+                byte b = pixels[i];
+                byte g = pixels[i + 1];
+                byte r = pixels[i + 2];
+                if (!IsOffNightRed(g, b))
+                {
+                    continue;
+                }
+
+                if (count == 0)
+                {
+                    firstX = x;
+                    firstY = y;
+                }
+
+                lastX = x;
+                lastY = y;
+                count++;
+                minX = Math.Min(minX, x);
+                minY = Math.Min(minY, y);
+                maxX = Math.Max(maxX, x);
+                maxY = Math.Max(maxY, y);
+                sumX += x;
+                sumY += y;
+
+                int key = ((r >> 5) << 6) | ((g >> 5) << 3) | (b >> 5);
+                colors.TryGetValue(key, out int seen);
+                colors[key] = seen + 1;
+            }
+        }
+
+        if (count == 0)
+        {
+            return "Diagnostica: nessun pixel fuori dal rosso.";
+        }
+
+        var sb = new StringBuilder();
+        sb.Append($"Riquadro pixel fuori dal rosso: x {minX}..{maxX}, y {minY}..{maxY} ")
+          .Append($"({maxX - minX + 1} x {maxY - minY + 1} px; 1 px = 1 DIP a 96 dpi).");
+        sb.Append("\nColori fuori dal rosso (8 livelli per canale, primi 5 per pixel):");
+        foreach (KeyValuePair<int, int> entry in colors.OrderByDescending(e => e.Value).ThenBy(e => e.Key).Take(5))
+        {
+            sb.Append($" {QuantizedHex(entry.Key)} x{entry.Value}");
+        }
+
+        sb.Append($" (colori distinti: {colors.Count}).");
+
+        (int middleX, int middleY) = NthOffending(pixels, width, height, stride, count / 2);
+        int centroidX = (int)Math.Round((double)sumX / count);
+        int centroidY = (int)Math.Round((double)sumY / count);
+
+        sb.Append("\nCampioni (HitTest sull'elemento radice):");
+        AppendSample(sb, "prima", firstX, firstY, root);
+        AppendSample(sb, "centrale", middleX, middleY, root);
+        AppendSample(sb, "ultima", lastX, lastY, root);
+        AppendSample(sb, "baricentro", centroidX, centroidY, root);
+        return sb.ToString();
+    }
+
+    /// <summary>Chiave quantizzata (3 bit per canale) come #RRGGBB, con il valore centrale del livello.</summary>
+    private static string QuantizedHex(int key)
+    {
+        int r = ((key >> 6) & 7) * 255 / 7;
+        int g = ((key >> 3) & 7) * 255 / 7;
+        int b = (key & 7) * 255 / 7;
+        return $"#{r:X2}{g:X2}{b:X2}";
+    }
+
+    /// <summary>Coordinate del pixel fuori dal rosso con indice dato, in ordine di scansione (riga per riga).</summary>
+    private static (int X, int Y) NthOffending(byte[] pixels, int width, int height, int stride, long ordinal)
+    {
+        long seen = 0;
+        for (int y = 0; y < height; y++)
+        {
+            int row = y * stride;
+            for (int x = 0; x < width; x++)
+            {
+                int i = row + x * 4;
+                if (!IsOffNightRed(pixels[i + 1], pixels[i]))
+                {
+                    continue;
+                }
+
+                if (seen == ordinal)
+                {
+                    return (x, y);
+                }
+
+                seen++;
+            }
+        }
+
+        return (-1, -1);
+    }
+
+    private static void AppendSample(StringBuilder sb, string label, int x, int y, DependencyObject? root)
+    {
+        sb.Append($"\n  {label} ({x},{y}): ");
+        if (x < 0 || y < 0)
+        {
+            sb.Append("punto non disponibile");
+            return;
+        }
+
+        sb.Append(DescribeHit(root, x, y));
+    }
+
+    /// <summary>Elemento più in alto sotto il punto e fino a quattro antenati visuali, dal più vicino.</summary>
+    private static string DescribeHit(DependencyObject? root, int x, int y)
+    {
+        if (root is null)
+        {
+            return "elemento radice assente";
+        }
+
+        HitTestResult? hit;
+        try
+        {
+            hit = VisualTreeHelper.HitTest(root, new Point(x + 0.5, y + 0.5));
+        }
+        catch (Exception ex)
+        {
+            return "HitTest fallito: " + ex.GetType().Name + " " + ex.Message;
+        }
+
+        if (hit?.VisualHit is not DependencyObject node)
+        {
+            return "nessun elemento sotto il punto";
+        }
+
+        string name = node is FrameworkElement element ? element.Name : string.Empty;
+        var ancestors = new List<string>();
+        DependencyObject? current = node;
+        for (int depth = 0; depth < 4 && current is Visual; depth++)
+        {
+            current = VisualTreeHelper.GetParent(current);
+            if (current is null)
+            {
+                break;
+            }
+
+            ancestors.Add(current.GetType().Name);
+        }
+
+        string chain = ancestors.Count == 0 ? "nessuno" : string.Join(" > ", ancestors);
+        return $"{node.GetType().Name} Name='{name}'; antenati: {chain}";
     }
 
     /// <summary>Anteprima ASCII: griglia fissa, luminanza media per cella, righe separate da <c>\n</c>.</summary>

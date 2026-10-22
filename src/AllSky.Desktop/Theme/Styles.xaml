@@ -214,6 +214,128 @@
     <Setter Property="Template" Value="{StaticResource TextBox.Template}"/>
   </Style>
 
+  <!-- Casella a discesa: stessa superficie, bordo e altezza dei campi di testo. Il modello di sistema disegna il
+       rettangolo e la freccia con colori propri, che non seguono Background: in notte rossa restano fuori dal rosso. -->
+  <Style TargetType="ComboBox">
+    <Setter Property="Background" Value="{DynamicResource Brush.Surface2}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>
+    <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Size.Body}"/>
+    <Setter Property="MinHeight" Value="32"/>
+    <Setter Property="Padding" Value="{DynamicResource Inset.Field}"/>
+    <Setter Property="FocusVisualStyle" Value="{DynamicResource Focus.Ring}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ComboBox">
+          <Grid SnapsToDevicePixels="True">
+            <Border x:Name="Chrome"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{DynamicResource Radius.Small}">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ContentPresenter Grid.Column="0"
+                                  Margin="{TemplateBinding Padding}"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Center"
+                                  IsHitTestVisible="False"
+                                  Content="{TemplateBinding SelectionBoxItem}"
+                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"/>
+                <Path Grid.Column="1"
+                      Margin="0,0,10,0"
+                      VerticalAlignment="Center"
+                      Data="M 0 0 L 4 4 L 8 0 Z"
+                      Fill="{DynamicResource Brush.TextSecondary}"
+                      IsHitTestVisible="False"/>
+                <ToggleButton Grid.ColumnSpan="2"
+                              Focusable="False"
+                              ClickMode="Press"
+                              IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                  <ToggleButton.Template>
+                    <ControlTemplate TargetType="ToggleButton">
+                      <Border Background="Transparent"/>
+                    </ControlTemplate>
+                  </ToggleButton.Template>
+                </ToggleButton>
+              </Grid>
+            </Border>
+            <Popup x:Name="PART_Popup"
+                   AllowsTransparency="True"
+                   Focusable="False"
+                   Placement="Bottom"
+                   PopupAnimation="None"
+                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                   MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
+              <Border Margin="0,2,0,0"
+                      Background="{DynamicResource Brush.Surface2}"
+                      BorderBrush="{DynamicResource Brush.BorderActive}"
+                      BorderThickness="1"
+                      CornerRadius="{DynamicResource Radius.Small}">
+                <ScrollViewer MaxHeight="240" SnapsToDevicePixels="True">
+                  <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/>
+                </ScrollViewer>
+              </Border>
+            </Popup>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Brush.TextTertiary}"/>
+            </Trigger>
+            <Trigger Property="IsDropDownOpen" Value="True">
+              <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Brush.BorderActive}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.Surface1}"/>
+              <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
+              <Setter Property="Foreground" Value="{DynamicResource Brush.TextTertiary}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Voce della casella a discesa: sfondo trasparente, evidenziazione e selezione in Surface3. -->
+  <Style TargetType="ComboBoxItem">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>
+    <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Size.Body}"/>
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    <Setter Property="Padding" Value="{DynamicResource Inset.Field}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ComboBoxItem">
+          <Border x:Name="Chrome"
+                  Background="{TemplateBinding Background}"
+                  CornerRadius="{DynamicResource Radius.Small}"
+                  Padding="{TemplateBinding Padding}"
+                  SnapsToDevicePixels="True">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="Center"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsHighlighted" Value="True">
+              <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.Surface3}"/>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.Surface3}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Foreground" Value="{DynamicResource Brush.TextTertiary}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <!-- Interruttore: binario (IsChecked) con pista e pallino. Il pallino scorre cambiando allineamento, senza animazioni. -->
   <Style TargetType="CheckBox">
     <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>

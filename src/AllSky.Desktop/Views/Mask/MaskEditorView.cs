@@ -1133,6 +1133,9 @@ public class MaskEditorView : UserControl
         pannello.Children.Add(Testo(_texts.MaskWidgetsHint, "Brush.TextSecondary", "Size.Caption"));
 
         _elenco = new ListBox { Height = 200, Margin = new Thickness(0, 8, 0, 8) };
+        _elenco.SetResourceReference(System.Windows.Controls.Control.BackgroundProperty, "Brush.Surface1");
+        _elenco.SetResourceReference(System.Windows.Controls.Control.ForegroundProperty, "Brush.Text");
+        _elenco.SetResourceReference(System.Windows.Controls.Control.BorderBrushProperty, "Brush.Border");
         AutomationProperties.SetName(_elenco, _texts.MaskWidgetsTitle);
         _elenco.SelectionChanged += OnSelezioneCambiata;
         pannello.Children.Add(_elenco);

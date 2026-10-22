@@ -797,6 +797,9 @@ public class SettingsView : UserControl
 
         stack.Children.Add(BuildLabel(_texts.SettingsLanPasswordLabel));
         _passwordBox = new PasswordBox { Width = 240, HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 4, 0, 0) };
+        _passwordBox.SetResourceReference(Control.BackgroundProperty, "Brush.Surface2");
+        _passwordBox.SetResourceReference(Control.ForegroundProperty, "Brush.Text");
+        _passwordBox.SetResourceReference(Control.BorderBrushProperty, "Brush.Border");
         AutomationProperties.SetName(_passwordBox, _texts.SettingsLanPasswordLabel);
         stack.Children.Add(_passwordBox);
         stack.Children.Add(BuildBodyText(_texts.SettingsLanPasswordHint, "Brush.TextTertiary", "Size.Caption"));
