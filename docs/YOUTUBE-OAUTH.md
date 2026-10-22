@@ -1,94 +1,97 @@
-# Collegamento YouTube (OAuth "Desktop app")
+# Collegamento YouTube (OAuth «Desktop app»)
 
-Questa pagina spiega come preparare le credenziali Google che All Sky Brain usa per caricare i timelapse su YouTube (P7.2 / P7.3).
-Ogni utente usa il PROPRIO progetto Google Cloud: l'applicazione non contiene credenziali incorporate.
+Questa pagina è il riferimento tecnico del collegamento che All Sky Brain usa per caricare i timelapse su YouTube. Per i passi da seguire nella Console Google vedi [GUIDA-YOUTUBE.md](GUIDA-YOUTUBE.md).
 
-Legenda: **[V]** verificato sulla pagina Google indicata, con data di lettura · **[NV]** non verificato, da controllare nella Console prima di usarlo.
+Ogni utente usa il proprio progetto Google Cloud: l'applicazione non contiene credenziali incorporate.
 
-Data di lettura di tutte le pagine: **22/10/2026**.
+Legenda: **[V]** verificato su una pagina Google, letta il 23/10/2026 (elenco in fondo) · **[NV]** non verificato. Il comportamento dell'applicazione è descritto dal codice e non ha marcatura.
 
 ---
 
 ## 1. Come funziona il login
 
-- Il flusso è quello della guida Google "OAuth 2.0 for Mobile & Desktop Apps" ([link](https://developers.google.com/identity/protocols/oauth2/native-app), letta il 22/10/2026):
-  - redirect verso l'indirizzo loopback `http://127.0.0.1:PORTA`, con l'HTTP listener su una porta libera scelta dal sistema. La guida dice: "Query your platform for the relevant loopback IP address and start an HTTP listener on a random available port." [V]
-  - la guida cita `localhost` come alternativa a `127.0.0.1` e avverte che può causare problemi di firewall. All Sky Brain usa `127.0.0.1`. [V]
-  - gli schemi URI personalizzati non sono supportati per le app desktop. [V]
-  - PKCE è obbligatorio: "Always use PKCE (Proof Key for Code Exchange) when requesting authorization codes." Il metodo consigliato è `S256`. [V]
-  - il parametro `state` è raccomandato e serve a prevenire CSRF. [V]
-  - endpoint: autorizzazione `https://accounts.google.com/o/oauth2/v2/auth`, token `https://oauth2.googleapis.com/token`, revoca `https://oauth2.googleapis.com/revoke`. [V]
-  - la guida non riporta `access_type` né `prompt` tra i parametri: All Sky Brain non li invia. [V]
-  - il client secret è indicato come "optional" nello scambio del codice; la guida dice anche che "Desktop apps are public clients and cannot keep secrets confidential." Se la Console mostra un secret per il client "Desktop app", All Sky Brain lo richiede e lo invia. [V] per la guida; la presenza del secret nella Console è [NV].
-  - la guida dice che "refresh tokens are always returned for installed applications". [V]
-- Scope richiesto: `https://www.googleapis.com/auth/youtube.upload`, descritto come "Manage your YouTube videos". [V] pagina [YouTube OAuth installed apps](https://developers.google.com/youtube/v3/guides/auth/installed-apps), letta il 22/10/2026.
-- Il listener ascolta solo su `127.0.0.1` e solo durante il login, poi viene chiuso. Il login scade dopo un tempo limite. Se l'utente non conclude, il listener si chiude.
-- Il refresh token è salvato cifrato con DPAPI (protettore della pubblicazione), nel file `youtube-auth.json` della cartella dati. Il client secret è cifrato allo stesso modo. Il client ID è in chiaro.
+Il flusso è quello della guida Google «OAuth 2.0 for Mobile & Desktop Apps» (vedi Fonti):
 
-## 2. Creare le credenziali "Desktop app" nella Google Cloud Console
+- **Redirect loopback.** Il redirect va a `http://127.0.0.1:PORTA`, con un listener HTTP su una porta libera scelta dal sistema. La guida dice di usare un indirizzo di loopback e una porta casuale disponibile. [V] All Sky Brain usa `127.0.0.1`.
+- **`localhost`.** La guida lo cita come alternativa a `127.0.0.1`, e avverte che può causare problemi con i firewall. [V]
+- **Schemi URI personalizzati.** Non sono supportati, per il rischio di impersonificazione dell'app. [V]
+- **PKCE.** La guida dice «Always use PKCE» (sempre). Il metodo raccomandato è `S256`. Se il parametro manca, il metodo è `plain`. [V] All Sky Brain usa `S256`.
+- **Parametro `state`.** È raccomandato e serve a mantenere lo stato tra richiesta e risposta, e a prevenire CSRF. [V]
+- **Endpoint.** Autorizzazione `https://accounts.google.com/o/oauth2/v2/auth`, token `https://oauth2.googleapis.com/token`, revoca `https://oauth2.googleapis.com/revoke`. [V]
+- **`access_type`.** La pagina non lo cita. [V] All Sky Brain non lo invia.
+- **`prompt`.** La pagina cita `prompt=consent` per ottenere un nuovo refresh token quando ne esiste già uno. [V] All Sky Brain non lo invia. Il comportamento in questo caso non è stato provato: [NV].
+- **Client secret.** Nello scambio del codice il `client_secret` è indicato come opzionale. La guida dice che «Desktop apps are public clients and cannot keep secrets confidential». [V] All Sky Brain lo richiede e lo invia (vedi la guida utente, passo 4).
+- **Refresh token.** La guida dice che «refresh tokens are always returned for installed applications». [V]
+- **Scope.** `https://www.googleapis.com/auth/youtube.upload`, descritto da Google come «Manage your YouTube videos». [V]
+- Il listener ascolta solo su `127.0.0.1` e solo durante il login, poi viene chiuso. Il login scade dopo 5 minuti. (Valore del codice.)
+- Il refresh token è salvato cifrato con DPAPI nel file `youtube-auth.json` della cartella dati. Il client secret è cifrato allo stesso modo. Il client ID è in chiaro.
 
-Procedura dalla pagina [Create credentials](https://developers.google.com/workspace/guides/create-credentials), letta il 22/10/2026:
+## 2. Credenziali «Desktop app»
 
-1. Apri il menu della Google Cloud Console e vai su **Google Auth platform > Clients**. [V]
-2. Clicca **Create Client**. [V]
-3. Sotto **Application type** seleziona **Desktop app**. [V]
-4. Inserisci un **Name** per la credenziale: compare solo nella Console. [V]
-5. Clicca **Create**. La credenziale compare sotto "OAuth 2.0 Client IDs". [V]
+Procedura dalla guida «Create credentials» [V]: **Google Auth platform > Clients**, **Create Client**, **Application type** = **Desktop app**, **Name**, **Create**. La credenziale compare in «OAuth 2.0 Client IDs».
 
-Non verificato sulla pagina:
+Non verificato:
 
-- se la Console mostra il client secret per le app "Desktop app" e come copiarlo [NV]. All Sky Brain richiede entrambi i valori, client ID e client secret: la schermata di collegamento non accetta il campo vuoto (messaggio "Inserisci client ID e client secret."). La guida Google indica il secret come opzionale [V]: il requisito è una scelta di All Sky Brain, non una regola di Google.
+- se la Console mostra il client secret per le app desktop, e come copiarlo: [NV]. La pagina Google non lo dice.
+- La richiesta del secret è una scelta di All Sky Brain. La guida Google lo indica come opzionale. [V]
 
-## 3. Configurare la schermata di consenso (OAuth consent screen)
+## 3. Schermata di consenso
 
-Procedura dalla pagina [Configure OAuth consent](https://developers.google.com/workspace/guides/configure-oauth-consent), letta il 22/10/2026:
+Procedura dalla guida «Configure OAuth consent» [V]:
 
-1. Vai su **Google Auth platform > Branding**. Se compare "Google Auth platform not configured yet", clicca **Get Started**. [V]
-2. In **App Information** inserisci nome dell'app e email di supporto. [V]
-3. In **Audience** scegli il tipo di utente. [V]
-4. In **Contact Information** inserisci un'email per le comunicazioni. [V]
-5. In **Finish** accetta la Google API Services User Data Policy e clicca **Continue** e **Create**. [V]
-6. Se scegli **External**, vai su **Audience**, sezione **Test users**, clicca **Add users**, inserisci le email di prova e clicca **Save**. [V]
-7. Per app usate fuori dall'organizzazione Google Workspace, vai su **Data Access > Add or Remove Scopes**, seleziona gli scope necessari e clicca **Save**. [V]
+1. **Branding**: se compare la configurazione non ancora completata, **Get Started**. In **App Information** nome dell'app e email di supporto.
+2. **Audience**: tipo di utente.
+3. **Contact Information**: email per le comunicazioni.
+4. **Finish**: accettare la policy, poi **Continue** e **Create**.
+5. **Audience > Test users** (solo External): **Add users**, poi **Save**.
+6. **Data Access**: **Add or Remove Scopes**, poi **Save**.
 
-Nota: la pagina dice che "For security reasons, you can't remove the OAuth 2.0 consent screen after you've configured it." [V]
+La pagina dice che, per ragioni di sicurezza, la schermata di consenso non si può eliminare una volta configurata. [V]
 
 ## 4. Abilitare la YouTube Data API v3
 
-Dalla pagina [YouTube OAuth installed apps](https://developers.google.com/youtube/v3/guides/auth/installed-apps), letta il 22/10/2026:
-
-- "Any application that calls Google APIs needs to enable those APIs in the API Console." [V]
-- "Use the Library page to find and enable the YouTube Data API." [V]
+- La guida YouTube dice: «Any application that calls Google APIs needs to enable those APIs in the API Console» e «Use the Library page to find and enable the YouTube Data API». [V]
+- Il pulsante per abilitare un'API è **Enable**. [V] dalla guida «Enable APIs», con percorso **Menu > APIs & Services > Library**.
 
 ## 5. Stato di pubblicazione: Testing e In production
 
 Fatti verificati [V]:
 
-- Con lo stato **Testing** il refresh token scade dopo 7 giorni. La pagina [OAuth 2.0 expiration](https://developers.google.com/identity/protocols/oauth2#expiration), letta il 22/10/2026, dice: "is issued a refresh token expiring in 7 days". La regola non si applica se gli scope richiesti sono solo name, email e profilo: lo scope `youtube.upload` non rientra in quel gruppo. Quindi con l'app in Testing il login va rifatto ogni 7 giorni, e il caricamento notturno si fermerà.
-- Le pagine indicano che è possibile avere un solo refresh token per account e client: "There is currently a limit of 100 refresh tokens per Google Account per OAuth 2.0 client ID." Il nuovo token invalida il più vecchio. [V] stessa pagina.
-- Con app non verificata, durante i test compare la schermata "unverified app". La pagina YouTube dice: "If you see unverified app on the screen when testing your application, you must submit a verification request to remove it." [V]
-- La pagina consent screen dice che gli scope sensibili e ristretti richiedono verifica aggiuntiva. [V] Non è verificato se `youtube.upload` sia classificato come sensibile. [NV]
+- **Testing.** Il refresh token scade dopo 7 giorni. La pagina dice: «is issued a refresh token expiring in 7 days». La regola non si applica se gli scope richiesti sono solo name, email e profilo: `youtube.upload` non rientra in quel gruppo. Con l'app in Testing il login va rifatto ogni 7 giorni.
+- **Utenti di test.** Un'app in Testing è limitata agli utenti di test elencati nella schermata di consenso, al massimo 100. Le autorizzazioni di un utente di test scadono 7 giorni dopo il consenso. [V] da «Manage App Audience».
+- **Passaggio a In production.** Il pulsante è **Publish app**, nella gestione dello stato di pubblicazione della pagina **Audience**. [V] Dopo il passaggio, il progetto è disponibile a qualunque account Google. [V]
+- **Regola dei 7 giorni.** La pagina di scadenza la riferisce allo stato Testing. [V] Per lo stato In production la pagina non dice che il token scade a 7 giorni. Google avverte che il codice deve prevedere il caso di un refresh token che smette di funzionare. [V] All Sky Brain gestisce questo caso chiedendo di collegare di nuovo l'account.
+- **Limite dei token.** Ci sono al massimo 100 refresh token per account e client ID. Un nuovo token invalida il più vecchio, senza avviso. [V]
+- **Schermata «unverified app».** Con l'app non verificata compare durante i test. Per rimuoverla occorre inviare una richiesta di verifica. [V]
+- **Scope sensibili.** Una richiesta di scope sensibili o riservati, prima della verifica, mostra un avviso. Le app non verificate che lo mostrano hanno un limite di 100 nuovi utenti nel corso della vita del progetto. [V]
 
 Non verificato [NV]:
 
-- il passaggio da **Testing** a **In production**: nelle pagine lette non c'è il pulsante né la procedura. Va fatto dalla Console (Google Auth platform, Audience) e controllato prima del rilascio.
-- se il passaggio a "In production" richiede una verifica dell'app per lo scope `youtube.upload`, e i tempi. [NV]
-- il comportamento dei refresh token in stato "In production" (non scadono finché non vengono revocati). Questo è scritto in una pagina Google Health API, non YouTube: non è un fatto verificato per questo progetto. [NV]
+- se `youtube.upload` sia classificato come sensibile o riservato. La pagina degli scope letta non riporta la riga YouTube.
+- se e quando lo stato In production richieda una verifica dell'app per questo scope, e i tempi.
 
-## 6. Cosa mostra la UI (P7.4)
+## 6. Interfaccia (comportamento dell'applicazione)
 
-- Con lo stato Testing la UI deve dire che il collegamento scade dopo 7 giorni e deve mostrare il passaggio a "In production" come azione da fare. [V] sulla scadenza.
-- Se il refresh viene rifiutato con `invalid_grant`, la UI chiede di collegare di nuovo l'account. [NV] sul nome dell'errore: è il nome definito nella specifica di progetto, non letto nelle pagine lette.
+- Con lo stato Testing la UI indica che il collegamento scade dopo 7 giorni e rimanda alla guida per il passaggio a In production.
+- Se il refresh viene rifiutato, la UI chiede di collegare di nuovo l'account. Il nome dell'errore che Google restituisce in questo caso (`invalid_grant`) non è stato verificato in una pagina Google: [NV].
 
 ## 7. Revoca e logout
 
-- Il logout revoca il refresh token con una POST a `https://oauth2.googleapis.com/revoke`, con il token nel corpo della richiesta. [V] per l'endpoint; la forma del corpo è [NV] (la guida non dettaglia la forma della richiesta). Il file locale viene rimosso anche se la revoca fallisce.
-- La guida dice che la revoca "removes all OAuth 2.0 scopes previously granted to a project" e invalida i token dei client dello stesso progetto. [V]
+- Il logout invia una POST a `https://oauth2.googleapis.com/revoke` con il token come parametro. [V] per l'endpoint; il metodo POST è quello dell'esempio della pagina Google. La pagina mostra il token nella query string; All Sky Brain lo invia nel corpo della richiesta, in forma `application/x-www-form-urlencoded`. Che Google accetti questa forma: [NV].
+- Il file locale viene rimosso anche se la revoca fallisce, e l'errore viene comunque segnalato. (Comportamento dell'applicazione, dal codice.)
 
-## Fonti (lette il 22/10/2026)
+---
 
-- [OAuth 2.0 for Mobile & Desktop Apps](https://developers.google.com/identity/protocols/oauth2/native-app)
-- [OAuth 2.0 expiration (refresh token, limiti)](https://developers.google.com/identity/protocols/oauth2#expiration)
-- [OAuth 2.0 for Mobile & Desktop Apps (guida YouTube)](https://developers.google.com/youtube/v3/guides/auth/installed-apps)
-- [Create credentials](https://developers.google.com/workspace/guides/create-credentials)
-- [Configure OAuth consent](https://developers.google.com/workspace/guides/configure-oauth-consent)
+## Fonti (lette il 23/10/2026)
+
+- OAuth 2.0 for Mobile & Desktop Apps: https://developers.google.com/identity/protocols/oauth2/native-app
+- OAuth 2.0 expiration (refresh token, limiti): https://developers.google.com/identity/protocols/oauth2#expiration
+- OAuth 2.0 for Mobile & Desktop Apps, guida YouTube: https://developers.google.com/youtube/v3/guides/auth/installed-apps
+- Create credentials: https://developers.google.com/workspace/guides/create-credentials
+- Configure OAuth consent: https://developers.google.com/workspace/guides/configure-oauth-consent
+- Enable APIs: https://developers.google.com/workspace/guides/enable-apis
+- Manage App Audience: https://support.google.com/cloud/answer/15549945
+- Publishing status (pagina Audience): https://support.google.com/cloud/answer/10311615
+- OAuth 2.0 Scopes (sensibilità di `youtube.upload`, non letta): https://developers.google.com/identity/protocols/oauth2/scopes
+
+Non letta: la pagina di creazione del progetto Google Cloud (https://cloud.google.com/resource-manager/docs/creating-managing-projects), bloccata durante la lettura.

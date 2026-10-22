@@ -138,7 +138,7 @@ Layout (`overlay.layout`, classe `OverlayLayout`, `versione` = 1). I nomi delle 
 | `ui.allowLan` | booleano | `false` | nessuna | letto | Ascolta sulla rete locale. Ha effetto solo con `webEnabled` e con `lanPasswordHash` impostato. Con `false` si ascolta solo su `127.0.0.1`. |
 | `ui.lanPasswordHash` | testo o `null` | `null` | nessuna | letto | Hash PBKDF2 della password per la rete locale. Mai la password in chiaro. |
 
-### `satellites`: previsione dei passaggi
+### `weather`: sorgente meteo
 
 | Chiave | Tipo | Predefinito | Validazione | Stato | Descrizione |
 |---|---|---|---|---|---|
@@ -148,6 +148,19 @@ Layout (`overlay.layout`, classe `OverlayLayout`, `versione` = 1). I nomi delle 
 | `weather.readTimeoutSeconds` | intero | `5` | da 1 a 60 | letto | Attesa massima per ogni lettura. |
 | `weather.maxAgeMinutes` | intero | `30` | da 1 a 1440 | letto | Dopo questa età il dato meteo non viene più usato. |
 | `weather.openMeteoAcknowledgedNonCommercial` | booleano | `false` | nessuna | letto | Senza `true` la sorgente `openmeteo` non parte; il motivo va nel log, non è un errore di validazione. |
+
+Stato della sorgente meteo:
+
+- Non c'è un'interfaccia: la sezione si modifica solo in `config.json`. Il fornitore viene ricreato quando cambia la sezione, senza riavviare l'app.
+- Il dato meteo finisce nel sidecar dei frame (campo `weather`) e nel widget **Meteo** della maschera, se attivo. La riga Meteo della vista Stanotte mostra ancora un segnaposto.
+- `openmeteo`: l'attribuzione «Dati meteo: Open-Meteo.com (CC BY 4.0)» è definita in `OpenMeteoSource.Attribution` e passata alla Engine. Non viene ancora scritta nel sidecar né mostrata. Stato: **non collegata**.
+- Unità dei campi Open-Meteo: non confermate su una risposta reale.
+- `ascom`: il driver ObservingConditions non è stato provato con una stazione reale.
+
+### `satellites`: previsione dei passaggi
+
+| Chiave | Tipo | Predefinito | Validazione | Stato | Descrizione |
+|---|---|---|---|---|---|
 | `satellites.version` | intero | `1` | nessuna | letto | Versione dello schema del sotto-oggetto. |
 | `satellites.enabled` | booleano | `false` | nessuna | letto | Interruttore generale. Con `false` non parte alcuna richiesta a CelesTrak. Non c'è un interruttore nella UI: si modifica `config.json`. |
 | `satellites.targets` | lista di `{ "noradId", "name" }` | `[{ "noradId": 25544, "name": "ISS (ZARYA)" }]` | da 1 a 99999 per `noradId`; massimo 20 elementi; nessun duplicato; `[]` ammesso | letto | Satelliti da seguire, per numero NORAD. `name` serve solo alla visualizzazione; vuoto: si mostra il numero. Oltre 99999 il TLE non è disponibile. |
@@ -4665,15 +4678,15 @@ Per le voci web (`web/js`, `web/mock`) il comportamento è ricavato dal codice. 
 Per i moduli del ramo desktop v1 il comportamento è ricavato dal codice, ma restano non verificati questi punti (fonte: `docs/ralph/NOTES.md`, voci del 22/10/2026):
 
 - **UI WPF**: non è mai stata eseguita né vista su schermo. La CI Windows compila e lancia i test; non esegue l'interfaccia.
-- **Rilevamento** (`detection.*`): soglie tarate solo su dati sintetici. Il confermatore dei transiti può dare falsi positivi quando il bordo di una nuvola è allineato alla traccia prevista. Clip con ffmpeg reale e JPEG reale non provate.
+- **Rilevamento** (`detection.*`): soglie tarate solo su dati sintetici. Il confermatore dei transiti può dare falsi positivi quando il bordo di una nuvola è allineato alla traccia prevista. Clip provate con libx264 su dati sintetici; non provate con `h264_mf` su Windows né con immagini reali.
 - **Calibrazione**: i punti raccolti dal Sole non persistono al riavvio. Il rilevamento del Sole per la calibrazione è stato provato solo su dati sintetici.
 - **Satelliti** (`AllSky.Satellites.Sgp4`, SGP.NET 1.6.0): la propagazione della ISS non è stata confrontata con una fonte esterna [NV]. Gli oggetti deep-space (modello SDP4) non vengono rifiutati.
 - **Posizione della Luna**: errore atteso di circa 1 grado sull'azimut, dall'angolo orario geocentrico.
 - **Modalità transito**: il tempo di lettura della camera (`capture.transitMode.readoutSeconds`, 2 s) è stimato.
-- **Maschera**: il budget del renderer (sotto 30 ms a 1920×1080) non è misurato. `WpfFrameOverlay` non è compilato in questo ambiente.
-- **Meteo**: le sorgenti `AllSky.Weather` non sono collegate all'Engine (`WeatherProvider` non viene impostato). Le stringhe `current_units` di Open-Meteo non sono confermate da una risposta reale.
-- **Widget non alimentati**: `satelliti` (il campo `satellites` del sidecar non viene scritto) e `meteo` non ricevono dati; `bussola` è omesso dal compositore.
-- **YouTube**: ID categoria `28` [NV]; effetto della privacy per i progetti API non verificati [NV]; `selfDeclaredMadeForKids` è sempre `false`; motivi esatti dei 403 di quota non verificati; durata della sessione resumable non verificata.
+- **Maschera**: il budget del renderer (sotto 30 ms a 1920×1080) non è misurato. La maschera sul timelapse reale non è stata verificata: la prova di notte simulata non l'ha applicata.
+- **Meteo**: il fornitore è collegato all'Engine e scrive il campo `weather` del sidecar. Le stringhe `current_units` di Open-Meteo non sono confermate da una risposta reale. Il driver ASCOM non è stato provato con una stazione reale. L'attribuzione Open-Meteo non viene ancora scritta nel sidecar.
+- **Widget**: `satelliti` riceve i nomi dal campo `satellites` del sidecar, ma il risultato a schermo non è verificato. `meteo` riceve dati solo con una sorgente configurata. `bussola` è omesso dal compositore.
+- **YouTube**: ID categoria `28` [NV]; effetto della privacy per i progetti API non verificati: la documentazione dice che i loro video non sono limitati alla visualizzazione privata, l'effetto reale per questo progetto è [NV]; `selfDeclaredMadeForKids` è sempre `false`; motivi esatti dei 403 di quota non verificati; durata della sessione resumable non verificata.
 - **Accesso dal browser**: `HttpListener` su `127.0.0.1` senza privilegi amministrativi non provato su Windows. La password della rete locale viaggia in HTTP Basic, non cifrato.
 - **Archivio**: il `keogram` dopo un riavvio può coprire meno frame dell'archivio; oltre 4096 frame le colonne sono a blocchi.
 
