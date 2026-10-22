@@ -69,6 +69,7 @@ public sealed class App : System.Windows.Application
         {
             Source = new Uri("/AllSkyBrain;component/Theme/Styles.xaml", UriKind.Relative),
         });
+        ApplySavedTheme();
 
         _window = new MainWindow(_runtime.Service, _texts);
         _tray = new TrayIcon(_runtime, _paths, _texts, ShowMainWindow, ExitApplication);
@@ -83,6 +84,19 @@ public sealed class App : System.Windows.Application
         else
         {
             _window.Show();
+        }
+    }
+
+    /// <summary>Applica la modalità notte rossa salvata in <c>ui.theme</c>. Un errore di lettura lascia il tema normale.</summary>
+    private void ApplySavedTheme()
+    {
+        try
+        {
+            Theme.SetNightMode(_runtime.Service.GetConfig().Ui.Theme == AllSky.Core.Theme.Red);
+        }
+        catch (Exception)
+        {
+            // Il tema è solo una preferenza: in caso di problema si parte con quello normale.
         }
     }
 

@@ -831,6 +831,7 @@ public sealed class NightsView : UserControl
         _regenerate.Content = _texts.NightsTimelapseRegenerate;
         _regenerate.ToolTip = _texts.NightsTimelapseRegenerateTooltip;
         _regenerate.MinHeight = 32;
+        _regenerate.IsEnabled = false;
         _regenerate.SetResourceReference(FrameworkElement.StyleProperty, "Button.Primary");
         AutomationProperties.SetName(_regenerate, _texts.NightsTimelapseRegenerate);
 

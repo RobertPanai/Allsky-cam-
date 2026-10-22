@@ -64,7 +64,11 @@ internal sealed class TrayIcon : IDisposable
         var openWindowItem = new WinForms.ToolStripMenuItem(texts.OpenWindow);
         openWindowItem.Click += (_, _) => _showWindow();
 
-        var openPanelItem = new WinForms.ToolStripMenuItem(texts.OpenPanel);
+        var openPanelItem = new WinForms.ToolStripMenuItem(texts.OpenPanel)
+        {
+            // Senza interfaccia web (ui.webEnabled spento) non c'è un pannello da aprire nel browser.
+            Enabled = runtime.Url is not null,
+        };
         openPanelItem.Click += (_, _) => OpenPanel();
 
         _autostartItem = new WinForms.ToolStripMenuItem(texts.StartWithWindows)
@@ -117,6 +121,11 @@ internal sealed class TrayIcon : IDisposable
     /// <summary>Apre l'indirizzo del pannello nel browser predefinito. In caso di errore mostra l'indirizzo da aprire a mano.</summary>
     private void OpenPanel()
     {
+        if (_runtime.Url is null)
+        {
+            return;
+        }
+
         try
         {
             Process.Start(new ProcessStartInfo(_runtime.Url) { UseShellExecute = true })?.Dispose();

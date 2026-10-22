@@ -1029,6 +1029,7 @@ public sealed record DesktopTexts
         NightsFrameTitle = "Frame selezionato",
         NightsFrameName = "Frame selezionato della notte",
         NightsFrameMissing = "Il file di questo frame non è più disponibile.",
+        NightsNoFrames = "Nessun frame archiviato in questa notte.",
         CameraDiscButton = "Scollega",
         SettingsTitle = "Impostazioni",
         SettingsObservatoryTitle = "Osservatorio",
@@ -1353,6 +1354,7 @@ public sealed record DesktopTexts
         NightsFrameTitle = "Selected frame",
         NightsFrameName = "Selected night frame",
         NightsFrameMissing = "This frame file is no longer available.",
+        NightsNoFrames = "No archived frames in this night.",
         CameraDiscButton = "Disconnect",
         SettingsTitle = "Settings",
         SettingsObservatoryTitle = "Observatory",
@@ -1670,4 +1672,7 @@ public sealed record DesktopTexts
 
     /// <summary>Messaggio quando il file del frame non esiste più.</summary>
     public required string NightsFrameMissing { get; init; }
+
+    /// <summary>Messaggio quando la notte selezionata non ha frame archiviati.</summary>
+    public required string NightsNoFrames { get; init; }
 }
