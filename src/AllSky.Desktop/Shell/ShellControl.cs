@@ -357,6 +357,7 @@ internal sealed class ShellControl : Grid
             ShellView.Live when service is not null => new AllSky.Desktop.Views.Live.LiveView(service, texts),
             ShellView.Camera when service is not null => new AllSky.Desktop.Views.Camera.CameraView(service, texts),
             ShellView.Nights when service is not null => new AllSky.Desktop.Views.Nights.NightsView(service, texts),
+            ShellView.Publication when runtime is not null => new AllSky.Desktop.Views.Publication.PublicationView(runtime.PublishSettings, texts),
             ShellView.Settings when runtime is not null && paths is not null => new AllSky.Desktop.Views.Settings.SettingsView(runtime, paths, texts, theme),
             ShellView.Log when paths is not null => new AllSky.Desktop.Views.Log.LogView(paths, texts),
             _ => null,

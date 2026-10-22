@@ -1,3 +1,4 @@
+using AllSky.Core.Publication;
 using AllSky.Engine;
 using AllSky.Updates;
 using Microsoft.AspNetCore.Builder;
@@ -16,6 +17,7 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
     private readonly CancellationTokenSource _shutdown;
     private readonly DailyFileLog _log;
     private readonly PublishServices? _publishing;
+    private readonly IPublishSettingsService _publishSettings;
     private readonly UpdateService _updates;
     private readonly UpdateSettingsStore _updateStore;
     private readonly TaskCompletionSource _stopped = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -30,6 +32,7 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
         _shutdown = shutdown;
         _log = log;
         _publishing = publishing;
+        _publishSettings = new HostPublishSettingsService(publishing);
         _updates = updates;
         _updateStore = updateStore;
         Url = url;
@@ -63,6 +66,12 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
     /// Resta valido fino all'arresto dell'Host; dopo <see cref="StopAsync"/> non si devono più chiamarne i membri.
     /// </summary>
     public IAllSkyService Service => _engine;
+
+    /// <summary>
+    /// Impostazioni e stato della pubblicazione per la vista Pubblicazione del desktop. Sempre presente: senza il modulo
+    /// di pubblicazione lo stato e' "disabled" e i salvataggi sono rifiutati. Resta valido fino all'arresto dell'Host.
+    /// </summary>
+    public IPublishSettingsService PublishSettings => _publishSettings;
 
     /// <summary>
     /// Attende l'arresto dell'Host. Se <paramref name="cancellationToken"/> viene annullato, l'Host si arresta

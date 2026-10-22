@@ -115,9 +115,9 @@ Se un comando fallisce per motivi d'ambiente (SDK, rete, NuGet), scrivi il motiv
 - [x] **P1.3 [H] Shell di navigazione.** Barra laterale con icone (vettoriali, Path XAML, niente immagini raster) + barra di stato in basso (stato camera, fase giorno/crepuscolo/notte, altezza Sole/Luna, ultimo frame, spazio disco, stato pubblicazioni). Navigazione da tastiera, focus visibile. *Dip.:* P1.2.
 - [x] **P1.4 [H] Vista "Live".** Immagine corrente grande (aggiornata su `FrameProduced`, decodifica fuori dal thread UI, nessun leak di bitmap), zoom/pan, toggle "grezzo/elaborato", pannello dati del frame (esposizione, gain, mediana ADU, temperatura). Overlay commutabili: griglia alt/az e punti cardinali (dopo P3), tracce satelliti previste (dopo P4). *Dip.:* P1.3.
 - [x] **P1.5 [H] Vista "Camera".** Ricerca/connessione camere (ASCOM/Alpaca/Sim) con l'API dell'Engine esistente, messaggi d'errore leggibili (anche quelli con i valori dei limiti di esposizione introdotti in 0.2.1). *Dip.:* P1.3.
-- [ ] **P1.6 [H] Vista "Notti".** Elenco notti, keogram come barra di scorrimento temporale, startrails, riproduzione timelapse (MediaElement) e pulsante "Rigenera timelapse". *Dip.:* P1.3.
-- [ ] **P1.7 [H] Vista "Pubblicazione".** Porta in WPF le impostazioni Uplink esistenti (stessi contratti `/api/publish/*` ma chiamando direttamente i servizi; token mai mostrato, solo "impostato/non impostato"). *Dip.:* P1.3.
-- [ ] **P1.8 [H] Vista "Impostazioni" + "Log".** Posizione osservatorio, lingua IT/EN, cartella dati (sola lettura), avvio con Windows, aggiornamenti (AutoCheck), "Accesso dal browser" (Kestrel opzionale, spento). Log: ultime righe con filtro, senza segreti. *Dip.:* P1.3.
+- [x] **P1.6 [H] Vista "Notti".** Elenco notti, keogram come barra di scorrimento temporale, startrails, riproduzione timelapse (MediaElement) e pulsante "Rigenera timelapse". *Dip.:* P1.3.
+- [x] **P1.7 [H] Vista "Pubblicazione".** Porta in WPF le impostazioni Uplink esistenti (stessi contratti `/api/publish/*` ma chiamando direttamente i servizi; token mai mostrato, solo "impostato/non impostato"). *Dip.:* P1.3.
+- [x] **P1.8 [H] Vista "Impostazioni" + "Log".** Posizione osservatorio, lingua IT/EN, cartella dati (sola lettura), avvio con Windows, aggiornamenti (AutoCheck), "Accesso dal browser" (Kestrel opzionale, spento). Log: ultime righe con filtro, senza segreti. *Dip.:* P1.3.
 - [ ] **P1.10 [S] Identità visiva e immagini** (vedi §5.3). Comprende:
   - **logo e icona originali:** vettoriali in XAML/SVG, esportati in `.ico` multi-risoluzione (16–256 px) con uno strumento di build nel repository, e usati da exe, tray e installer (`--icon`);
   - **splash d'avvio;**
@@ -169,7 +169,7 @@ Se un comando fallisce per motivi d'ambiente (SDK, rete, NuGet), scrivi il motiv
 ### P6 — Meteo
 - [x] **P6.1 [H] `IWeatherSource` + adapter ASCOM ObservingConditions** (COM late-bound come la camera, thread dedicato, ogni proprietà letta con try/catch: se non implementata → assente). **Verifica le unità** sulle pagine delle singole proprietà ASCOM e scrivile in NOTES.md. *Test:* fake. *Dip.:* P0.1.
 - [x] **P6.2 [H] Adapter Open-Meteo opt-in** (default spento, testo in UI: "solo uso non commerciale, dati CC-BY 4.0 Open-Meteo" + attribuzione mostrata dove compaiono i dati): una richiesta ogni ≥ 15 min, cache, stop su errori ripetuti. Campi: temperatura, umidità, copertura nuvolosa, vento. **Verifica i nomi dei parametri sulla documentazione** prima di scrivere il codice. *Test:* handler finto. *Dip.:* P6.1.
-- [ ] **P6.3 [H] Meteo nel sidecar (P2.1) e nel widget `Meteo`** (P2.2): l'utente sceglie quali campi mostrare. *Dip.:* P6.1, P2.2.
+- [x] **P6.3 [H] Meteo nel sidecar (P2.1) e nel widget `Meteo`** (P2.2): l'utente sceglie quali campi mostrare. *Dip.:* P6.1, P2.2.
 
 ### P7 — Caricamento automatico su YouTube
 - [x] **P7.1 [H] Modello del titolo/descrizione** (puro): segnaposto `{data:yyyy-MM-dd}`, `{notte}` (data di inizio notte), `{ora:HH:mm}`, `{luogo}`, `{fotogrammi}`, `{durata}`, `{meteore}`, `{transiti}`; formati .NET validati; anteprima; caratteri vietati e lunghezze massime controllate (**limiti di lunghezza YouTube [NV]**: verificali sulla doc della risorsa `video` prima di codificarli). *Test:* esempi con date a cavallo della mezzanotte e del cambio ora legale. *Dip.:* P0.1.

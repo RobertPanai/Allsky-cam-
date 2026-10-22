@@ -20,8 +20,6 @@ internal static class PublishRoutes
     private const int MaxBodyBytes = 64 * 1024;
     private const string LocalOnlyMessage =
         "Le impostazioni di pubblicazione si cambiano solo da questo computer. Aprire la UI da questa macchina.";
-    private const string UnavailableMessage =
-        "La pubblicazione non è disponibile: il modulo non è partito. Controllare il file di log dell'applicazione.";
     private const string IsoFormat = "yyyy-MM-dd'T'HH:mm:ss.fff'Z'";
 
     /// <summary>Registra gli endpoint della pubblicazione.</summary>
@@ -139,33 +137,10 @@ internal static class PublishRoutes
             return Refused();
         }
 
-        PublishServices? services = host.Publishing;
-        if (services is null)
-        {
-            return new PublishReply(200, new { ok = false, errors = new[] { new SettingsError("publish", UnavailableMessage) } });
-        }
-
-        PublishSettings merged = Merge(services.Current, body);
-        IReadOnlyList<SettingsError> errors = SettingsValidator.Validate(merged);
-        if (errors.Count > 0)
-        {
-            return new PublishReply(200, new { ok = false, errors });
-        }
-
-        try
-        {
-            services.Store.Save(merged);
-        }
-        catch (Exception ex) when (ex is InvalidOperationException or IOException or UnauthorizedAccessException)
-        {
-            services.Log.Error("Salvataggio delle impostazioni di pubblicazione non riuscito", ex);
-            var error = new SettingsError("token", "Impossibile salvare le impostazioni: " + services.Redactor.Sanitize(ex.Message));
-            return new PublishReply(200, new { ok = false, errors = new[] { error } });
-        }
-
-        services.Replace(merged);
-        services.Publisher.ApplySettings(merged);
-        return new PublishReply(200, new { ok = true });
+        PublishSettingsOperations.SaveOutcome outcome = PublishSettingsOperations.Save(host.Publishing, body);
+        return outcome.Ok
+            ? new PublishReply(200, new { ok = true })
+            : new PublishReply(200, new { ok = false, errors = outcome.Errors });
     }
 
     /// <summary>
@@ -179,36 +154,8 @@ internal static class PublishRoutes
             return Refused();
         }
 
-        PublishServices? services = host.Publishing;
-        if (services is null)
-        {
-            return new PublishReply(200, new { ok = false, code = "unknown", message = UnavailableMessage, statusCode = (int?)null });
-        }
-
-        PublishSettings merged = Merge(services.Current, body);
-        IReadOnlyList<SettingsError> errors = SettingsValidator.Validate(merged);
-        if (errors.Count > 0)
-        {
-            return new PublishReply(200, new { ok = false, code = "invalid_settings", message = errors[0].Message, statusCode = (int?)null });
-        }
-
-        // I segreti digitati ma non salvati devono essere mascherati nei log e nelle risposte di questa prova.
-        services.Secrets.SetTransient(new[] { Trimmed(body.Token), Trimmed(body.ExtraHeaderValue) });
-        try
-        {
-            TestResult result = await services.Publisher.TestConnectionAsync(merged, ct);
-            return new PublishReply(200, new
-            {
-                ok = result.Ok,
-                code = result.Code,
-                message = services.Redactor.Sanitize(result.Message),
-                statusCode = result.StatusCode,
-            });
-        }
-        finally
-        {
-            services.Secrets.ClearTransient();
-        }
+        PublishSettingsOperations.TestOutcome outcome = await PublishSettingsOperations.TestAsync(host.Publishing, body, ct);
+        return new PublishReply(200, new { ok = outcome.Ok, code = outcome.Code, message = outcome.Message, statusCode = outcome.StatusCode });
     }
 
     /// <summary>Impostazioni visibili alla UI.</summary>
@@ -238,44 +185,14 @@ internal static class PublishRoutes
         State: status.State.ToString().ToLowerInvariant(),
         LastSuccessUtc: Iso(status.LastSuccessUtc),
         LastErrorCode: status.LastErrorCode,
-        LastError: status.LastError is null ? null : redactor.Sanitize(status.LastError),
+        LastError: PublishSettingsOperations.SanitizeError(status.LastError, redactor),
         LastErrorUtc: Iso(status.LastErrorUtc),
         QueueCount: status.QueueCount,
         SentTotal: status.SentTotal,
         DiscardedTotal: status.DiscardedTotal,
         NextAttemptUtc: Iso(status.NextAttemptUtc));
 
-    /// <summary>Unisce il corpo ricevuto alle impostazioni correnti. Un segreto vuoto o assente resta invariato.</summary>
-    internal static PublishSettings Merge(PublishSettings current, PublishSettingsBody body)
-    {
-        Secret token = body.ClearToken == true
-            ? default
-            : Trimmed(body.Token) is { } newToken ? new Secret(newToken) : current.Token;
-        Secret header = body.ClearExtraHeaderValue == true
-            ? default
-            : Trimmed(body.ExtraHeaderValue) is { } newHeader ? new Secret(newHeader) : current.ExtraHeaderValue;
-
-        return new PublishSettings
-        {
-            Enabled = body.Enabled ?? current.Enabled,
-            ServerUrl = body.ServerUrl ?? current.ServerUrl,
-            DeviceId = body.DeviceId ?? current.DeviceId,
-            Token = token,
-            ProfileName = EmptyToNull(body.ProfileName ?? current.ProfileName),
-            IntervalSeconds = body.IntervalSeconds ?? current.IntervalSeconds,
-            LongEdgePx = body.LongEdgePx ?? current.LongEdgePx,
-            JpegQuality = body.JpegQuality ?? current.JpegQuality,
-            ExtraHeaderName = EmptyToNull(body.ExtraHeaderName ?? current.ExtraHeaderName),
-            ExtraHeaderValue = header,
-        };
-    }
-
     private static PublishReply Refused() => new(403, new ErrorBody(LocalOnlyMessage));
-
-    /// <summary>Testo senza spazi ai bordi, oppure null se vuoto: un segreto digitato con spazi o a capo non e' valido.</summary>
-    private static string? Trimmed(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
-
-    private static string? EmptyToNull(string? value) => string.IsNullOrEmpty(value) ? null : value;
 
     private static string? Iso(DateTimeOffset? value) =>
         value?.ToUniversalTime().ToString(IsoFormat, CultureInfo.InvariantCulture);
