@@ -19,7 +19,7 @@ Data di lettura di tutte le pagine: **22/10/2026**.
   - il parametro `state` è raccomandato e serve a prevenire CSRF. [V]
   - endpoint: autorizzazione `https://accounts.google.com/o/oauth2/v2/auth`, token `https://oauth2.googleapis.com/token`, revoca `https://oauth2.googleapis.com/revoke`. [V]
   - la guida non riporta `access_type` né `prompt` tra i parametri: All Sky Brain non li invia. [V]
-  - il client secret è indicato come "optional" nello scambio del codice; la guida dice anche che "Desktop apps are public clients and cannot keep secrets confidential." Se la Console mostra un secret per il client "Desktop app", All Sky Brain lo accetta e lo invia. [V] per la guida; la presenza del secret nella Console è [NV].
+  - il client secret è indicato come "optional" nello scambio del codice; la guida dice anche che "Desktop apps are public clients and cannot keep secrets confidential." Se la Console mostra un secret per il client "Desktop app", All Sky Brain lo richiede e lo invia. [V] per la guida; la presenza del secret nella Console è [NV].
   - la guida dice che "refresh tokens are always returned for installed applications". [V]
 - Scope richiesto: `https://www.googleapis.com/auth/youtube.upload`, descritto come "Manage your YouTube videos". [V] pagina [YouTube OAuth installed apps](https://developers.google.com/youtube/v3/guides/auth/installed-apps), letta il 22/10/2026.
 - Il listener ascolta solo su `127.0.0.1` e solo durante il login, poi viene chiuso. Il login scade dopo un tempo limite. Se l'utente non conclude, il listener si chiude.
@@ -37,7 +37,7 @@ Procedura dalla pagina [Create credentials](https://developers.google.com/worksp
 
 Non verificato sulla pagina:
 
-- se la Console mostra il client secret per le app "Desktop app" e come scaricarlo [NV]. Se il secret non c'è, All Sky Brain funziona comunque, perché la guida lo indica come opzionale. [V]
+- se la Console mostra il client secret per le app "Desktop app" e come copiarlo [NV]. All Sky Brain richiede entrambi i valori, client ID e client secret: la schermata di collegamento non accetta il campo vuoto (messaggio "Inserisci client ID e client secret."). La guida Google indica il secret come opzionale [V]: il requisito è una scelta di All Sky Brain, non una regola di Google.
 
 ## 3. Configurare la schermata di consenso (OAuth consent screen)
 

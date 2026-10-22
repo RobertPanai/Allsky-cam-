@@ -37,17 +37,32 @@ Il contratto è la sola dipendenza fra la UI e il motore: la UI si sviluppa cont
   "camera": { "id": "sim-1", "gain": 250, "maxExposureMs": 30000, "dayExposureMs": 2, "binning": 1 },
   "color": { "whiteBalance": "auto | manual", "manualGains": [1.0, 1.0, 1.0], "smoothing": 0.85, "gradientRemoval": 0.5, "stretch": "mtf | asinh", "saturation": 1.1 },
   "mask": { "enabled": false, "imagePath": null },
-  "overlay": { "enabled": true, "showTime": true, "showSensorTemp": true, "label": "" },
-  "capture": { "intervalSeconds": 30, "dayCapture": true },
+  "overlay": { "version": 1, "enabled": true, "showTime": true, "showSensorTemp": true, "label": "", "applyToTimelapse": false, "applyToLive": false, "applyToPublish": false, "layout": null },
+  "capture": { "intervalSeconds": 30, "dayCapture": true, "transitMode": { "version": 1, "enabled": false, "intervalFraction": 0.5, "restoreMarginSeconds": 5, "readoutSeconds": 2 } },
   "products": { "timelapse": true, "keogram": true, "startrails": true, "timelapseFps": 25 },
   "storage": { "folder": "C:\\Users\\...\\AllSky", "keepNights": 30 },
-  "ui": { "theme": "auto | day | night | red", "port": 5810, "allowLan": false, "webEnabled": false, "lanPasswordHash": null }
+  "ui": { "theme": "auto | day | night | red", "port": 5810, "allowLan": false, "webEnabled": false, "lanPasswordHash": null },
+  "optics": null,
+  "youtube": { "version": 1, "enabled": false, "clientId": null, "dailyTime": "12:30", "catchUpWindowHours": 12, "privacy": "private", "tags": ["timelapse", "allsky", "astrofotografia"], "categoryId": "28", "location": "Osservatorio", "titleTemplate": "Timelapse notte del {notte:yyyy-MM-dd}", "descriptionTemplate": "Timelapse della notte del {notte:yyyy-MM-dd} da {luogo}: {fotogrammi} fotogrammi, durata {durata}, meteore {meteore}, transiti {transiti}." },
+  "satellites": { "version": 1, "enabled": false, "targets": [ { "noradId": 25544, "name": "ISS (ZARYA)" } ], "windowHours": 24, "minElevationDeg": 10, "sunMaxAltDeg": -6 },
+  "detection": { "version": 1, "enabled": false, "saveAllVisiblePasses": false, "analysisLongSidePx": 960, "clipFps": 25, "streak": { "backgroundFrames": 8, "thresholdSigma": 3.0, "minDifferenceLuma": 6.0, "minAreaPx": 15, "minLengthPx": 25.0, "maxWidthPx": 6.0, "minElongation": 6.0, "maxChangedFraction": 0.02, "trackDistancePx": 12.0, "trackAngleDeg": 8.0, "repeatShiftPx": 30.0, "repeatAngleDeg": 8.0, "maxFrameGapSeconds": 30.0, "bolideSaturatedPeakLuma": 200.0, "bolideIntegratedLuma": 4000.0, "bolideLengthPx": 300.0 }, "transit": { "corridorHalfWidthPx": 4.0, "flankWidthPx": 6.0, "sampleSpacingPx": 1.0, "sigmaMultiplier": 5.0, "minExcessLevels": 10.0, "scoreThreshold": 0.6, "minVisibleTrackPx": 40.0 } }
 }
 ```
 
 `ui.webEnabled` (predefinito `false`) avvia il server per il browser: con `false` l'host non apre alcuna porta HTTP.
 `ui.allowLan` ha effetto solo con `webEnabled` attivo e con `lanPasswordHash` impostato (hash PBKDF2, mai la password in chiaro);
 le richieste dalla rete locale usano HTTP Basic. Modifiche a questi valori si applicano al riavvio.
+
+### Sezioni aggiunte nel ramo desktop v1
+
+Le sezioni seguenti sono opzionali: una configurazione precedente le legge con i valori predefiniti. Nomi, tipi, predefiniti, vincoli e stato di ogni chiave sono nella sezione «Parametri di config.json» di `docs/FUNZIONI.md`. Gli errori di validazione di `satellites` e `detection` usano i percorsi `satellites.*` e `detection.*`.
+
+- `optics`: calibrazione ottica accettata, scritta dalla vista Camera. Vale `null` finché non viene accettata. Non va modificata a mano.
+- `youtube`: caricamento automatico su YouTube. Il client secret e i token non sono in questa sezione: stanno in `youtube-auth.json`, cifrati con DPAPI. `enabled` lo impostano collegamento e scollegamento dell'account.
+- `satellites`: previsione dei passaggi. Con `enabled: false` non parte nessuna richiesta a CelesTrak.
+- `detection`: rilevamento di meteore, bolidi e transiti. Con `enabled: false` non parte alcun worker di rilevamento.
+- `capture.transitMode`: modalità transito, spenta di default.
+- `overlay.applyToTimelapse`: applica la maschera informativa ai frame del timelapse. `overlay.layout` contiene il layout della maschera (`null` = layout predefinito). `applyToLive` e `applyToPublish` sono riservati e per ora non hanno effetto.
 
 ## Notti e prodotti (timelapse, keogram, startrails)
 Una "notte" va da mezzogiorno locale a mezzogiorno locale; id = data di inizio `YYYY-MM-DD`.
