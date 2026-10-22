@@ -102,3 +102,20 @@ Una voce per iterazione, la più recente in fondo. Formato:
   - Salvataggio impostazioni pubblicazione ora serializzato da lock; nell'adattatore `null` = vuoto, nelle rotte `null` = invariato.
 - Non verificato: tutte le viste WPF mai viste a schermo; media player timelapse e codec; keogram↔frame su archivio reale (dopo riavvio il keogram può coprire meno frame; oltre 4096 frame colonne a blocchi); avvio con Windows nel registro; middleware password su rete reale.
 - Da fare: `Engine.WeatherProvider` non è ancora impostato da nessuno (serve una sezione meteo nelle impostazioni: sorgente ASCOM/Open-Meteo opt-in); attribuzione Open-Meteo nel widget; adattatore PassFinder→IPredictedTrackProvider (P4.4).
+
+## 2026-10-22 09:30 — P1.10, P1.11, P2.3, P3.3, P7.2
+- Fatto: identità visiva (marchio SVG/XAML, `.ico` multirisoluzione deterministico da `tools/brand/build_brand.py`, splash, illustrazioni stati vuoti, sfondo stellare procedurale, font Inter 4.0 e JetBrains Mono 2.305 con OFL 1.1 incorporati); vista "Stanotte" (home); compositore + renderer WPF dell'overlay; UI calibrazione con `ICalibrationService` nell'Engine; OAuth Desktop per YouTube (PKCE S256, loopback 127.0.0.1, refresh cifrato DPAPI).
+- Test: runner shim 1632/1632. CI Windows run 39735490656 verde (una correzione: `AstroTime` è internal, validazione lat/lon locale in Core).
+- Fatti verificati:
+  - Velopack `vpk pack --icon, -i <PATH>` esiste — https://docs.velopack.io/reference/cli/content/vpk-windows (22/10/2026).
+  - Flusso OAuth Desktop (loopback 127.0.0.1, PKCE S256, state) — https://developers.google.com/identity/protocols/oauth2/native-app (22/10/2026); scadenza 7 giorni del refresh token in Testing e limite 100 token per client — https://developers.google.com/identity/protocols/oauth2#expiration.
+  - Licenza Inter e JetBrains Mono: OFL 1.1, dai repository ufficiali (hash in assets/brand/README.md).
+  - Crepuscoli (Torino, 21/05/2025) confrontati con timeanddate con tolleranza 2 min; tramonto/alba divergono di 2-5 min per la definizione del bordo del Sole (documentato). USNO non raggiungibile.
+- Non verificato:
+  - Tutto il WPF di questo gruppo (splash, font da pack URI e peso SemiBold, icona in exe/tray/installer, Stanotte, pannello calibrazione, griglia alt/az sul frame reale) mai visto a schermo.
+  - Budget renderer overlay (<30 ms a 1920×1080) non misurato (serve Windows). Misure del testo stimate a 0,6 corpi/carattere.
+  - Rilevamento del Sole per la calibrazione solo su dati sintetici; punti raccolti non persistono al riavvio.
+  - `HttpListener` su 127.0.0.1 senza privilegi amministrativi su Windows: da provare. Procedura "Testing → In production" e verifica dello scope `youtube.upload`: [NV], nel documento docs/YOUTUBE-OAUTH.md.
+  - Nomi d'errore `invalid_grant`/`access_denied` e forma della revoca presi dallo standard OAuth, non dalle pagine Google lette.
+  - Glifo lunare confrontato con una sola data approssimata.
+- Da decidere con Robert: manca un file LICENSE nel repository (la licenza del marchio e di tutto il codice).
