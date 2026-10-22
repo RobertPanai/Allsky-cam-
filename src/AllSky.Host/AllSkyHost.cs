@@ -117,7 +117,8 @@ public static class AllSkyHost
                 Publisher: publishing?.Publisher,
                 FrameOverlayFactory: options.FrameOverlayFactory,
                 TleFetcher: options.TleFetcher,
-                OrbitPropagators: options.OrbitPropagators));
+                OrbitPropagators: options.OrbitPropagators,
+                ObservingConditions: options.ObservingConditions));
 
             await engine.StartAsync(cancellationToken);
 

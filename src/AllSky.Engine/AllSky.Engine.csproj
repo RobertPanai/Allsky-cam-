@@ -21,6 +21,7 @@
     <ProjectReference Include="..\AllSky.Transits\AllSky.Transits.csproj" />
     <ProjectReference Include="..\AllSky.Detection\AllSky.Detection.csproj" />
     <ProjectReference Include="..\AllSky.Events\AllSky.Events.csproj" />
+    <ProjectReference Include="..\AllSky.Weather\AllSky.Weather.csproj" />
   </ItemGroup>
 
 </Project>

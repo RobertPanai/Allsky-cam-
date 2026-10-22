@@ -84,6 +84,7 @@ internal static class Program
                 FrameOverlayFactory = WpfFrameOverlay.CreateFactory(paths.DataFolder),
                 TleFetcher = PassForecastWiring.CreateTleFetcher(paths.DataFolder),
                 OrbitPropagators = new AllSky.Satellites.Sgp4.SgpNetPropagatorFactory(),
+                ObservingConditions = new AllSky.Weather.ComObservingConditionsFactory(),
             };
             using var startCts = new CancellationTokenSource(StartTimeout);
 

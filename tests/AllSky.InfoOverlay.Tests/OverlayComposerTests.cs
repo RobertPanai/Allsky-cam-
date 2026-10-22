@@ -29,7 +29,7 @@ public sealed class OverlayComposerTests
         Source: "ASCOM:ObservingConditions.Test");
 
     /// <summary>Sidecar di una notte: Sole sotto l'orizzonte, Luna in salita, dati di esposizione presenti.</summary>
-    private static FrameSidecar Sidecar(WeatherSnapshot? meteo = null, JsonElement? satelliti = null) => new()
+    private static FrameSidecar Sidecar(WeatherSnapshot? meteo = null, IReadOnlyList<SatelliteInView>? satelliti = null) => new()
     {
         TimestampUtc = new DateTimeOffset(2026, 10, 21, 22, 0, 0, TimeSpan.Zero),
         TimestampLocal = new DateTimeOffset(2026, 10, 22, 0, 0, 0, TimeSpan.FromHours(2)),
@@ -53,10 +53,10 @@ public sealed class OverlayComposerTests
         TimestampLocal = new DateTimeOffset(2026, 10, 22, 0, 0, 0, TimeSpan.FromHours(2)),
     };
 
-    private static JsonElement Json(string testo)
+    /// <summary>Elenco di satelliti letto dal JSON del sidecar, con il convertitore reale (stessa forma che si legge da disco).</summary>
+    private static IReadOnlyList<SatelliteInView>? Satelliti(string testo)
     {
-        using JsonDocument documento = JsonDocument.Parse(testo);
-        return documento.RootElement.Clone();
+        return JsonSerializer.Deserialize<FrameSidecar>("{\"satellites\":" + testo + "}", FrameSidecars.JsonOptions)!.Satellites;
     }
 
     private static OverlayLayout Abilita(OverlayLayout layout, OverlayWidgetKind tipo, OverlayWidgetFormat? formato = null) =>
@@ -221,7 +221,7 @@ public sealed class OverlayComposerTests
             OverlayLayoutDefaults.Predefinito(),
             OverlayWidgetKind.Satelliti,
             new OverlayWidgetFormat(MaxElementi: 2));
-        var satelliti = Json("[\"ISS (ZARYA)\", \"STARLINK-1234\", \"NOAA 19\"]");
+        var satelliti = Satelliti("[\"ISS (ZARYA)\", \"STARLINK-1234\", \"NOAA 19\"]");
 
         var scena = OverlayComposer.Compose(layout, Sidecar(satelliti: satelliti), Full, Language.It);
 
@@ -236,7 +236,7 @@ public sealed class OverlayComposerTests
     public void Satelliti_accettano_oggetti_con_proprieta_nome()
     {
         var layout = Abilita(OverlayLayoutDefaults.Predefinito(), OverlayWidgetKind.Satelliti);
-        var satelliti = Json("[{\"name\": \"ISS (ZARYA)\", \"altDeg\": 41}]");
+        var satelliti = Satelliti("[{\"name\": \"ISS (ZARYA)\", \"altDeg\": 41}]");
 
         var scena = OverlayComposer.Compose(layout, Sidecar(satelliti: satelliti), Full, Language.En);
 
@@ -249,8 +249,8 @@ public sealed class OverlayComposerTests
         var layout = Abilita(OverlayLayoutDefaults.Predefinito(), OverlayWidgetKind.Satelliti);
 
         var mancanti = OverlayComposer.Compose(layout, Sidecar(satelliti: null), Full, Language.It);
-        var vuoto = OverlayComposer.Compose(layout, Sidecar(satelliti: Json("[]")), Full, Language.It);
-        var formatoSconosciuto = OverlayComposer.Compose(layout, Sidecar(satelliti: Json("\"ISS\"")), Full, Language.It);
+        var vuoto = OverlayComposer.Compose(layout, Sidecar(satelliti: Satelliti("[]")), Full, Language.It);
+        var formatoSconosciuto = OverlayComposer.Compose(layout, Sidecar(satelliti: Satelliti("\"ISS\"")), Full, Language.It);
         var inglese = OverlayComposer.Compose(layout, Sidecar(satelliti: null), Full, Language.En);
 
         Assert.Contains("Satelliti: n/d", Testi(mancanti));
@@ -265,7 +265,7 @@ public sealed class OverlayComposerTests
         var layout = Abilita(OverlayLayoutDefaults.Predefinito(), OverlayWidgetKind.Satelliti);
         string lungo = new string('A', 40);
 
-        var scena = OverlayComposer.Compose(layout, Sidecar(satelliti: Json($"[\"{lungo}\"]")), Full, Language.It);
+        var scena = OverlayComposer.Compose(layout, Sidecar(satelliti: Satelliti($"[\"{lungo}\"]")), Full, Language.It);
 
         string riga = Testi(scena).Single(t => t.StartsWith("AAA"));
         Assert.Equal(26, riga.Length);
@@ -381,7 +381,7 @@ public sealed class OverlayComposerTests
 
         var scena = OverlayComposer.Compose(
             layout,
-            Sidecar(meteo: Completo, satelliti: Json("[\"ISS\", \"NOAA 19\"]")),
+            Sidecar(meteo: Completo, satelliti: Satelliti("[\"ISS\", \"NOAA 19\"]")),
             new OverlayFrameSize(larghezza, altezza),
             Language.It);
 

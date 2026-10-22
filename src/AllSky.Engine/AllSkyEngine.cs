@@ -113,6 +113,8 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
         _locateFfmpeg = dependencies.LocateFfmpeg ?? (() => FfmpegLocator.Locate());
         _publisher = dependencies.Publisher;
         _frameOverlayFactory = dependencies.FrameOverlayFactory;
+        _observingConditions = dependencies.ObservingConditions;
+        _weatherClock = new EngineWeatherClock(dependencies.Clock);
         InitPassForecasting(dependencies.OrbitPropagators, dependencies.TleFetcher);
 
         AppConfig config;
@@ -130,6 +132,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
         _config = config;
         _tz = ResolveTimeZone(config.Site.Timezone) ?? TimeZoneInfo.Utc;
         _archive = CreateArchive(config, _tz);
+        ApplyWeatherConfig(config);
 
         IReadOnlyList<ValidationError> errors = ValidateAll(config);
         if (errors.Count > 0)
@@ -225,10 +228,11 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
         RaiseStatus();
     }
 
-    /// <summary>Equivale a <see cref="StopAsync"/>.</summary>
+    /// <summary>Arresta il servizio e chiude la sorgente meteo. Equivale a <see cref="StopAsync"/> piu' la chiusura delle risorse meteo.</summary>
     public async ValueTask DisposeAsync()
     {
         await StopAsync();
+        await ReleaseWeatherAsync();
     }
 
     // ---- Stato ----
@@ -433,6 +437,12 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
                 _configError = null;
                 _tz = ResolveTimeZone(config.Site.Timezone) ?? TimeZoneInfo.Utc;
                 _archive = CreateArchive(config, _tz);
+            }
+
+            // La sorgente meteo si ricrea solo se la sua sezione cambia: niente riavvio e niente driver riconnessi inutilmente.
+            if (!Equals(previous.Weather, config.Weather))
+            {
+                ApplyWeatherConfig(config);
             }
         }
 

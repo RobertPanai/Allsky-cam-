@@ -3,6 +3,7 @@ using AllSky.Core;
 using AllSky.Publish;
 using AllSky.Satellites;
 using AllSky.Timelapse;
+using AllSky.Weather;
 
 namespace AllSky.Engine;
 
@@ -28,6 +29,10 @@ namespace AllSky.Engine;
 /// Sorgente dei TLE per la previsione dei passaggi (P4.3). Null = previsione non disponibile. Il Desktop passa la sorgente CelesTrak.
 /// </param>
 /// <param name="OrbitPropagators">Crea i propagatori SGP4 dai TLE. Null = previsione non disponibile. Il Desktop passa SGP.NET.</param>
+/// <param name="ObservingConditions">
+/// Fabbrica dei driver ASCOM ObservingConditions per il meteo (sorgente "ascom"). Null = sorgente non disponibile.
+/// Il Desktop passa la fabbrica COM, solo su Windows.
+/// </param>
 public sealed record EngineDependencies(
     IClock Clock,
     ICameraProvider CameraProvider,
@@ -41,4 +46,5 @@ public sealed record EngineDependencies(
     IPublisher? Publisher = null,
     Func<AppConfig, IFrameOverlay?>? FrameOverlayFactory = null,
     ITleFetcher? TleFetcher = null,
-    IOrbitPropagatorFactory? OrbitPropagators = null);
+    IOrbitPropagatorFactory? OrbitPropagators = null,
+    IObservingConditionsFactory? ObservingConditions = null);

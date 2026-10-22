@@ -95,11 +95,10 @@ public sealed class FrameSidecarTests : IDisposable
             SkyTemperatureC: null,
             SkyQualityMagArcsec2: 20.8,
             Source: "Open-Meteo");
-        using JsonDocument sats = JsonDocument.Parse("[{\"name\":\"ISS\"}]");
         FrameSidecar withExtras = CaptureSidecar(NightFrame()) with
         {
             Weather = meteo,
-            Satellites = sats.RootElement.Clone(),
+            Satellites = [new SatelliteInView("ISS (ZARYA)", 25544, 31.25, 118.5)],
         };
 
         archive.WriteSidecar(withExtras);
@@ -108,7 +107,8 @@ public sealed class FrameSidecarTests : IDisposable
         Assert.NotNull(back);
         Assert.Equal(meteo, back!.Weather);
         Assert.Null(back.Weather!.PressureHpa);
-        Assert.Equal("ISS", back.Satellites!.Value[0].GetProperty("name").GetString());
+        SatelliteInView iss = Assert.Single(back.Satellites!);
+        Assert.Equal(new SatelliteInView("ISS (ZARYA)", 25544, 31.25, 118.5), iss);
 
         string text = File.ReadAllText(archive.GetSidecarPath("2026-10-19", "20261019T210000Z"));
         Assert.Contains("\"cloudCoverPercent\": 12.5", text);

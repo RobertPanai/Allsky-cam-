@@ -1,4 +1,5 @@
 using System.Globalization;
+using AllSky.Archive;
 using AllSky.Core;
 using AllSky.Core.Passes;
 using AllSky.Engine.Forecasting;
@@ -191,6 +192,29 @@ public sealed partial class AllSkyEngine : IPassForecastService
         IReadOnlyList<PassTrackPath> paths = forecaster.Tracks(
             ToPassSettings(config), calibration, _clock.UtcNow, PassForecaster.TrackLead);
         return new PassTrackState(PassTrackBlock.None, accepted.FrameWidthPx, accepted.FrameHeightPx, paths);
+    }
+
+    /// <summary>
+    /// Satelliti sopra l'orizzonte nell'istante del frame, per il sidecar. Null se la previsione e' spenta o non disponibile;
+    /// lista vuota se nessun bersaglio e' sopra l'orizzonte. Non lancia: un errore resta nel log e il frame non ha il campo.
+    /// </summary>
+    private IReadOnlyList<SatelliteInView>? SatellitesInViewAt(AppConfig config, DateTimeOffset when)
+    {
+        PassForecaster? forecaster = _passes;
+        if (forecaster is null || !config.Satellites.Enabled)
+        {
+            return null;
+        }
+
+        try
+        {
+            return forecaster.InViewAt(ToPassSettings(config), when);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            _log("Satelliti in vista non calcolabili per il frame", ex);
+            return null;
+        }
     }
 
     /// <summary>Traduce la configurazione nelle impostazioni della previsione. Nomi vuoti diventano "NORAD n".</summary>

@@ -1,4 +1,5 @@
 using System.Globalization;
+using AllSky.Archive;
 using AllSky.Core.Passes;
 using AllSky.Satellites;
 using AllSky.Sky.Calibration;
@@ -459,6 +460,53 @@ public sealed class PassForecaster
         }
 
         return satellites;
+    }
+
+    /// <summary>
+    /// Satelliti sopra l'orizzonte (altezza maggiore di zero) nell'istante <paramref name="when"/>, per il sidecar del frame.
+    /// Usa un propagatore nuovo per bersaglio, perche' i propagatori della previsione non sono thread-safe e lavorano sotto
+    /// <c>_computeGate</c>. Un TLE illeggibile salta solo il suo bersaglio. Con la previsione spenta restituisce lista vuota.
+    /// </summary>
+    internal IReadOnlyList<SatelliteInView> InViewAt(PassForecastSettings settings, DateTimeOffset when)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+
+        var visibili = new List<SatelliteInView>();
+        if (!settings.Enabled)
+        {
+            return visibili;
+        }
+
+        lock (_computeGate)
+        {
+            foreach (SatelliteTarget target in settings.Targets)
+            {
+                if (!_tles.TryGetValue(target.NoradId, out TleSet? tle))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    SatObservation osservazione = _factory.Create(tle).Observe(
+                        when, settings.Site.LatDeg, settings.Site.LonDeg, settings.Site.AltM);
+                    if (osservazione.ElevationDeg > 0)
+                    {
+                        visibili.Add(new SatelliteInView(
+                            target.Name,
+                            target.NoradId,
+                            Math.Round(osservazione.ElevationDeg, 2, MidpointRounding.AwayFromZero),
+                            Math.Round(osservazione.AzimuthDeg, 2, MidpointRounding.AwayFromZero)));
+                    }
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    // Un TLE illeggibile non deve fermare gli altri bersagli.
+                }
+            }
+        }
+
+        return visibili;
     }
 
     private static PassForecastItem ToItem(SatelliteTarget target, SatellitePass pass) => new(

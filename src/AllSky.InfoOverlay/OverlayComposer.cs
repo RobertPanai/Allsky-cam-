@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text.Json;
 using AllSky.Archive;
 using AllSky.Core;
 using AllSky.Weather;
@@ -182,46 +181,20 @@ public static class OverlayComposer
     }
 
     /// <summary>
-    /// Nomi dei satelliti dal campo grezzo del sidecar. Il formato non è ancora fissato (P4): si accetta un array
-    /// di stringhe oppure di oggetti con la proprietà "nome" o "name". Null se il campo manca o ha altra forma.
+    /// Nomi dei satelliti del sidecar, senza nomi vuoti. Null se il campo manca (previsione spenta o sidecar senza dati);
+    /// lista vuota se nessun satellite è sopra l'orizzonte.
     /// </summary>
-    internal static IReadOnlyList<string>? NomiSatelliti(JsonElement? campo)
+    internal static IReadOnlyList<string>? NomiSatelliti(IReadOnlyList<SatelliteInView>? satelliti)
     {
-        if (campo is not { } elemento || elemento.ValueKind != JsonValueKind.Array)
+        if (satelliti is null)
         {
             return null;
         }
 
-        var nomi = new List<string>();
-        foreach (JsonElement voce in elemento.EnumerateArray())
-        {
-            string? nome = voce.ValueKind switch
-            {
-                JsonValueKind.String => voce.GetString(),
-                JsonValueKind.Object => LeggiNome(voce),
-                _ => null,
-            };
-
-            if (!string.IsNullOrWhiteSpace(nome))
-            {
-                nomi.Add(nome.Trim());
-            }
-        }
-
-        return nomi;
-    }
-
-    private static string? LeggiNome(JsonElement oggetto)
-    {
-        foreach (string proprieta in new[] { "nome", "name" })
-        {
-            if (oggetto.TryGetProperty(proprieta, out JsonElement valore) && valore.ValueKind == JsonValueKind.String)
-            {
-                return valore.GetString();
-            }
-        }
-
-        return null;
+        return satelliti
+            .Select(s => s.Name.Trim())
+            .Where(n => n.Length > 0)
+            .ToList();
     }
 
     private static string TestoEsposizione(FrameSidecar sidecar, OverlayWidgetFormat formato, Language cultura, DesktopTexts testi)

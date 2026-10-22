@@ -150,6 +150,7 @@ public sealed partial class AllSkyEngine
                 }
             }
 
+            IReadOnlyList<SatelliteInView>? satellites = SatellitesInViewAt(config, raw.Timestamp);
             FrameSidecar sidecar = FrameSidecars.FromCapture(
                 raw.Timestamp,
                 processed.Phase,
@@ -161,7 +162,7 @@ public sealed partial class AllSkyEngine
                     LatitudeDeg = config.Site.Latitude,
                     LongitudeDeg = config.Site.Longitude,
                 },
-                TimeZoneOf()) with { Weather = weather };
+                TimeZoneOf()) with { Weather = weather, Satellites = satellites };
             FrameSidecars.TryWrite(ArchiveOf(), sidecar, _log);
         }
         catch (Exception ex)

@@ -120,8 +120,42 @@ public sealed class ConfigStore
 
         ValidateSatellites(config.Satellites, errors);
         ValidateDetection(config.Detection, errors);
+        ValidateWeather(config.Weather ?? new(), errors);
 
         return errors;
+    }
+
+    /// <summary>Vincoli della sorgente meteo. Il consenso a Open-Meteo non è un errore: senza di esso la sorgente non parte.</summary>
+    private static void ValidateWeather(AppConfig.WeatherConfig weather, List<ValidationError> errors)
+    {
+        const string root = "weather";
+        if (weather.Version < 1 || weather.Version > AppConfig.WeatherConfig.CurrentVersion)
+        {
+            errors.Add(new ValidationError(root + ".version", "Versione della sezione meteo non supportata."));
+        }
+
+        bool sorgenteValida = weather.Source is AppConfig.WeatherConfig.Sources.None
+            or AppConfig.WeatherConfig.Sources.Ascom
+            or AppConfig.WeatherConfig.Sources.OpenMeteo;
+        if (!sorgenteValida)
+        {
+            errors.Add(new ValidationError(root + ".source", "La sorgente meteo deve essere \"none\", \"ascom\" o \"openmeteo\"."));
+        }
+
+        if (weather.Source == AppConfig.WeatherConfig.Sources.Ascom && string.IsNullOrWhiteSpace(weather.AscomProgId))
+        {
+            errors.Add(new ValidationError(root + ".ascomProgId", "Con la sorgente ASCOM indicare il ProgID del driver ObservingConditions."));
+        }
+
+        if (weather.ReadTimeoutSeconds < 1 || weather.ReadTimeoutSeconds > 60)
+        {
+            errors.Add(new ValidationError(root + ".readTimeoutSeconds", "Il tempo massimo di lettura deve essere compreso tra 1 e 60 secondi."));
+        }
+
+        if (weather.MaxAgeMinutes < 1 || weather.MaxAgeMinutes > 1440)
+        {
+            errors.Add(new ValidationError(root + ".maxAgeMinutes", "L'età massima del dato meteo deve essere compresa tra 1 e 1440 minuti."));
+        }
     }
 
     /// <summary>Vincoli del rilevamento (P5.5). Gli intervalli ricalcano le validazioni dei moduli, che lanciano eccezioni.</summary>

@@ -67,6 +67,12 @@ public sealed record AppConfig
     public Calibration.OpticalCalibrationConfig? Optics { get; init; } = null;
 
     /// <summary>
+    /// Meteo per il sidecar di ogni frame. Spento di default (<c>source</c> "none"): nessuna lettura, nessuna rete.
+    /// Le configurazioni precedenti non hanno la sezione e leggono i valori predefiniti.
+    /// </summary>
+    public WeatherConfig Weather { get; init; } = new();
+
+    /// <summary>
     /// Caricamento automatico su YouTube (P7). Spento di default. Il client secret e i token non stanno qui: sono nello
     /// store cifrato <c>youtube-auth.json</c>. Assente nelle configurazioni precedenti: si legge con i valori predefiniti.
     /// </summary>
@@ -262,6 +268,49 @@ public sealed record AppConfig
 
         public string DescriptionTemplate { get; init; } =
             "Timelapse della notte del {notte:yyyy-MM-dd} da {luogo}: {fotogrammi} fotogrammi, durata {durata}, meteore {meteore}, transiti {transiti}.";
+    }
+
+    /// <summary>
+    /// Sorgente meteo (sezione <c>weather</c>). Versionata: le configurazioni precedenti non hanno la sezione.
+    /// Un valore di <c>source</c> non riconosciuto non attiva nessuna sorgente: la cattura non si ferma.
+    /// </summary>
+    public sealed record WeatherConfig
+    {
+        /// <summary>Versione dello schema di questo sotto-oggetto.</summary>
+        public const int CurrentVersion = 1;
+
+        /// <summary>Valori ammessi per <see cref="Source"/>.</summary>
+        public static class Sources
+        {
+            /// <summary>Nessuna sorgente. Predefinito.</summary>
+            public const string None = "none";
+
+            /// <summary>Driver ASCOM ObservingConditions locale, per ProgID.</summary>
+            public const string Ascom = "ascom";
+
+            /// <summary>Open-Meteo, via rete. Richiede <see cref="OpenMeteoAcknowledgedNonCommercial"/>.</summary>
+            public const string OpenMeteo = "openmeteo";
+        }
+
+        public int Version { get; init; } = CurrentVersion;
+
+        /// <summary>"none" (predefinito), "ascom" o "openmeteo".</summary>
+        public string Source { get; init; } = Sources.None;
+
+        /// <summary>ProgID COM del driver ObservingConditions, per la sorgente "ascom". Obbligatorio con quella sorgente.</summary>
+        public string? AscomProgId { get; init; } = null;
+
+        /// <summary>Attesa massima per una lettura della sorgente, in secondi. Predefinito 5.</summary>
+        public int ReadTimeoutSeconds { get; init; } = 5;
+
+        /// <summary>Età massima di un valore usato quando la sorgente non risponde, in minuti. Predefinito 30.</summary>
+        public int MaxAgeMinutes { get; init; } = 30;
+
+        /// <summary>
+        /// Conferma dell'uso non commerciale di Open-Meteo (gratuito solo per uso non commerciale, meno di 10.000 chiamate al giorno).
+        /// Predefinito falso: senza conferma la sorgente "openmeteo" non parte. Non è un errore di validazione.
+        /// </summary>
+        public bool OpenMeteoAcknowledgedNonCommercial { get; init; } = false;
     }
 
     public sealed record UiConfig

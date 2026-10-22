@@ -3,6 +3,7 @@ using AllSky.Publish;
 using AllSky.Satellites;
 using AllSky.Timelapse;
 using AllSky.Updates;
+using AllSky.Weather;
 
 namespace AllSky.Host;
 
@@ -63,4 +64,10 @@ public sealed record HostOptions(
 
     /// <summary>Propagatori SGP4 per la previsione (P4.3). Null = previsione non disponibile. Il Desktop passa SGP.NET.</summary>
     public IOrbitPropagatorFactory? OrbitPropagators { get; init; }
+
+    /// <summary>
+    /// Driver ASCOM ObservingConditions per il meteo (sezione <c>weather</c>, sorgente "ascom"). Null = sorgente non disponibile.
+    /// Il Desktop passa la fabbrica COM, che funziona solo su Windows.
+    /// </summary>
+    public IObservingConditionsFactory? ObservingConditions { get; init; }
 }
