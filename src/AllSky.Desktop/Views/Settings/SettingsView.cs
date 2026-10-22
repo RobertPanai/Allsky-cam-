@@ -573,6 +573,7 @@ public class SettingsView : UserControl
 
         var right = new StackPanel();
         right.Children.Add(BuildStartupPanel());
+        right.Children.Add(BuildMaskPanel());
         right.Children.Add(BuildUpdatesPanel());
         right.Children.Add(BuildAccessPanel());
 
@@ -672,6 +673,32 @@ public class SettingsView : UserControl
         var panel = BuildPanel(stack, _texts.SettingsGeneralTitle);
         panel.Margin = new Thickness(0, 16, 0, 16);
         return panel;
+    }
+
+    private Border BuildMaskPanel()
+    {
+        var stack = new StackPanel();
+        stack.Children.Add(BuildPanelTitle(_texts.MaskTitle));
+        var openButton = BuildButton(_texts.MaskNav, primary: false);
+        openButton.Margin = new Thickness(0, 12, 0, 0);
+        openButton.Click += (_, _) => OpenMaskEditor();
+        stack.Children.Add(openButton);
+        return BuildPanel(stack, _texts.MaskTitle);
+    }
+
+    private void OpenMaskEditor()
+    {
+        var window = new Window
+        {
+            Title = _texts.MaskTitle,
+            Width = 1200,
+            Height = 780,
+            Owner = Window.GetWindow(this),
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Content = new AllSky.Desktop.Views.Mask.MaskEditorView(_runtime.Service, _paths, _texts),
+        };
+        window.SetResourceReference(Window.BackgroundProperty, "Brush.Background");
+        window.Show();
     }
 
     private Border BuildFolderPanel()
