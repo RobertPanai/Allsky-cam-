@@ -170,7 +170,7 @@ public static class MaskLogoStore
     }
 
     /// <summary>Solo lettere, cifre, trattino e underscore. Il resto diventa "_". Lunghezza massima 60.</summary>
-    internal static string NomeBase(string nome)
+    public static string NomeBase(string nome)
     {
         var sb = new StringBuilder(nome.Length);
         foreach (char c in nome)
