@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AllSky.Studio</RootNamespace>
+    <AssemblyName>AllSky.Studio</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Nessuna dipendenza NuGet: JSON e processi sono del framework.
+       Archive: sorgente "notte dell'archivio". Timelapse: solo per localizzare ffmpeg (stesse regole di licenza). -->
+  <ItemGroup>
+    <ProjectReference Include="..\AllSky.Archive\AllSky.Archive.csproj" />
+    <ProjectReference Include="..\AllSky.Timelapse\AllSky.Timelapse.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AllSky.Studio.Tests" />
+  </ItemGroup>
+
+</Project>
