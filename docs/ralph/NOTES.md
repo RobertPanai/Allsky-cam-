@@ -79,3 +79,13 @@ Una voce per iterazione, la più recente in fondo. Formato:
 ## 2026-10-22 ~02:00 — Interruzione per limite di sessione
 - Gli agenti P1.4 (a441cf9512d35ee78), P1.5 (a3413d67d9ff43d5e), P2.2 (a9c57de049397a33e) si sono fermati per il limite di sessione (reset 03:50). Lavoro parziale salvato nel commit WIP, NON compilato, NON rivisto.
 - Alla ripresa: riprendere gli agenti con SendMessage (stesso contesto), poi suite shim, CI Windows, registrazione delle viste nella shell.
+
+## 2026-10-22 04:30 — P1.4, P1.5, P2.2 (dopo la ripresa delle 03:50)
+- Fatto: vista Live (zoom/pan, decodifica fuori UI, pannello dati), vista Camera (ricerca, collegamento, impostazioni, errori leggibili), layout overlay (`AllSky.InfoOverlay`, JSON versionato, posizionamento puro). Le due viste sono registrate nella shell (`ShellControl` riceve `IAllSkyService`).
+- Test: runner shim 1241 eseguiti, 1240 PASS, 1 FAIL (instabile noto). CI Windows run 39709022899 verde (una correzione: chiave risorsa `"Size.Body"`).
+- Non verificato: tutte le viste WPF mai viste a schermo; InfoOverlay: posizionamento con misure di testo approssimate (il renderer P2.3 darà quelle vere), versione 0 dello schema ipotetica.
+- Da fare (task piccoli per l'Engine, non ancora nel piano):
+  - temperatura sensore in `LastFrameDto`/`FrameEvent` (il pannello Live mostra sempre "n/d");
+  - `DisconnectCameraAsync` in `IAllSkyService`;
+  - far arrivare i valori dei limiti di esposizione 0.2.1 nel messaggio di errore restituito, non solo nel log.
+- `DesktopTexts` passato alla shell: la lingua scelta va cablata in P1.8.
