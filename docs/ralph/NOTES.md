@@ -162,3 +162,12 @@ Una voce per iterazione, la più recente in fondo. Formato:
 - **Smoke test headless (camera Sim), esito PASS parziale.** Avvio e arresto puliti; 18 frame JPEG con sidecar e miniature, keogram presente, log senza ERROR/Exception, nessun segreto nella cartella dati. Limiti: la prova è di giorno (0 frame notturni), dura 90 s con cadenza 5 s, interfaccia web, pubblicazione e YouTube non avviati. Non prova timelapse, startrails, maschera, rilevamento. Quindi **P8.2 resta aperto**: manca una notte simulata con timelapse e almeno un evento sintetico.
 - Da controllare: con `storage.folder` che termina con `nights` i frame finiscono in `nights/nights/<data>`. Probabilmente è una mia impostazione di prova sbagliata, non un difetto; da verificare col default.
 - Riferimenti della prova: `/home/claude/allsky-scratch/smoke/` (fuori dal repo).
+
+## 2026-10-22 (14:30) — P8.2 completata con notte simulata (orologio accelerato x90)
+- Harness fuori dal repo: `/home/claude/allsky-scratch/smoke2/` (Engine costruito direttamente con `EngineDependencies`, camera Sim con decoratore che inietta una scia sintetica alle 23:30 CEST; orologio da 20:00 CEST a 12:30 CEST, circa 11 minuti reali).
+- Verificato: 955 frame (603 notte, 108 crepuscolo, 244 giorno); **timelapse.mp4** H.264 1280×960, 25 fps, 955 frame, 38,2 s; **keogram.jpg** e **startrails.jpg** presenti e non vuoti; **evento sintetico** salvato come `bolide` (`events/20261022T213009Z-000`) con `event.json`, `frame.jpg`, `crop.jpg`, `clip.mp4` (H.264, 5 frame); log `engine.log` senza ERROR né Exception; rilevamento: 711 frame analizzati, 1 evento; nessun segreto nella cartella dati.
+- **Limiti dichiarati:**
+  - Il timelapse della prova è senza overlay informativo: `IFrameOverlay` esiste solo nel Desktop WPF, quindi la maschera informativa non è verificata. Il percorso `mask.enabled`/`mask.imagePath` non è usato dal motore (commento in `FrameProcessor`).
+  - L'encoder di prova è **libx264 (GPL)** con `AllowGpl=true`, solo per il test locale. L'encoder del prodotto su Windows è `h264_mf` e non è stato provato. Su quel PC va verificato in P8.2/Windows.
+  - La classificazione dell'evento (bolide) riguarda una scia sintetica: non dice nulla sulla soglia reale.
+- Da provare sul PC con la ZWO: overlay informativo sul timelapse; encoder `h264_mf` in edizione N e normale; scia reale; maschera.

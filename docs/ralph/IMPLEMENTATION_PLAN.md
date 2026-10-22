@@ -180,7 +180,7 @@ Se un comando fallisce per motivi d'ambiente (SDK, rete, NuGet), scrivi il motiv
 
 ### P8 — Verifica e rilascio 0.3.0
 - [ ] **P8.1 [H] Documentazione**: README (desktop, maschera, satelliti, meteore, YouTube, meteo), `docs/FUNZIONI.md` aggiornato, guida "Configurare YouTube" passo-passo (Google Cloud Console, credenziali Desktop, stato In production), note sui limiti noti.
-- [ ] **P8.2 [S] Verifica finale**: build + test completi, smoke test con camera Sim e `--data-folder` temporanea (1 notte simulata accelerata se l'Engine lo consente: timelapse con maschera, almeno un evento sintetico); controllo segreti (`grep` del token di prova su cartella dati e log); revisione del diff complessivo. Scrivi in NOTES.md cosa è verificato e cosa no.
+- [x] **P8.2 [S] Verifica finale** (completata il 22/10/2026 con limiti dichiarati in NOTES.md: mask informativa del timelapse e encoder Windows `h264_mf` non verificati su Linux): build + test completi, smoke test con camera Sim e `--data-folder` temporanea (1 notte simulata accelerata se l'Engine lo consente: timelapse con maschera, almeno un evento sintetico); controllo segreti (`grep` del token di prova su cartella dati e log); revisione del diff complessivo. Scrivi in NOTES.md cosa è verificato e cosa no.
 - [ ] **P8.3 [S] Riepilogo per Robert** in NOTES.md: cosa è fatto, cosa è bloccato e perché, decisioni prese da confermare, prossimi passi. Includi la sezione **"Da provare sul PC con la ZWO"** (il loop gira con il solo simulatore, vedi PROMPT.md).
 - [ ] **P8.4 [S] Rilascio automatico 0.3.0** (richiesto da Robert). Parte solo se tutte le condizioni del **cancello** sono vere:
   - **Condizioni del cancello:**
