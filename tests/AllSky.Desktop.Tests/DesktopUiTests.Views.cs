@@ -14,6 +14,7 @@ using AllSky.Desktop.Views.Nights;
 using AllSky.Desktop.Views.Publication;
 using AllSky.Desktop.Views.Settings;
 using AllSky.Desktop.Views.Tonight;
+using AllSky.Engine;
 using Xunit;
 
 namespace AllSky.Desktop.Tests;

@@ -8,8 +8,9 @@ public sealed partial class DesktopUiTests
     private static string[] ExpectedNames() => [.. ViewNames, MainWindowName, "Risorse tema"];
 
     /// <summary>
-    /// Riepilogo finale: elenco delle viste superate e fallite, più quelle non eseguite. Gira per ultimo (vedi
-    /// <see cref="SummaryLastOrderer"/>). Non fa fallire il test: gli esiti singoli sono già falliti se serve.
+    /// Riepilogo: elenco delle viste superate e fallite, più quelle non ancora eseguite. xunit non garantisce che
+    /// questo caso giri per ultimo, quindi il riepilogo riporta i casi raccolti nel momento in cui gira; le viste
+    /// mancanti sono indicate come "non ancora eseguite". Non fa fallire il test: gli esiti singoli sono già falliti se serve.
     /// </summary>
     [Fact]
     public void Riepilogo_viste()
@@ -29,7 +30,7 @@ public sealed partial class DesktopUiTests
         string text = string.Join("\n",
             $"Viste superate ({passed.Count}): {Join(passed)}",
             $"Viste fallite ({failed.Count}): {Join(failed)}",
-            $"Viste non eseguite ({notRun.Count}): {Join(notRun)}",
+            $"Viste non ancora eseguite ({notRun.Count}): {Join(notRun)}",
             $"Casi registrati: {records.Count}");
 
         CiReport.Notice("Riepilogo", text, _output);

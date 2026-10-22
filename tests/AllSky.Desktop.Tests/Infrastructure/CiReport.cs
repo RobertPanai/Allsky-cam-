@@ -1,5 +1,5 @@
 using System.Text;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace AllSky.Desktop.Tests;
 

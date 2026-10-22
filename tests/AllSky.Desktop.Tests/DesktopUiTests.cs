@@ -3,7 +3,6 @@ using System.Windows.Media;
 using AllSky.Core.Design;
 using AllSky.Desktop.Theme;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace AllSky.Desktop.Tests;
 
