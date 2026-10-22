@@ -23,7 +23,7 @@ public static class OverlayLayoutDefaults
             Crea(OverlayWidgetKind.Bussola, false, OverlayPosition.TR, 2),
         });
 
-    /// <summary>Tutti i tipi di widget con i valori predefiniti, per l'editor. Non attivi, tranne data/ora, sole e luna.</summary>
+    /// <summary>Un widget con il formato predefinito del suo tipo.</summary>
     private static OverlayWidget Crea(OverlayWidgetKind tipo, bool abilitato, OverlayPosition posizione, int ordine) =>
         new(tipo, abilitato, posizione, ordine, OverlayWidgetFormats.Predefinito(tipo));
 }

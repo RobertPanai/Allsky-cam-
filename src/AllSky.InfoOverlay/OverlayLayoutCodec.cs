@@ -265,20 +265,20 @@ internal static class OverlayLayoutNormalizer
         {
             OverlayWidgetKind.DataOra => new OverlayWidgetFormat(
                 Pattern: Scegli(f.Pattern, OverlayWidgetFormats.PatternValido, predefinito.Pattern!, $"formato di {etichetta}", avvisi),
-                Fuso: Scegli(f.Fuso, v => Enum.IsDefined(v), predefinito.Fuso!.Value, $"fuso di {etichetta}", avvisi)),
+                Fuso: ScegliVal(f.Fuso, v => Enum.IsDefined(v), predefinito.Fuso!.Value, $"fuso di {etichetta}", avvisi)),
             OverlayWidgetKind.Sole => new OverlayWidgetFormat(
-                Decimali: Scegli(f.Decimali, d => d >= 0 && d <= OverlayLimits.DecimaliMax, predefinito.Decimali!.Value, $"decimali di {etichetta}", avvisi)),
+                Decimali: ScegliVal(f.Decimali, d => d >= 0 && d <= OverlayLimits.DecimaliMax, predefinito.Decimali!.Value, $"decimali di {etichetta}", avvisi)),
             OverlayWidgetKind.Luna => new OverlayWidgetFormat(
-                Decimali: Scegli(f.Decimali, d => d >= 0 && d <= OverlayLimits.DecimaliMax, predefinito.Decimali!.Value, $"decimali di {etichetta}", avvisi),
+                Decimali: ScegliVal(f.Decimali, d => d >= 0 && d <= OverlayLimits.DecimaliMax, predefinito.Decimali!.Value, $"decimali di {etichetta}", avvisi),
                 MostraFase: f.MostraFase ?? predefinito.MostraFase!.Value),
             OverlayWidgetKind.Satelliti => new OverlayWidgetFormat(
-                MaxElementi: Scegli(f.MaxElementi, m => m >= OverlayLimits.MaxElementiMin && m <= OverlayLimits.MaxElementiMax, predefinito.MaxElementi!.Value, $"numero di satelliti", avvisi)),
+                MaxElementi: ScegliVal(f.MaxElementi, m => m >= OverlayLimits.MaxElementiMin && m <= OverlayLimits.MaxElementiMax, predefinito.MaxElementi!.Value, $"numero di satelliti", avvisi)),
             OverlayWidgetKind.Meteo => new OverlayWidgetFormat(
                 Campi: Scegli<IReadOnlyList<OverlayMeteoField>>(f.Campi, OverlayLayoutValidator.CampiValidi, predefinito.Campi!, "campi meteo", avvisi)),
             OverlayWidgetKind.Logo => new OverlayWidgetFormat(
                 FileLogo: Scegli(f.FileLogo, OverlayWidgetFormats.FileLogoValido, predefinito.FileLogo!, "file del logo", avvisi),
-                AltezzaMaxPercento: Scegli(f.AltezzaMaxPercento, a => OverlayLayoutValidator.Entro(a, OverlayLimits.AltezzaLogoMin, OverlayLimits.AltezzaLogoMax), predefinito.AltezzaMaxPercento!.Value, "altezza del logo", avvisi),
-                Opacita: Scegli(f.Opacita, o => OverlayLayoutValidator.Entro(o, OverlayLimits.OpacitaMin, OverlayLimits.OpacitaMax), predefinito.Opacita!.Value, "opacità del logo", avvisi)),
+                AltezzaMaxPercento: ScegliVal(f.AltezzaMaxPercento, a => OverlayLayoutValidator.Entro(a, OverlayLimits.AltezzaLogoMin, OverlayLimits.AltezzaLogoMax), predefinito.AltezzaMaxPercento!.Value, "altezza del logo", avvisi),
+                Opacita: ScegliVal(f.Opacita, o => OverlayLayoutValidator.Entro(o, OverlayLimits.OpacitaMin, OverlayLimits.OpacitaMax), predefinito.Opacita!.Value, "opacità del logo", avvisi)),
             OverlayWidgetKind.TestoLibero => new OverlayWidgetFormat(
                 Testo: Scegli(f.Testo, OverlayWidgetFormats.TestoValido, predefinito.Testo!, "testo libero", avvisi)),
             OverlayWidgetKind.Esposizione => new OverlayWidgetFormat(
@@ -291,16 +291,33 @@ internal static class OverlayLayoutNormalizer
 
     /// <summary>Valore assente: predefinito in silenzio. Valore presente ma non valido: predefinito con avviso.</summary>
     private static T Scegli<T>(T? valore, Func<T, bool> valido, T predefinito, string nome, List<string> avvisi)
-        where T : notnull
+        where T : class
     {
         if (valore is null)
         {
             return predefinito;
         }
 
-        if (valore is T v && valido(v))
+        if (valido(valore))
         {
-            return v;
+            return valore;
+        }
+
+        avvisi.Add($"{nome} non valido: uso il predefinito");
+        return predefinito;
+    }
+
+    private static T ScegliVal<T>(T? valore, Func<T, bool> valido, T predefinito, string nome, List<string> avvisi)
+        where T : struct
+    {
+        if (valore is null)
+        {
+            return predefinito;
+        }
+
+        if (valido(valore.Value))
+        {
+            return valore.Value;
         }
 
         avvisi.Add($"{nome} non valido: uso il predefinito");
