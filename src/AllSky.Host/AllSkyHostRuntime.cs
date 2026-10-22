@@ -1,3 +1,4 @@
+using AllSky.Core.Events;
 using AllSky.Core.Publication;
 using AllSky.Core.YouTube;
 using AllSky.Engine;
@@ -22,14 +23,16 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
     private readonly UpdateService _updates;
     private readonly UpdateSettingsStore _updateStore;
     private readonly YouTubeServices? _youTube;
+    private readonly IEventBrowser _events;
     private readonly TaskCompletionSource _stopped = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly object _gate = new();
     private Task? _stopTask;
 
     /// <summary>Crea il runtime: usato solo da <see cref="AllSkyHost"/>.</summary>
-    internal AllSkyHostRuntime(WebApplication? app, AllSkyEngine engine, CancellationTokenSource shutdown, DailyFileLog log, string? url, PublishServices? publishing, UpdateService updates, UpdateSettingsStore updateStore, YouTubeServices? youTube = null)
+    internal AllSkyHostRuntime(WebApplication? app, AllSkyEngine engine, CancellationTokenSource shutdown, DailyFileLog log, string? url, PublishServices? publishing, UpdateService updates, UpdateSettingsStore updateStore, YouTubeServices? youTube = null, IEventBrowser? events = null)
     {
         _youTube = youTube;
+        _events = events ?? throw new ArgumentNullException(nameof(events));
         _app = app;
         _engine = engine;
         _shutdown = shutdown;
@@ -81,6 +84,11 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
     /// un servizio che mostra il problema. Resta valido fino all'arresto dell'Host.
     /// </summary>
     public IYouTubeService YouTube => (IYouTubeService?)_youTube?.Service ?? UnavailableYouTubeService.Instance;
+
+    /// <summary>
+    /// Archivio di meteore, bolidi e transiti per la vista Eventi del desktop. Resta valido fino all'arresto dell'Host.
+    /// </summary>
+    public IEventBrowser Events => _events;
 
     /// <summary>
     /// Attende l'arresto dell'Host. Se <paramref name="cancellationToken"/> viene annullato, l'Host si arresta

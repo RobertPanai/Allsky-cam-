@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AllSky.Core\AllSky.Core.csproj" />
     <ProjectReference Include="..\AllSky.Engine\AllSky.Engine.csproj" />
+    <ProjectReference Include="..\AllSky.Events\AllSky.Events.csproj" />
     <ProjectReference Include="..\AllSky.Satellites\AllSky.Satellites.csproj" />
     <ProjectReference Include="..\AllSky.Archive\AllSky.Archive.csproj" />
     <ProjectReference Include="..\AllSky.Capture\AllSky.Capture.csproj" />

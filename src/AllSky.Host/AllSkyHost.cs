@@ -153,7 +153,9 @@ public static class AllSkyHost
                 : $"AllSky Host in ascolto su {url}" + (lan ? " e sulla rete locale" : string.Empty) + ".");
             ready = true;
             updates.Service.Start();
-            return new AllSkyHostRuntime(app, engine, shutdown, log, url, publishing, updates.Service, updates.Store, youTube);
+            // La radice degli eventi e' la cartella d'archivio delle notti, letta dalla configurazione corrente.
+            var events = new AllSky.Host.Events.EventArchiveBrowser(() => ArchiveFolder(engine?.GetConfig() ?? initial));
+            return new AllSkyHostRuntime(app, engine, shutdown, log, url, publishing, updates.Service, updates.Store, youTube, events);
         }
         finally
         {
@@ -305,6 +307,10 @@ public static class AllSkyHost
 
         return app;
     }
+
+    /// <summary>Cartella dell'archivio delle notti, con lo stesso ripiego del motore (<c>storage.folder</c> vuoto).</summary>
+    private static string ArchiveFolder(AppConfig config) =>
+        string.IsNullOrWhiteSpace(config.Storage.Folder) ? new AppConfig.StorageConfig().Folder : config.Storage.Folder;
 
     /// <summary>
     /// Crea il file di configurazione con i valori predefiniti se manca. La cartella dati diventa anche

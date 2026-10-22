@@ -17,6 +17,9 @@ public enum ShellView
     /// <summary>Archivio delle notti, keogram e timelapse (placeholder fino a P1.6).</summary>
     Nights,
 
+    /// <summary>Meteore, bolidi e transiti rilevati, con clip e conferma (P5.4).</summary>
+    Events,
+
     /// <summary>Uplink e YouTube (placeholder fino a P1.7).</summary>
     Publication,
 

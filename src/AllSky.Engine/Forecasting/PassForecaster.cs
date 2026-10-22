@@ -399,6 +399,63 @@ public sealed class PassForecaster
         return paths;
     }
 
+    /// <summary>Passaggio calcolato con il suo propagatore, per il rilevamento dei transiti (P5.5). Usare solo tramite <see cref="ProjectWatched"/>.</summary>
+    internal sealed record WatchedPass(PassForecastItem Item, SatellitePass Pass, IOrbitPropagator Propagator);
+
+    /// <summary>Passaggi calcolati che finiscono dopo <paramref name="from"/> e iniziano prima di <paramref name="until"/>.</summary>
+    internal IReadOnlyList<WatchedPass> WatchedPasses(DateTimeOffset from, DateTimeOffset until)
+    {
+        IReadOnlyList<Entry> entries;
+        lock (_gate)
+        {
+            entries = _entries;
+        }
+
+        return entries
+            .Where(e => e.Item.EndUtc > from && e.Item.StartUtc < until)
+            .Select(e => new WatchedPass(e.Item, e.Pass, e.Propagator))
+            .ToList();
+    }
+
+    /// <summary>Proietta un passaggio nei pixel con la calibrazione. Il propagatore è condiviso: il calcolo passa da <c>_computeGate</c>.</summary>
+    internal ProjectedPassTrack ProjectWatched(WatchedPass watched, SkyCalibrationResult calibration, ObserverSite site)
+    {
+        lock (_computeGate)
+        {
+            return PassTrackProjector.Project(watched.Pass, watched.Propagator, site, calibration);
+        }
+    }
+
+    /// <summary>
+    /// Propagatori nuovi, uno per bersaglio con TLE, per il classificatore di scie. Sono istanze separate da quelle della
+    /// previsione: il classificatore lavora su un altro thread.
+    /// </summary>
+    internal IReadOnlyList<TrackedSatellite> TrackedSatellites(PassForecastSettings settings)
+    {
+        var satellites = new List<TrackedSatellite>();
+        lock (_computeGate)
+        {
+            foreach (SatelliteTarget target in settings.Targets)
+            {
+                if (!_tles.TryGetValue(target.NoradId, out TleSet? tle))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    satellites.Add(new TrackedSatellite(target.Name, _factory.Create(tle)));
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    // Un TLE illeggibile non deve fermare il rilevamento degli altri bersagli.
+                }
+            }
+        }
+
+        return satellites;
+    }
+
     private static PassForecastItem ToItem(SatelliteTarget target, SatellitePass pass) => new(
         target.Name,
         target.NoradId,

@@ -30,6 +30,9 @@ internal static class ShellIcons
     /// <summary>Cursori di regolazione, per "Impostazioni".</summary>
     internal static readonly Geometry Settings = Build("M4,7 H20 M4,17 H20 M8,4.5 V9.5 M16,14.5 V19.5");
 
+    /// <summary>Scia di meteora con la testa luminosa, per "Eventi".</summary>
+    internal static readonly Geometry Meteor = Build("M4,20 L14,10 M14,10 L20,4 M9.5,14.5 L4,20 M18.5,4.5 L19.5,5.5");
+
     /// <summary>Foglio con righe, per "Log".</summary>
     internal static readonly Geometry Log = Build("M6,3.5 H18 V20.5 H6 Z M9,8.5 H15 M9,12 H15 M9,15.5 H13");
 
@@ -59,6 +62,7 @@ internal static class ShellIcons
         ShellView.Live => Live,
         ShellView.Camera => Camera,
         ShellView.Nights => Moon,
+        ShellView.Events => Meteor,
         ShellView.Publication => Upload,
         ShellView.Settings => Settings,
         ShellView.Log => Log,

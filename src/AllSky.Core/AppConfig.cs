@@ -78,6 +78,12 @@ public sealed record AppConfig
     /// </summary>
     public SatellitesConfig Satellites { get; init; } = new();
 
+    /// <summary>
+    /// Rilevamento di meteore, bolidi e transiti nell'Engine (P5.5). Spento di default: con <c>enabled</c> falso
+    /// il comportamento dell'Engine non cambia. Le configurazioni precedenti non hanno la sezione.
+    /// </summary>
+    public DetectionConfig Detection { get; init; } = new();
+
     public sealed record SiteConfig
     {
         public string Name { get; init; } = "Osservatorio";
@@ -320,6 +326,118 @@ public sealed record AppConfig
 
             /// <summary>Nome leggibile. Vuoto: si mostra il numero NORAD.</summary>
             public string Name { get; init; } = string.Empty;
+        }
+    }
+
+    /// <summary>
+    /// Rilevamento di meteore, bolidi e transiti (P5.5). Versionato: le configurazioni precedenti non hanno la sezione
+    /// e leggono i valori predefiniti, cioe' rilevamento spento. Le soglie sono quelle dei moduli di AllSky.Detection,
+    /// AllSky.Transits ed AllSky.Events; i valori iniziali sono da tarare su cielo reale.
+    /// </summary>
+    public sealed record DetectionConfig
+    {
+        /// <summary>Versione dello schema di questo sotto-oggetto.</summary>
+        public const int CurrentVersion = 1;
+
+        /// <summary>Versione dello schema. Le configurazioni precedenti non la hanno: si legge come 1.</summary>
+        public int Version { get; init; } = CurrentVersion;
+
+        /// <summary>Interruttore generale. Predefinito: spento.</summary>
+        public bool Enabled { get; init; } = false;
+
+        /// <summary>
+        /// Salva anche i passaggi non identificati (con il verdetto registrato), non solo quelli confermati nelle immagini.
+        /// Predefinito: spento.
+        /// </summary>
+        public bool SaveAllVisiblePasses { get; init; } = false;
+
+        /// <summary>Lato lungo del frame ridotto usato per il rilevamento, in pixel. Predefinito 960.</summary>
+        public int AnalysisLongSidePx { get; init; } = 960;
+
+        /// <summary>Frame al secondo delle mini-clip degli eventi. Predefinito 25.</summary>
+        public int ClipFps { get; init; } = 25;
+
+        /// <summary>Soglie del rilevatore di scie e del classificatore.</summary>
+        public StreakSettings Streak { get; init; } = new();
+
+        /// <summary>Soglie della conferma dei transiti nelle immagini.</summary>
+        public TransitSettings Transit { get; init; } = new();
+
+        /// <summary>Soglie di <c>StreakDetector</c> e <c>StreakClassifier</c>, con i valori iniziali dei moduli.</summary>
+        public sealed record StreakSettings
+        {
+            /// <summary>Frame su cui il fondo adattivo fa la media. Predefinito 8.</summary>
+            public int BackgroundFrames { get; init; } = 8;
+
+            /// <summary>Moltiplicatore sigma della soglia. Predefinito 3.</summary>
+            public double ThresholdSigma { get; init; } = 3.0;
+
+            /// <summary>Soglia minima assoluta della differenza, in livelli 8 bit. Predefinito 6.</summary>
+            public double MinDifferenceLuma { get; init; } = 6.0;
+
+            /// <summary>Area minima di una componente, in pixel. Predefinito 15.</summary>
+            public int MinAreaPx { get; init; } = 15;
+
+            /// <summary>Lunghezza minima di una scia, in pixel del frame ridotto. Predefinito 25.</summary>
+            public double MinLengthPx { get; init; } = 25.0;
+
+            /// <summary>Spessore massimo di una scia, in pixel. Predefinito 6.</summary>
+            public double MaxWidthPx { get; init; } = 6.0;
+
+            /// <summary>Elongazione minima. Predefinito 6.</summary>
+            public double MinElongation { get; init; } = 6.0;
+
+            /// <summary>Frazione di pixel cambiati oltre la quale il frame e' scartato. Predefinito 0,02.</summary>
+            public double MaxChangedFraction { get; init; } = 0.02;
+
+            /// <summary>Distanza massima dalla traccia prevista, in pixel. Predefinito 12.</summary>
+            public double TrackDistancePx { get; init; } = 12.0;
+
+            /// <summary>Scarto angolare massimo dalla traccia prevista, in gradi. Predefinito 8.</summary>
+            public double TrackAngleDeg { get; init; } = 8.0;
+
+            /// <summary>Spostamento massimo tra frame consecutivi perche' due scie siano la stessa, in pixel. Predefinito 30.</summary>
+            public double RepeatShiftPx { get; init; } = 30.0;
+
+            /// <summary>Scarto angolare massimo tra frame consecutivi, in gradi. Predefinito 8.</summary>
+            public double RepeatAngleDeg { get; init; } = 8.0;
+
+            /// <summary>Intervallo massimo, in secondi, tra due frame consecutivi. Predefinito 30.</summary>
+            public double MaxFrameGapSeconds { get; init; } = 30.0;
+
+            /// <summary>Picco sopra il fondo oltre il quale la scia e' un bolide. Predefinito 200.</summary>
+            public double BolideSaturatedPeakLuma { get; init; } = 200.0;
+
+            /// <summary>Luminosita' integrata oltre la quale la scia e' un bolide. Predefinito 4000.</summary>
+            public double BolideIntegratedLuma { get; init; } = 4000.0;
+
+            /// <summary>Lunghezza oltre la quale la scia e' un bolide, in pixel del frame ridotto. Predefinito 300.</summary>
+            public double BolideLengthPx { get; init; } = 300.0;
+        }
+
+        /// <summary>Soglie di <c>TransitConfirmer</c>, con i valori iniziali del modulo.</summary>
+        public sealed record TransitSettings
+        {
+            /// <summary>Semiampiezza del corridoio attorno alla traccia, in pixel. Predefinito 4.</summary>
+            public double CorridorHalfWidthPx { get; init; } = 4.0;
+
+            /// <summary>Larghezza di ciascuna fascia di fondo, in pixel. Predefinito 6.</summary>
+            public double FlankWidthPx { get; init; } = 6.0;
+
+            /// <summary>Distanza tra due campioni lungo la traccia, in pixel. Predefinito 1.</summary>
+            public double SampleSpacingPx { get; init; } = 1.0;
+
+            /// <summary>Soglia in sigma robuste del fondo. Predefinito 5.</summary>
+            public double SigmaMultiplier { get; init; } = 5.0;
+
+            /// <summary>Soglia minima assoluta di eccesso, in livelli 8 bit. Predefinito 10.</summary>
+            public double MinExcessLevels { get; init; } = 10.0;
+
+            /// <summary>Frazione della traccia sopra soglia perche' un frame sia identificato. Predefinito 0,6.</summary>
+            public double ScoreThreshold { get; init; } = 0.6;
+
+            /// <summary>Lunghezza minima del tratto visibile, in pixel. Predefinito 40.</summary>
+            public double MinVisibleTrackPx { get; init; } = 40.0;
         }
     }
 }

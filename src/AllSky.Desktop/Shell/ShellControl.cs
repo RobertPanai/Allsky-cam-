@@ -19,7 +19,7 @@ namespace AllSky.Desktop.Shell;
 /// Shell della finestra principale: barra laterale con le icone delle viste, area centrale e barra di stato in basso.
 /// </summary>
 /// <remarks>
-/// <para>Tastiera: Ctrl+1..Ctrl+6 aprono le viste della <see cref="ShellNavigation.ShortcutOrder"/>; Su e Giù, con il fuoco
+/// <para>Tastiera: Ctrl+1..Ctrl+7 aprono le viste della <see cref="ShellNavigation.ShortcutOrder"/>; Su e Giù, con il fuoco
 /// su una voce della barra laterale, passano alla vista precedente o successiva; Ctrl+R cambia la modalità notte.</para>
 /// <para>La navigazione passa da <see cref="ShellNavigation"/> (logica pura). Ogni voce è un <see cref="RadioButton"/>
 /// in un gruppo: uno solo è selezionato, e il gruppo gestisce anche lo stato per i lettori di schermo.</para>
@@ -327,7 +327,7 @@ internal sealed class ShellControl : Grid
         return null;
     }
 
-    /// <summary>Numero della scorciatoia (1..6) per il tasto premuto con Ctrl, oppure 0.</summary>
+    /// <summary>Numero della scorciatoia (1..7) per il tasto premuto con Ctrl, oppure 0.</summary>
     private static int ShortcutNumber(Key key) => key switch
     {
         Key.D1 or Key.NumPad1 => 1,
@@ -336,6 +336,7 @@ internal sealed class ShellControl : Grid
         Key.D4 or Key.NumPad4 => 4,
         Key.D5 or Key.NumPad5 => 5,
         Key.D6 or Key.NumPad6 => 6,
+        Key.D7 or Key.NumPad7 => 7,
         _ => 0,
     };
 
@@ -378,6 +379,7 @@ internal sealed class ShellControl : Grid
             ShellView.Live when service is not null => new AllSky.Desktop.Views.Live.LiveView(service, texts),
             ShellView.Camera when service is not null => new AllSky.Desktop.Views.Camera.CameraView(service, texts),
             ShellView.Nights when service is not null => new AllSky.Desktop.Views.Nights.NightsView(service, texts),
+            ShellView.Events when runtime is not null => new AllSky.Desktop.Views.Events.EventsView(runtime.Events, texts),
             ShellView.Publication when runtime is not null => new AllSky.Desktop.Views.Publication.PublicationView(runtime.PublishSettings, texts, runtime.YouTube),
             ShellView.Settings when runtime is not null && paths is not null => new AllSky.Desktop.Views.Settings.SettingsView(runtime, paths, texts, theme),
             ShellView.Log when paths is not null => new AllSky.Desktop.Views.Log.LogView(paths, texts),

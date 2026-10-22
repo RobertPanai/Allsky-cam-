@@ -4,8 +4,9 @@ namespace AllSky.Core.Shell;
 /// Ordine delle viste nella barra laterale e scorciatoie da tastiera. Logica pura, senza WPF.
 /// </summary>
 /// <remarks>
-/// Ctrl+1..Ctrl+6 raggiungono le sei viste della <see cref="ShortcutOrder"/>. "Stanotte" non ha una scorciatoia
-/// numerica: si raggiunge con il mouse, con le frecce o con Tab.
+/// Ctrl+1..Ctrl+7 raggiungono le sette viste della <see cref="ShortcutOrder"/>. "Stanotte" non ha una scorciatoia
+/// numerica: si raggiunge con il mouse, con le frecce o con Tab. "Eventi" è in fondo alla lista delle scorciatoie
+/// (Ctrl+7) e non in mezzo, così le scorciatoie già note (Ctrl+1..6) non cambiano.
 /// </remarks>
 public static class ShellNavigation
 {
@@ -15,6 +16,7 @@ public static class ShellNavigation
         ShellView.Live,
         ShellView.Camera,
         ShellView.Nights,
+        ShellView.Events,
         ShellView.Publication,
         ShellView.Settings,
         ShellView.Log,
@@ -28,18 +30,19 @@ public static class ShellNavigation
         ShellView.Publication,
         ShellView.Settings,
         ShellView.Log,
+        ShellView.Events,
     ];
 
     /// <summary>Viste nell'ordine della barra laterale, dall'alto in basso.</summary>
     public static IReadOnlyList<ShellView> SidebarOrder => Sidebar;
 
-    /// <summary>Viste con scorciatoia Ctrl+1..Ctrl+6, in quest'ordine.</summary>
+    /// <summary>Viste con scorciatoia Ctrl+1..Ctrl+7, in quest'ordine.</summary>
     public static IReadOnlyList<ShellView> ShortcutOrder => Shortcuts;
 
     /// <summary>Vista mostrata all'avvio.</summary>
     public static ShellView Default => ShellView.Tonight;
 
-    /// <summary>Traduce il numero di una scorciatoia (1..6) nella vista corrispondente.</summary>
+    /// <summary>Traduce il numero di una scorciatoia (1..7) nella vista corrispondente.</summary>
     /// <param name="number">Numero premuto con Ctrl.</param>
     /// <param name="view">Vista corrispondente, o <see cref="Default"/> se il numero non ha una vista.</param>
     /// <returns>True se il numero ha una vista.</returns>
@@ -55,7 +58,7 @@ public static class ShellNavigation
         return false;
     }
 
-    /// <summary>Numero della scorciatoia della vista (1..6), oppure 0 se la vista non ne ha una.</summary>
+    /// <summary>Numero della scorciatoia della vista (1..7), oppure 0 se la vista non ne ha una.</summary>
     /// <param name="view">Vista da cercare.</param>
     public static int ShortcutNumber(ShellView view)
     {

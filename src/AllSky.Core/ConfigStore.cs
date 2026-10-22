@@ -119,8 +119,101 @@ public sealed class ConfigStore
         }
 
         ValidateSatellites(config.Satellites, errors);
+        ValidateDetection(config.Detection, errors);
 
         return errors;
+    }
+
+    /// <summary>Vincoli del rilevamento (P5.5). Gli intervalli ricalcano le validazioni dei moduli, che lanciano eccezioni.</summary>
+    private static void ValidateDetection(AppConfig.DetectionConfig detection, List<ValidationError> errors)
+    {
+        const string root = "detection";
+        if (detection.Version < 1 || detection.Version > AppConfig.DetectionConfig.CurrentVersion)
+        {
+            errors.Add(new ValidationError(root + ".version", "Versione della sezione rilevamento non supportata."));
+        }
+
+        if (!InRange(detection.AnalysisLongSidePx, 240, 4096))
+        {
+            errors.Add(new ValidationError(root + ".analysisLongSidePx", "Il lato lungo di analisi deve essere compreso tra 240 e 4096 pixel."));
+        }
+
+        if (!InRange(detection.ClipFps, 1, 120))
+        {
+            errors.Add(new ValidationError(root + ".clipFps", "Il fps delle mini-clip deve essere compreso tra 1 e 120."));
+        }
+
+        AppConfig.DetectionConfig.StreakSettings s = detection.Streak ?? new();
+        if (!InRange(s.BackgroundFrames, 1, 120))
+        {
+            errors.Add(new ValidationError(root + ".streak.backgroundFrames", "I frame del fondo devono essere compresi tra 1 e 120."));
+        }
+
+        if (!InRange(s.ThresholdSigma, 0, 20))
+        {
+            errors.Add(new ValidationError(root + ".streak.thresholdSigma", "La soglia in sigma deve essere compresa tra 0 e 20."));
+        }
+
+        if (!InRange(s.MinDifferenceLuma, 0.5, 255))
+        {
+            errors.Add(new ValidationError(root + ".streak.minDifferenceLuma", "La differenza minima deve essere compresa tra 0,5 e 255 livelli."));
+        }
+
+        if (!InRange(s.MinAreaPx, 1, 100000))
+        {
+            errors.Add(new ValidationError(root + ".streak.minAreaPx", "L'area minima deve essere compresa tra 1 e 100000 pixel."));
+        }
+
+        if (!InRange(s.MinLengthPx, 1, 10000) || !InRange(s.MaxWidthPx, 0.5, 1000) || !InRange(s.MinElongation, 0, 1000))
+        {
+            errors.Add(new ValidationError(root + ".streak", "Lunghezza, spessore o elongazione minimi fuori dai limiti."));
+        }
+
+        if (!(s.MaxChangedFraction > 0 && s.MaxChangedFraction <= 1))
+        {
+            errors.Add(new ValidationError(root + ".streak.maxChangedFraction", "La frazione massima di pixel cambiati deve stare in (0, 1]."));
+        }
+
+        if (!InRange(s.TrackDistancePx, 0, 10000) || !InRange(s.RepeatShiftPx, 0, 10000))
+        {
+            errors.Add(new ValidationError(root + ".streak", "Le distanze di confronto con tracce e frame successivi non sono valide."));
+        }
+
+        if (!InRange(s.TrackAngleDeg, 0, 90) || !InRange(s.RepeatAngleDeg, 0, 90))
+        {
+            errors.Add(new ValidationError(root + ".streak", "Gli angoli di confronto devono stare tra 0 e 90 gradi."));
+        }
+
+        if (!InRange(s.MaxFrameGapSeconds, 1, 3600))
+        {
+            errors.Add(new ValidationError(root + ".streak.maxFrameGapSeconds", "L'intervallo massimo tra frame consecutivi deve essere tra 1 e 3600 secondi."));
+        }
+
+        if (!(s.BolideSaturatedPeakLuma > 0) || !(s.BolideIntegratedLuma > 0) || !(s.BolideLengthPx > 0))
+        {
+            errors.Add(new ValidationError(root + ".streak", "Le soglie del bolide devono essere positive."));
+        }
+
+        AppConfig.DetectionConfig.TransitSettings t = detection.Transit ?? new();
+        if (!InRange(t.CorridorHalfWidthPx, 0, 50) || !InRange(t.FlankWidthPx, 1, 50))
+        {
+            errors.Add(new ValidationError(root + ".transit", "Corridoio e fasce di fondo devono stare tra 0 e 50 pixel (fascia almeno 1)."));
+        }
+
+        if (!InRange(t.SampleSpacingPx, 0.1, 10) || !InRange(t.SigmaMultiplier, 0, 100) || !InRange(t.MinExcessLevels, 0, 255))
+        {
+            errors.Add(new ValidationError(root + ".transit", "Passo di campionamento o soglie di eccesso fuori dai limiti."));
+        }
+
+        if (!InRange(t.ScoreThreshold, 0, 1))
+        {
+            errors.Add(new ValidationError(root + ".transit.scoreThreshold", "La soglia di punteggio deve essere compresa tra 0 e 1."));
+        }
+
+        if (!(t.MinVisibleTrackPx >= 0) || double.IsInfinity(t.MinVisibleTrackPx))
+        {
+            errors.Add(new ValidationError(root + ".transit.minVisibleTrackPx", "La lunghezza minima del tratto deve essere un numero non negativo."));
+        }
     }
 
     /// <summary>Vincoli della previsione dei passaggi (P4.3). Con la sezione spenta si validano comunque i valori.</summary>

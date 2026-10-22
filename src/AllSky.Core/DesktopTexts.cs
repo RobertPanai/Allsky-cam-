@@ -1496,6 +1496,69 @@ public sealed record DesktopTexts
         MaskMeteoNoField = "Scegli almeno un campo meteo.",
         MaskBusy = "Operazione in corso…",
         YouTubeLogoutConfirm = "Scollegare l'account? Il token viene revocato e il caricamento automatico si spegne.",
+        EventsNav = "Eventi",
+        EventsEmpty = "Nessun evento ancora. Meteore, bolidi e transiti rilevati compariranno qui, con clip e dati.",
+        EventsCount = "{0} eventi",
+        EventsNoMatch = "Nessun evento con questi filtri.",
+        EventsSelectPrompt = "Seleziona un evento per vedere la clip e i dati.",
+        EventsStatusLoading = "Caricamento degli eventi…",
+        EventsListError = "Impossibile leggere l'archivio degli eventi: {0}",
+        EventsDetailMissing = "Evento non più disponibile. Aggiorna la vista.",
+        EventsFilterNight = "Notte",
+        EventsFilterAllNights = "Tutte le notti",
+        EventsFilterType = "Tipo",
+        EventsFilterAllTypes = "Tutti i tipi",
+        EventsCategoryMeteor = "Meteora",
+        EventsCategoryBolide = "Bolide",
+        EventsCategoryTransit = "Transito",
+        EventsClassMeteor = "Meteora",
+        EventsClassBolide = "Bolide",
+        EventsClassSatellite = "Satellite",
+        EventsClassAircraft = "Aereo o satellite",
+        EventsClassUnknown = "Non classificata",
+        EventsLabelNone = "Non etichettato",
+        EventsLabelConfirmed = "Confermato",
+        EventsLabelFalsePositive = "Falso positivo",
+        EventsButtonConfirm = "Conferma",
+        EventsButtonFalsePositive = "Falso positivo",
+        EventsButtonExport = "Esporta evento",
+        EventsLabelHint = "L'etichetta serve a tarare le soglie di rilevamento. Non cancella l'evento: premere di nuovo lo stesso pulsante la toglie.",
+        EventsPanelImage = "Immagine",
+        EventsPanelClip = "Clip",
+        EventsPanelData = "Dati",
+        EventsDataTime = "Ora",
+        EventsDataClass = "Classe",
+        EventsDataScore = "Punteggio",
+        EventsDataLength = "Lunghezza",
+        EventsDataPeak = "Luminosità di picco",
+        EventsDataIntegrated = "Luminosità integrata",
+        EventsDataStart = "Inizio (alt / az)",
+        EventsDataEnd = "Fine (alt / az)",
+        EventsNoSkyPosition = "Posizione sul cielo non disponibile: la camera non è calibrata.",
+        EventsDataSatellite = "Satellite",
+        EventsDataNorad = "Numero NORAD",
+        EventsDataWindow = "Passaggio",
+        EventsDataCulmination = "Culminazione",
+        EventsDataMaxElevation = "Altezza massima",
+        EventsDataConfirmation = "Punteggio conferma",
+        EventsDataVerdict = "Verdetto",
+        EventsVerdictIdentified = "Identificato",
+        EventsVerdictNotIdentified = "Non identificato",
+        EventsVerdictPredicted = "Previsto, non verificato",
+        EventsClipPlayerName = "Clip dell'evento",
+        EventsClipPlay = "Riproduci",
+        EventsClipPause = "Pausa",
+        EventsClipStop = "Stop",
+        EventsClipMissing = "Clip non disponibile: il file non è stato prodotto, per esempio perché ffmpeg non era presente al rilevamento.",
+        EventsClipError = "Il video non si riproduce. Può mancare un codec di sistema.",
+        EventsImageMissing = "Immagine non disponibile.",
+        EventsLabelSaved = "Etichetta salvata: {0}.",
+        EventsLabelError = "Etichetta non salvata: {0}",
+        EventsExportBusy = "Esportazione in corso…",
+        EventsExportDone = "Evento esportato in {0}.",
+        EventsExportError = "Esportazione non riuscita: {0}",
+        EventsExportDialogTitle = "Esporta evento",
+        EventsExportFilter = "Archivio zip (*.zip)|*.zip",
     };
 
     /// <summary>Testi in inglese.</summary>
@@ -2138,6 +2201,69 @@ public sealed record DesktopTexts
         MaskMeteoNoField = "Choose at least one weather field.",
         MaskBusy = "Working…",
         YouTubeLogoutConfirm = "Disconnect the account? The token is revoked and automatic upload turns off.",
+        EventsNav = "Events",
+        EventsEmpty = "No events yet. Detected meteors, fireballs and passes will appear here, with clip and data.",
+        EventsCount = "{0} events",
+        EventsNoMatch = "No events match these filters.",
+        EventsSelectPrompt = "Select an event to see its clip and data.",
+        EventsStatusLoading = "Loading events…",
+        EventsListError = "Cannot read the event archive: {0}",
+        EventsDetailMissing = "Event no longer available. Refresh the view.",
+        EventsFilterNight = "Night",
+        EventsFilterAllNights = "All nights",
+        EventsFilterType = "Type",
+        EventsFilterAllTypes = "All types",
+        EventsCategoryMeteor = "Meteor",
+        EventsCategoryBolide = "Fireball",
+        EventsCategoryTransit = "Transit",
+        EventsClassMeteor = "Meteor",
+        EventsClassBolide = "Fireball",
+        EventsClassSatellite = "Satellite",
+        EventsClassAircraft = "Aircraft or satellite",
+        EventsClassUnknown = "Unclassified",
+        EventsLabelNone = "Not labelled",
+        EventsLabelConfirmed = "Confirmed",
+        EventsLabelFalsePositive = "False positive",
+        EventsButtonConfirm = "Confirm",
+        EventsButtonFalsePositive = "False positive",
+        EventsButtonExport = "Export event",
+        EventsLabelHint = "The label helps tune detection thresholds. It does not delete the event: press the same button again to clear it.",
+        EventsPanelImage = "Image",
+        EventsPanelClip = "Clip",
+        EventsPanelData = "Data",
+        EventsDataTime = "Time",
+        EventsDataClass = "Class",
+        EventsDataScore = "Score",
+        EventsDataLength = "Length",
+        EventsDataPeak = "Peak brightness",
+        EventsDataIntegrated = "Integrated brightness",
+        EventsDataStart = "Start (alt / az)",
+        EventsDataEnd = "End (alt / az)",
+        EventsNoSkyPosition = "Sky position not available: the camera is not calibrated.",
+        EventsDataSatellite = "Satellite",
+        EventsDataNorad = "NORAD number",
+        EventsDataWindow = "Pass",
+        EventsDataCulmination = "Culmination",
+        EventsDataMaxElevation = "Maximum elevation",
+        EventsDataConfirmation = "Confirmation score",
+        EventsDataVerdict = "Verdict",
+        EventsVerdictIdentified = "Identified",
+        EventsVerdictNotIdentified = "Not identified",
+        EventsVerdictPredicted = "Predicted, not verified",
+        EventsClipPlayerName = "Event clip",
+        EventsClipPlay = "Play",
+        EventsClipPause = "Pause",
+        EventsClipStop = "Stop",
+        EventsClipMissing = "Clip not available: the file was not produced, for example because ffmpeg was missing at detection time.",
+        EventsClipError = "The video cannot be played. A system codec may be missing.",
+        EventsImageMissing = "Image not available.",
+        EventsLabelSaved = "Label saved: {0}.",
+        EventsLabelError = "Label not saved: {0}",
+        EventsExportBusy = "Exporting…",
+        EventsExportDone = "Event exported to {0}.",
+        EventsExportError = "Export failed: {0}",
+        EventsExportDialogTitle = "Export event",
+        EventsExportFilter = "Zip archive (*.zip)|*.zip",
     };
 
     /// <summary>Nome della vista nella barra laterale e come titolo della schermata.</summary>
@@ -2148,6 +2274,7 @@ public sealed record DesktopTexts
         ShellView.Live => NavLive,
         ShellView.Camera => NavCamera,
         ShellView.Nights => NavNights,
+        ShellView.Events => EventsNav,
         ShellView.Publication => NavPublication,
         ShellView.Settings => NavSettings,
         ShellView.Log => NavLog,
@@ -2161,6 +2288,7 @@ public sealed record DesktopTexts
         ShellView.Live => EmptyLive,
         ShellView.Camera => EmptyCamera,
         ShellView.Nights => EmptyNights,
+        ShellView.Events => EventsEmpty,
         ShellView.Publication => EmptyPublication,
         ShellView.Settings => EmptySettings,
         ShellView.Log => EmptyLog,
@@ -3260,4 +3388,193 @@ public sealed record DesktopTexts
 
     /// <summary>Conferma prima dello scollegamento dell'account.</summary>
     public required string YouTubeLogoutConfirm { get; init; }
+
+    /// <summary>Nome della vista Eventi nella barra laterale.</summary>
+    public required string EventsNav { get; init; }
+
+    /// <summary>Stato vuoto della vista Eventi, sotto l'illustrazione.</summary>
+    public required string EventsEmpty { get; init; }
+
+    /// <summary>Numero di eventi visibili; {0} è il numero.</summary>
+    public required string EventsCount { get; init; }
+
+    /// <summary>Messaggio quando i filtri escludono tutti gli eventi.</summary>
+    public required string EventsNoMatch { get; init; }
+
+    /// <summary>Messaggio nel dettaglio quando nessun evento è selezionato.</summary>
+    public required string EventsSelectPrompt { get; init; }
+
+    /// <summary>Messaggio durante la lettura dell'archivio eventi.</summary>
+    public required string EventsStatusLoading { get; init; }
+
+    /// <summary>Errore di lettura dell'archivio eventi; {0} è il dettaglio.</summary>
+    public required string EventsListError { get; init; }
+
+    /// <summary>Messaggio quando il dettaglio di un evento non si legge più.</summary>
+    public required string EventsDetailMissing { get; init; }
+
+    /// <summary>Etichetta del filtro per notte.</summary>
+    public required string EventsFilterNight { get; init; }
+
+    /// <summary>Voce del filtro per notte che non filtra.</summary>
+    public required string EventsFilterAllNights { get; init; }
+
+    /// <summary>Etichetta del filtro per tipo.</summary>
+    public required string EventsFilterType { get; init; }
+
+    /// <summary>Voce del filtro per tipo che non filtra.</summary>
+    public required string EventsFilterAllTypes { get; init; }
+
+    /// <summary>Nome del tipo meteora.</summary>
+    public required string EventsCategoryMeteor { get; init; }
+
+    /// <summary>Nome del tipo bolide.</summary>
+    public required string EventsCategoryBolide { get; init; }
+
+    /// <summary>Nome del tipo transito.</summary>
+    public required string EventsCategoryTransit { get; init; }
+
+    /// <summary>Nome della classe meteora.</summary>
+    public required string EventsClassMeteor { get; init; }
+
+    /// <summary>Nome della classe bolide.</summary>
+    public required string EventsClassBolide { get; init; }
+
+    /// <summary>Nome della classe satellite.</summary>
+    public required string EventsClassSatellite { get; init; }
+
+    /// <summary>Nome della classe aereo o satellite non previsto.</summary>
+    public required string EventsClassAircraft { get; init; }
+
+    /// <summary>Classe non assegnata.</summary>
+    public required string EventsClassUnknown { get; init; }
+
+    /// <summary>Stato dell'etichetta: nessuna.</summary>
+    public required string EventsLabelNone { get; init; }
+
+    /// <summary>Stato dell'etichetta: confermato.</summary>
+    public required string EventsLabelConfirmed { get; init; }
+
+    /// <summary>Stato dell'etichetta: falso positivo.</summary>
+    public required string EventsLabelFalsePositive { get; init; }
+
+    /// <summary>Pulsante per confermare un evento.</summary>
+    public required string EventsButtonConfirm { get; init; }
+
+    /// <summary>Pulsante per segnare un falso positivo.</summary>
+    public required string EventsButtonFalsePositive { get; init; }
+
+    /// <summary>Pulsante per esportare l'evento in uno zip.</summary>
+    public required string EventsButtonExport { get; init; }
+
+    /// <summary>Spiegazione delle etichette sotto i pulsanti.</summary>
+    public required string EventsLabelHint { get; init; }
+
+    /// <summary>Titolo del riquadro immagine.</summary>
+    public required string EventsPanelImage { get; init; }
+
+    /// <summary>Titolo del riquadro clip.</summary>
+    public required string EventsPanelClip { get; init; }
+
+    /// <summary>Titolo del riquadro dati.</summary>
+    public required string EventsPanelData { get; init; }
+
+    /// <summary>Riga dati: ora locale del frame.</summary>
+    public required string EventsDataTime { get; init; }
+
+    /// <summary>Riga dati: classe.</summary>
+    public required string EventsDataClass { get; init; }
+
+    /// <summary>Riga dati: punteggio della scia.</summary>
+    public required string EventsDataScore { get; init; }
+
+    /// <summary>Riga dati: lunghezza della scia.</summary>
+    public required string EventsDataLength { get; init; }
+
+    /// <summary>Riga dati: luminosità di picco.</summary>
+    public required string EventsDataPeak { get; init; }
+
+    /// <summary>Riga dati: luminosità integrata.</summary>
+    public required string EventsDataIntegrated { get; init; }
+
+    /// <summary>Riga dati: primo estremo sul cielo.</summary>
+    public required string EventsDataStart { get; init; }
+
+    /// <summary>Riga dati: secondo estremo sul cielo.</summary>
+    public required string EventsDataEnd { get; init; }
+
+    /// <summary>Tooltip delle posizioni mancanti.</summary>
+    public required string EventsNoSkyPosition { get; init; }
+
+    /// <summary>Riga dati transito: nome del satellite.</summary>
+    public required string EventsDataSatellite { get; init; }
+
+    /// <summary>Riga dati transito: numero di catalogo.</summary>
+    public required string EventsDataNorad { get; init; }
+
+    /// <summary>Riga dati transito: inizio e fine.</summary>
+    public required string EventsDataWindow { get; init; }
+
+    /// <summary>Riga dati transito: culminazione.</summary>
+    public required string EventsDataCulmination { get; init; }
+
+    /// <summary>Riga dati transito: altezza massima prevista.</summary>
+    public required string EventsDataMaxElevation { get; init; }
+
+    /// <summary>Riga dati transito: punteggio della conferma nelle immagini.</summary>
+    public required string EventsDataConfirmation { get; init; }
+
+    /// <summary>Riga dati transito: esito della conferma.</summary>
+    public required string EventsDataVerdict { get; init; }
+
+    /// <summary>Esito del transito: identificato.</summary>
+    public required string EventsVerdictIdentified { get; init; }
+
+    /// <summary>Esito del transito: non identificato.</summary>
+    public required string EventsVerdictNotIdentified { get; init; }
+
+    /// <summary>Esito del transito: previsto ma non verificabile.</summary>
+    public required string EventsVerdictPredicted { get; init; }
+
+    /// <summary>Nome automatico del lettore della clip.</summary>
+    public required string EventsClipPlayerName { get; init; }
+
+    /// <summary>Pulsante Riproduci della clip.</summary>
+    public required string EventsClipPlay { get; init; }
+
+    /// <summary>Pulsante Pausa della clip.</summary>
+    public required string EventsClipPause { get; init; }
+
+    /// <summary>Pulsante Stop della clip.</summary>
+    public required string EventsClipStop { get; init; }
+
+    /// <summary>Messaggio quando l'evento non ha la clip.</summary>
+    public required string EventsClipMissing { get; init; }
+
+    /// <summary>Messaggio quando il lettore non apre la clip.</summary>
+    public required string EventsClipError { get; init; }
+
+    /// <summary>Messaggio quando l'evento non ha un'immagine.</summary>
+    public required string EventsImageMissing { get; init; }
+
+    /// <summary>Esito del salvataggio dell'etichetta; {0} è il nome dell'etichetta.</summary>
+    public required string EventsLabelSaved { get; init; }
+
+    /// <summary>Errore del salvataggio dell'etichetta; {0} è il dettaglio.</summary>
+    public required string EventsLabelError { get; init; }
+
+    /// <summary>Messaggio durante l'esportazione.</summary>
+    public required string EventsExportBusy { get; init; }
+
+    /// <summary>Esito dell'esportazione; {0} è il percorso del file.</summary>
+    public required string EventsExportDone { get; init; }
+
+    /// <summary>Errore dell'esportazione; {0} è il dettaglio.</summary>
+    public required string EventsExportError { get; init; }
+
+    /// <summary>Titolo della finestra di salvataggio.</summary>
+    public required string EventsExportDialogTitle { get; init; }
+
+    /// <summary>Filtro della finestra di salvataggio.</summary>
+    public required string EventsExportFilter { get; init; }
 }
