@@ -110,7 +110,8 @@ public static class MaskLogoStore
             return Array.Empty<string>();
         }
 
-        return Directory.EnumerateFiles(cartellaLoghi, "*" + Estensione, SearchOption.TopDirectoryOnly)
+        // Il filtro sull'estensione è in codice: il pattern del filesystem non è sempre sensibile alle maiuscole.
+        return Directory.EnumerateFiles(cartellaLoghi, "*", SearchOption.TopDirectoryOnly)
             .Select(percorso => Path.GetFileName(percorso))
             .Where(nome => OverlayWidgetFormats.FileLogoValido(nome))
             .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)

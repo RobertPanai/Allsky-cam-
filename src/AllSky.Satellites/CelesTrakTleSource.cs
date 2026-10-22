@@ -17,7 +17,7 @@ namespace AllSky.Satellites;
 /// L'<see cref="HttpClient"/> iniettato deve avere <c>AllowAutoRedirect = false</c>, così un 301 non viene seguito in silenzio.
 /// Il reindirizzamento viene rilevato comunque confrontando l'URL finale con quello richiesto.
 /// </remarks>
-public sealed class CelesTrakTleSource : ITleSource
+public sealed class CelesTrakTleSource : ITleSource, ITleFetcher
 {
     /// <summary>Unico URL usato dal progetto: una richiesta per numero di catalogo, formato TLE.</summary>
     private const string UrlTemplate = "https://celestrak.org/NORAD/elements/gp.php?CATNR={0}&FORMAT=TLE";

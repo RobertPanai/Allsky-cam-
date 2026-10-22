@@ -37,6 +37,16 @@ public interface ITleSource
     Task<IReadOnlyList<TleSet>> GetAsync(IReadOnlyList<SatelliteTarget> targets, CancellationToken cancellationToken);
 }
 
+/// <summary>
+/// Sorgente che restituisce anche lo stato e il messaggio per l'utente (blocco, dati rifiutati).
+/// Il servizio di previsione lo usa; <see cref="ITleSource"/> resta per chi non ha bisogno dello stato.
+/// </summary>
+public interface ITleFetcher
+{
+    /// <summary>Restituisce i TLE dei bersagli, con lo stato dell'operazione.</summary>
+    Task<TleFetchResult> FetchAsync(IReadOnlyList<SatelliteTarget> targets, CancellationToken cancellationToken);
+}
+
 /// <summary>Orologio della sorgente TLE, sostituibile nei test.</summary>
 public interface ICelesTrakClock
 {

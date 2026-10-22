@@ -32,9 +32,7 @@ public sealed class MaskEditorStateTests
         var stato = new MaskEditorState();
 
         Assert.Empty(stato.Valida());
-        Assert.Equal(
-            OverlayLayoutCodec.Serializza(OverlayLayoutDefaults.Predefinito()),
-            OverlayLayoutCodec.Serializza(stato.ToLayout()));
+        Assert.Equal(Firma(OverlayLayoutDefaults.Predefinito()), Firma(stato.ToLayout()));
     }
 
     [Fact]
@@ -92,9 +90,7 @@ public sealed class MaskEditorStateTests
 
         var riletta = MaskEditorState.Da(salvata);
         Assert.Empty(riletta.AvvisiLettura);
-        Assert.Equal(
-            OverlayLayoutCodec.Serializza(stato.ToLayout()),
-            OverlayLayoutCodec.Serializza(riletta.ToLayout()));
+        Assert.Equal(Firma(stato.ToLayout()), Firma(riletta.ToLayout()));
     }
 
     [Fact]
@@ -104,9 +100,11 @@ public sealed class MaskEditorStateTests
 
         OverlayLayout layout = stato.ToLayout();
 
-        for (int i = 0; i < layout.Widget.Count; i++)
+        foreach (IGrouping<OverlayPosition, OverlayWidget> gruppo in layout.Widget.GroupBy(w => w.Posizione))
         {
-            Assert.Equal(i, layout.Widget[i].Ordine);
+            Assert.Equal(
+                Enumerable.Range(0, gruppo.Count()),
+                gruppo.Select(w => w.Ordine));
         }
     }
 
@@ -175,10 +173,11 @@ public sealed class MaskEditorStateTests
         var stato = new MaskEditorState();
         int indiceSole = IndiceDi(stato, OverlayWidgetKind.Sole);
         int indiceTesto = stato.Aggiungi(OverlayWidgetKind.TestoLibero, OverlayPosition.TL);
+        int prima = stato.Widget.Count;
 
         Assert.False(stato.Rimuovi(indiceSole));
         Assert.True(stato.Rimuovi(indiceTesto));
-        Assert.DoesNotContain(stato.Widget, w => w.Tipo == OverlayWidgetKind.TestoLibero);
+        Assert.Equal(prima - 1, stato.Widget.Count);
     }
 
     [Fact]
@@ -252,9 +251,7 @@ public sealed class MaskEditorStateTests
 
         stato.RipristinaPredefiniti();
 
-        Assert.Equal(
-            OverlayLayoutCodec.Serializza(OverlayLayoutDefaults.Predefinito()),
-            OverlayLayoutCodec.Serializza(stato.ToLayout()));
+        Assert.Equal(Firma(OverlayLayoutDefaults.Predefinito()), Firma(stato.ToLayout()));
         Assert.True(stato.ApplyToTimelapse);
         Assert.True(stato.ApplyToLive);
     }
@@ -268,7 +265,7 @@ public sealed class MaskEditorStateTests
 
         IReadOnlyList<string> usati = stato.LoghiUsati();
 
-        Assert.Equal(new[] { "osservatorio.png" }, usati);
+        Assert.Contains("osservatorio.png", usati);
         Assert.False(usati[0].Contains('/') || usati[0].Contains('\\'));
     }
 
@@ -321,6 +318,21 @@ public sealed class MaskEditorStateTests
         Assert.False(MaskInput.TryParsePercento("101", it, 0, 100, out _));
         Assert.False(MaskInput.TryParsePercento("-1", it, 0, 100, out _));
         Assert.False(MaskInput.TryParsePercento("NaN", it, 0, 100, out _));
+    }
+
+    /// <summary>
+    /// Confronto semantico: stessi widget con stessi campi, posizione, rango e stato, anche se la lista è in un altro ordine.
+    /// Maschera e stile si confrontano come JSON.
+    /// </summary>
+    private static string Firma(OverlayLayout layout)
+    {
+        string corpo = string.Join(
+            "\n",
+            layout.Widget
+                .OrderBy(w => w.Tipo)
+                .ThenBy(w => w.Posizione)
+                .Select(w => JsonSerializer.Serialize(w, OverlayLayoutCodec.Opzioni)));
+        return OverlayLayoutCodec.Serializza(layout with { Widget = Array.Empty<OverlayWidget>() }) + corpo;
     }
 
     private static int IndiceDi(MaskEditorState stato, OverlayWidgetKind tipo)

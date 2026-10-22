@@ -93,16 +93,19 @@ public sealed class MaskEditorState
     }
 
     /// <summary>
-    /// Layout da serializzare. Ogni formato contiene solo i campi previsti dal tipo (quelli mancanti prendono il predefinito)
-    /// e <c>ordine</c> coincide con la posizione nella lista. Il risultato può ancora non passare la validazione: vedi <see cref="Valida"/>.
+    /// Layout da serializzare. Ogni formato contiene solo i campi previsti dal tipo (quelli mancanti prendono il predefinito).
+    /// <c>ordine</c> è il rango della voce dentro la sua posizione (0, 1, 2…), che è l'unico ordine che conta per il posizionamento.
+    /// Il risultato può ancora non passare la validazione: vedi <see cref="Valida"/>.
     /// </summary>
     public OverlayLayout ToLayout()
     {
         var widget = new List<OverlayWidget>(_widget.Count);
-        for (int i = 0; i < _widget.Count; i++)
+        var ranghi = new Dictionary<OverlayPosition, int>();
+        foreach (MaskWidgetDraft voce in _widget)
         {
-            MaskWidgetDraft voce = _widget[i];
-            widget.Add(new OverlayWidget(voce.Tipo, voce.Abilitato, voce.Posizione, i, NormalizzaFormato(voce.Tipo, voce.Formato)));
+            int rango = ranghi.GetValueOrDefault(voce.Posizione);
+            ranghi[voce.Posizione] = rango + 1;
+            widget.Add(new OverlayWidget(voce.Tipo, voce.Abilitato, voce.Posizione, rango, NormalizzaFormato(voce.Tipo, voce.Formato)));
         }
 
         return new OverlayLayout(

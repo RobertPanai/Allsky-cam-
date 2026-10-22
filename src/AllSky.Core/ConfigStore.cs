@@ -118,7 +118,55 @@ public sealed class ConfigStore
             errors.Add(new ValidationError("color.smoothing", "Lo smoothing deve essere compreso tra 0 e 1."));
         }
 
+        ValidateSatellites(config.Satellites, errors);
+
         return errors;
+    }
+
+    /// <summary>Vincoli della previsione dei passaggi (P4.3). Con la sezione spenta si validano comunque i valori.</summary>
+    private static void ValidateSatellites(AppConfig.SatellitesConfig satellites, List<ValidationError> errors)
+    {
+        if (!InRange(satellites.WindowHours, 1, 72))
+        {
+            errors.Add(new ValidationError("satellites.windowHours", "La finestra di previsione deve essere compresa tra 1 e 72 ore."));
+        }
+
+        if (!(satellites.MinElevationDeg >= 0 && satellites.MinElevationDeg < 90))
+        {
+            errors.Add(new ValidationError("satellites.minElevationDeg", "L'elevazione minima deve essere compresa tra 0 e 90 gradi."));
+        }
+
+        if (!InRange(satellites.SunMaxAltDeg, -90, 0))
+        {
+            errors.Add(new ValidationError("satellites.sunMaxAltDeg", "L'altezza massima del Sole deve essere compresa tra -90 e 0 gradi."));
+        }
+
+        AppConfig.SatellitesConfig.SatelliteTargetConfig[]? targets = satellites.Targets;
+        if (targets is null)
+        {
+            errors.Add(new ValidationError("satellites.targets", "L'elenco dei satelliti non è leggibile: per nessun satellite usare []."));
+            return;
+        }
+
+        if (targets.Length > 20)
+        {
+            errors.Add(new ValidationError("satellites.targets", "Al massimo 20 satelliti da seguire."));
+        }
+
+        var seen = new HashSet<int>();
+        foreach (AppConfig.SatellitesConfig.SatelliteTargetConfig? target in targets)
+        {
+            if (target is null || target.NoradId < 1 || target.NoradId > 99999)
+            {
+                errors.Add(new ValidationError("satellites.targets", "Il numero NORAD deve essere compreso tra 1 e 99999: i TLE non coprono numeri a 6 cifre."));
+                continue;
+            }
+
+            if (!seen.Add(target.NoradId))
+            {
+                errors.Add(new ValidationError("satellites.targets", $"Numero NORAD duplicato: {target.NoradId}."));
+            }
+        }
     }
 
     private static bool InRange(double value, double min, double max)

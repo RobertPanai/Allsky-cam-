@@ -66,6 +66,18 @@ public sealed record AppConfig
     /// </summary>
     public Calibration.OpticalCalibrationConfig? Optics { get; init; } = null;
 
+    /// <summary>
+    /// Caricamento automatico su YouTube (P7). Spento di default. Il client secret e i token non stanno qui: sono nello
+    /// store cifrato <c>youtube-auth.json</c>. Assente nelle configurazioni precedenti: si legge con i valori predefiniti.
+    /// </summary>
+    public YouTubeConfig YouTube { get; init; } = new();
+
+    /// <summary>
+    /// Previsione dei passaggi di satelliti (P4.3). Spenta di default: con <c>enabled</c> falso non parte alcuna
+    /// richiesta a CelesTrak. Le configurazioni precedenti non hanno la sezione e leggono i valori predefiniti.
+    /// </summary>
+    public SatellitesConfig Satellites { get; init; } = new();
+
     public sealed record SiteConfig
     {
         public string Name { get; init; } = "Osservatorio";
@@ -206,6 +218,46 @@ public sealed record AppConfig
         public int KeepNights { get; init; } = 30;
     }
 
+    /// <summary>
+    /// Sotto-oggetto <c>youtube</c>. Privacy, ora e tag sono testo, non enumerazioni: un valore di una versione futura
+    /// non fa fallire la lettura dell'intero file (vedi <c>YouTubeSettingsRules</c> per la validazione).
+    /// </summary>
+    public sealed record YouTubeConfig
+    {
+        /// <summary>Versione dello schema del sotto-oggetto.</summary>
+        public const int CurrentVersion = 1;
+
+        public int Version { get; init; } = CurrentVersion;
+
+        /// <summary>Caricamento automatico attivo. Lo impostano il collegamento e lo scollegamento dell'account, non il modulo.</summary>
+        public bool Enabled { get; init; } = false;
+
+        /// <summary>Client ID delle credenziali "Desktop app" dell'utente. Non segreto. Null se non collegato.</summary>
+        public string? ClientId { get; init; } = null;
+
+        /// <summary>Ora locale del caricamento giornaliero, "HH:mm". Predefinito 12:30: la notte osservativa finisce a mezzogiorno.</summary>
+        public string DailyTime { get; init; } = "12:30";
+
+        /// <summary>Se il PC era spento all'ora prevista, il caricamento parte entro queste ore dall'avvio. Da 0 a 24.</summary>
+        public int CatchUpWindowHours { get; init; } = 12;
+
+        /// <summary>Privacy del video: "private" (predefinito), "unlisted" o "public".</summary>
+        public string Privacy { get; init; } = "private";
+
+        public string[] Tags { get; init; } = ["timelapse", "allsky", "astrofotografia"];
+
+        /// <summary>ID numerico della categoria YouTube. Predefinito "28": da verificare sulla documentazione YouTube.</summary>
+        public string CategoryId { get; init; } = "28";
+
+        /// <summary>Luogo di ripresa, usato da {luogo} nei modelli di titolo e descrizione.</summary>
+        public string Location { get; init; } = "Osservatorio";
+
+        public string TitleTemplate { get; init; } = "Timelapse notte del {notte:yyyy-MM-dd}";
+
+        public string DescriptionTemplate { get; init; } =
+            "Timelapse della notte del {notte:yyyy-MM-dd} da {luogo}: {fotogrammi} fotogrammi, durata {durata}, meteore {meteore}, transiti {transiti}.";
+    }
+
     public sealed record UiConfig
     {
         public Theme Theme { get; init; } = Theme.Auto;
@@ -225,5 +277,49 @@ public sealed record AppConfig
         /// Mai la password in chiaro.
         /// </summary>
         public string? LanPasswordHash { get; init; } = null;
+    }
+
+    /// <summary>
+    /// Previsione dei passaggi (P4.3). Versionata: le versioni precedenti non hanno la proprieta' <c>version</c>.
+    /// Numeri NORAD e vincoli sono controllati da <see cref="ConfigStore.Validate"/>.
+    /// </summary>
+    public sealed record SatellitesConfig
+    {
+        /// <summary>Versione dello schema di questo sotto-oggetto.</summary>
+        public const int CurrentVersion = 1;
+
+        /// <summary>Versione dello schema.</summary>
+        public int Version { get; init; } = CurrentVersion;
+
+        /// <summary>Interruttore generale. Predefinito: spento.</summary>
+        public bool Enabled { get; init; } = false;
+
+        /// <summary>
+        /// Bersagli da seguire, per numero NORAD. Predefinito: solo la ISS (NORAD 25544, verificato su CelesTrak).
+        /// Il nome serve solo alla visualizzazione.
+        /// </summary>
+        public SatelliteTargetConfig[] Targets { get; init; } =
+        [
+            new SatelliteTargetConfig { NoradId = 25544, Name = "ISS (ZARYA)" },
+        ];
+
+        /// <summary>Finestra della previsione, in ore a partire da ora. Predefinito 24.</summary>
+        public double WindowHours { get; init; } = 24;
+
+        /// <summary>Elevazione minima perche' un passaggio conti, in gradi. Predefinito 10.</summary>
+        public double MinElevationDeg { get; init; } = 10;
+
+        /// <summary>Altezza massima del Sole per il cielo "scuro", in gradi. Predefinito -6 (crepuscolo civile).</summary>
+        public double SunMaxAltDeg { get; init; } = -6;
+
+        /// <summary>Un bersaglio: numero NORAD e nome per la visualizzazione.</summary>
+        public sealed record SatelliteTargetConfig
+        {
+            /// <summary>Numero di catalogo NORAD, da 1 a 99999 (i TLE non coprono numeri a 6 cifre).</summary>
+            public int NoradId { get; init; }
+
+            /// <summary>Nome leggibile. Vuoto: si mostra il numero NORAD.</summary>
+            public string Name { get; init; } = string.Empty;
+        }
     }
 }
