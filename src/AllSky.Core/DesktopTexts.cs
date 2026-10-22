@@ -202,6 +202,207 @@ public sealed record DesktopTexts
     /// <summary>Stato vuoto della vista "Log".</summary>
     public required string EmptyLog { get; init; }
 
+    /// <summary>Interruttore "Grezzo" della vista Live (spento = elaborato).</summary>
+    public required string LiveRaw { get; init; }
+
+    /// <summary>Spiegazione dell'interruttore "Grezzo" della vista Live.</summary>
+    public required string LiveRawTooltip { get; init; }
+
+    /// <summary>Pulsante di zoom avanti della vista Live.</summary>
+    public required string LiveZoomIn { get; init; }
+
+    /// <summary>Pulsante di zoom indietro della vista Live.</summary>
+    public required string LiveZoomOut { get; init; }
+
+    /// <summary>Pulsante che riporta la vista Live a zoom 1 e centrata.</summary>
+    public required string LiveZoomReset { get; init; }
+
+    /// <summary>Suggerimento sui comandi di zoom e trascinamento della vista Live.</summary>
+    public required string LiveZoomHint { get; init; }
+
+    /// <summary>Nome accessibile dell'immagine corrente del cielo.</summary>
+    public required string LiveImageName { get; init; }
+
+    /// <summary>Titolo del pannello dati del frame.</summary>
+    public required string LiveDataTitle { get; init; }
+
+    /// <summary>Etichetta dell'ora del frame.</summary>
+    public required string LiveDataTime { get; init; }
+
+    /// <summary>Tooltip dell'ora del frame; {0} è l'identificativo UTC del frame.</summary>
+    public required string LiveDataTimeTooltip { get; init; }
+
+    /// <summary>Etichetta dell'esposizione.</summary>
+    public required string LiveDataExposure { get; init; }
+
+    /// <summary>Etichetta del gain.</summary>
+    public required string LiveDataGain { get; init; }
+
+    /// <summary>Etichetta della mediana ADU.</summary>
+    public required string LiveDataMedian { get; init; }
+
+    /// <summary>Etichetta della temperatura del sensore.</summary>
+    public required string LiveDataTemperature { get; init; }
+
+    /// <summary>Titolo del pannello degli overlay.</summary>
+    public required string LiveOverlaysTitle { get; init; }
+
+    /// <summary>Overlay griglia alt/az (non ancora disponibile).</summary>
+    public required string LiveOverlayGrid { get; init; }
+
+    /// <summary>Overlay punti cardinali (non ancora disponibile).</summary>
+    public required string LiveOverlayCardinal { get; init; }
+
+    /// <summary>Overlay tracce satelliti (non ancora disponibile).</summary>
+    public required string LiveOverlaySatellites { get; init; }
+
+    /// <summary>Spiegazione degli overlay non ancora disponibili.</summary>
+    public required string LiveOverlayPending { get; init; }
+
+    /// <summary>Messaggio quando l'immagine non si può mostrare; {0} è il dettaglio.</summary>
+    public required string LiveLoadError { get; init; }
+
+    /// <summary>Etichetta del filtro per sorgente nella vista "Camera".</summary>
+    public required string CameraSourceLabel { get; init; }
+
+    /// <summary>Sorgente "tutte" nel filtro della vista "Camera".</summary>
+    public required string CameraSourceAll { get; init; }
+
+    /// <summary>Sorgente "simulatore" (camera integrata senza hardware).</summary>
+    public required string CameraSourceSimulator { get; init; }
+
+    /// <summary>Sorgente "ASCOM COM" (driver registrati su Windows).</summary>
+    public required string CameraSourceAscom { get; init; }
+
+    /// <summary>Sorgente "ASCOM Alpaca" (camere trovate in rete).</summary>
+    public required string CameraSourceAlpaca { get; init; }
+
+    /// <summary>Titolo del pannello di ricerca.</summary>
+    public required string CameraSearchTitle { get; init; }
+
+    /// <summary>Pulsante "Cerca camere".</summary>
+    public required string CameraSearch { get; init; }
+
+    /// <summary>Testo mentre la ricerca è in corso.</summary>
+    public required string CameraSearching { get; init; }
+
+    /// <summary>Intestazione dell'elenco delle camere trovate.</summary>
+    public required string CameraFoundLabel { get; init; }
+
+    /// <summary>Elenco vuoto dopo una ricerca.</summary>
+    public required string CameraNoneFound { get; init; }
+
+    /// <summary>Suggerimento quando la sorgente ASCOM COM non ha driver; visibile con filtro ASCOM.</summary>
+    public required string CameraHintAscom { get; init; }
+
+    /// <summary>Suggerimento quando la discovery Alpaca non trova camere; visibile con filtro Alpaca.</summary>
+    public required string CameraHintAlpaca { get; init; }
+
+    /// <summary>Suggerimento quando non c'è nessuna camera; il simulatore è sempre disponibile.</summary>
+    public required string CameraHintSimulator { get; init; }
+
+    /// <summary>Titolo del pannello di collegamento.</summary>
+    public required string CameraConnectionTitle { get; init; }
+
+    /// <summary>Pulsante "Collega camera".</summary>
+    public required string CameraConnect { get; init; }
+
+    /// <summary>Testo mentre la connessione è in corso.</summary>
+    public required string CameraConnecting { get; init; }
+
+    /// <summary>Stato con camera collegata; {0} è il nome, {1} il tipo di sorgente.</summary>
+    public required string CameraConnectedAs { get; init; }
+
+    /// <summary>Stato senza camera collegata.</summary>
+    public required string CameraNoneConnected { get; init; }
+
+    /// <summary>Messaggio per chi cerca di disconnettere: la disconnessione non è ancora disponibile.</summary>
+    public required string CameraDisconnectUnavailable { get; init; }
+
+    /// <summary>Invito a selezionare una camera prima di collegarla.</summary>
+    public required string CameraSelectFirst { get; init; }
+
+    /// <summary>Titolo del pannello delle impostazioni di cattura.</summary>
+    public required string CameraSettingsTitle { get; init; }
+
+    /// <summary>Etichetta del guadagno.</summary>
+    public required string CameraGainLabel { get; init; }
+
+    /// <summary>Suggerimento sotto il campo guadagno.</summary>
+    public required string CameraGainHint { get; init; }
+
+    /// <summary>Etichetta dell'esposizione massima.</summary>
+    public required string CameraMaxExposureLabel { get; init; }
+
+    /// <summary>Suggerimento sotto il campo dell'esposizione massima.</summary>
+    public required string CameraMaxExposureHint { get; init; }
+
+    /// <summary>Pulsante "Salva e applica".</summary>
+    public required string CameraSave { get; init; }
+
+    /// <summary>Esito di un salvataggio riuscito.</summary>
+    public required string CameraSaved { get; init; }
+
+    /// <summary>Salvataggio senza modifiche.</summary>
+    public required string CameraNoChanges { get; init; }
+
+    /// <summary>Problema di un campo vuoto; in fondo al campo.</summary>
+    public required string CameraProblemEmpty { get; init; }
+
+    /// <summary>Problema di un campo che non è un numero.</summary>
+    public required string CameraProblemNotNumber { get; init; }
+
+    /// <summary>Problema del guadagno che non è un numero intero.</summary>
+    public required string CameraProblemNotInteger { get; init; }
+
+    /// <summary>Problema del guadagno negativo.</summary>
+    public required string CameraProblemNegative { get; init; }
+
+    /// <summary>Problema di un valore che deve essere maggiore di zero.</summary>
+    public required string CameraProblemNotPositive { get; init; }
+
+    /// <summary>Titolo del segnaposto della calibrazione ottica.</summary>
+    public required string CameraCalibrationTitle { get; init; }
+
+    /// <summary>Testo del segnaposto della calibrazione ottica (la vista arriva in P3.3).</summary>
+    public required string CameraCalibrationEmpty { get; init; }
+
+    /// <summary>Errore: il servizio non è avviato.</summary>
+    public required string CameraErrorServiceNotStarted { get; init; }
+
+    /// <summary>Errore: la camera è monocromatica (non supportata).</summary>
+    public required string CameraErrorMonochrome { get; init; }
+
+    /// <summary>Errore: sensore non supportato diverso dal monocromatico.</summary>
+    public required string CameraErrorUnsupportedSensor { get; init; }
+
+    /// <summary>Errore: il driver riporta limiti di esposizione non validi; {0} e {1} sono i valori del driver, {2} e {3} quelli usati.</summary>
+    public required string CameraErrorDriverExposureLimits { get; init; }
+
+    /// <summary>Errore: il driver riporta limiti di esposizione non validi, senza valori leggibili.</summary>
+    public required string CameraErrorDriverExposureLimitsUnknown { get; init; }
+
+    /// <summary>Errore: la cattura non è partita con la camera collegata.</summary>
+    public required string CameraErrorCaptureStart { get; init; }
+
+    /// <summary>Errore: la ricerca delle camere non è riuscita.</summary>
+    public required string CameraErrorDiscovery { get; init; }
+
+    /// <summary>Errore: la camera non risponde alla connessione.</summary>
+    public required string CameraErrorConnection { get; init; }
+
+    /// <summary>Errore: impostazioni non valide.</summary>
+    public required string CameraErrorConfigInvalid { get; init; }
+
+    /// <summary>Errore: impossibile salvare la configurazione.</summary>
+    public required string CameraErrorSaveFailed { get; init; }
+
+    /// <summary>Errore non classificato.</summary>
+    public required string CameraErrorUnknown { get; init; }
+
+    /// <summary>Riga di dettaglio sotto un errore; {0} è il testo tecnico, già ridotto a una riga.</summary>
+    public required string CameraErrorDetail { get; init; }
+
     /// <summary>Testi in italiano (lingua predefinita).</summary>
     public static DesktopTexts Italian { get; } = new()
     {
@@ -269,6 +470,73 @@ public sealed record DesktopTexts
         EmptyPublication = "Nessuna pubblicazione ancora. Uplink e YouTube si gestiscono da questa vista.",
         EmptySettings = "Posizione dell'osservatorio, lingua e avvio con Windows si trovano in questa vista.",
         EmptyLog = "Nessuna riga di registro da mostrare.",
+        LiveRaw = "Grezzo",
+        LiveRawTooltip = "Mostra la versione grezza ricalcolata dall'ultimo frame, senza elaborazione.",
+        LiveZoomIn = "Ingrandisci",
+        LiveZoomOut = "Riduci",
+        LiveZoomReset = "Ripristina vista",
+        LiveZoomHint = "Rotella per ingrandire, trascinamento per spostare, doppio clic per ripristinare.",
+        LiveImageName = "Immagine corrente del cielo",
+        LiveDataTitle = "Dati del frame",
+        LiveDataTime = "Ora frame",
+        LiveDataTimeTooltip = "Identificativo UTC: {0}",
+        LiveDataExposure = "Esposizione",
+        LiveDataGain = "Gain",
+        LiveDataMedian = "Mediana ADU",
+        LiveDataTemperature = "Temperatura sensore",
+        LiveOverlaysTitle = "Overlay",
+        LiveOverlayGrid = "Griglia alt/az",
+        LiveOverlayCardinal = "Punti cardinali",
+        LiveOverlaySatellites = "Tracce satelliti",
+        LiveOverlayPending = "Disponibile dopo la calibrazione.",
+        LiveLoadError = "Impossibile mostrare l'immagine: {0}",
+        CameraSourceLabel = "Sorgente",
+        CameraSourceAll = "Tutte le sorgenti",
+        CameraSourceSimulator = "Simulatore",
+        CameraSourceAscom = "ASCOM (driver COM)",
+        CameraSourceAlpaca = "ASCOM Alpaca (rete)",
+        CameraSearchTitle = "Ricerca",
+        CameraSearch = "Cerca camere",
+        CameraSearching = "Ricerca in corso…",
+        CameraFoundLabel = "Camere trovate",
+        CameraNoneFound = "Nessuna camera trovata con questo filtro.",
+        CameraHintAscom = "Nessun driver ASCOM registrato. Installare la piattaforma ASCOM e il driver della camera, poi cercare di nuovo.",
+        CameraHintAlpaca = "Nessuna camera Alpaca sulla rete locale. Controllare che il server Alpaca sia avviato e che il firewall lasci passare la ricerca UDP sulla porta 32227.",
+        CameraHintSimulator = "Il simulatore è sempre disponibile per le prove.",
+        CameraConnectionTitle = "Collegamento",
+        CameraConnect = "Collega camera",
+        CameraConnecting = "Connessione in corso…",
+        CameraConnectedAs = "Collegata: {0} ({1})",
+        CameraNoneConnected = "Nessuna camera collegata.",
+        CameraDisconnectUnavailable = "Per cambiare camera, collegarne un'altra: la disconnessione non è ancora disponibile.",
+        CameraSelectFirst = "Selezionare una camera dall'elenco.",
+        CameraSettingsTitle = "Impostazioni di cattura",
+        CameraGainLabel = "Guadagno",
+        CameraGainHint = "Numero intero, 0 o più.",
+        CameraMaxExposureLabel = "Esposizione massima (ms)",
+        CameraMaxExposureHint = "Millisecondi, maggiore di zero.",
+        CameraSave = "Salva e applica",
+        CameraSaved = "Impostazioni salvate e applicate.",
+        CameraNoChanges = "Nessuna modifica da salvare.",
+        CameraProblemEmpty = "Inserire un valore.",
+        CameraProblemNotNumber = "Inserire un numero.",
+        CameraProblemNotInteger = "Il guadagno deve essere un numero intero.",
+        CameraProblemNegative = "Il guadagno non può essere negativo.",
+        CameraProblemNotPositive = "Il valore deve essere maggiore di zero.",
+        CameraCalibrationTitle = "Calibrazione ottica",
+        CameraCalibrationEmpty = "Disponibile in una versione successiva: qui compariranno la raccolta dei punti e l'anteprima della griglia.",
+        CameraErrorServiceNotStarted = "Il servizio non è avviato. Avviarlo, poi collegare la camera.",
+        CameraErrorMonochrome = "La camera è monocromatica. All Sky Brain supporta solo camere a colori con matrice di Bayer (RGGB), quindi con questa camera non si può fare il timelapse a colori. Scegliere un'altra camera.",
+        CameraErrorUnsupportedSensor = "Il sensore di questa camera non è supportato. All Sky Brain richiede una matrice di Bayer RGGB. Scegliere un'altra camera.",
+        CameraErrorDriverExposureLimits = "Il driver riporta limiti di esposizione non validi (min {0} ms, max {1} ms). All Sky Brain usa invece min {2} ms e max {3} ms. Se le immagini sono sempre troppo scure o troppo chiare, controllare l'esposizione massima qui sotto.",
+        CameraErrorDriverExposureLimitsUnknown = "Il driver riporta limiti di esposizione non validi. All Sky Brain usa valori di sicurezza. Se le immagini sono sempre troppo scure o troppo chiare, controllare l'esposizione massima qui sotto.",
+        CameraErrorCaptureStart = "La cattura non è partita con questa camera. Controllare guadagno ed esposizione massima, poi riprovare.",
+        CameraErrorDiscovery = "La ricerca delle camere non è riuscita. Controllare che il driver ASCOM o il server Alpaca siano installati e attivi, poi riprovare.",
+        CameraErrorConnection = "La camera non risponde. Controllare che sia accesa e collegata (USB o rete), poi riprovare.",
+        CameraErrorConfigInvalid = "Impostazioni non valide: correggere i campi evidenziati e salvare di nuovo.",
+        CameraErrorSaveFailed = "Impossibile salvare le impostazioni. Controllare i permessi della cartella dati e riprovare.",
+        CameraErrorUnknown = "Operazione non riuscita. Riprovare; se il problema continua, consultare il log.",
+        CameraErrorDetail = "Dettaglio: {0}",
     };
 
     /// <summary>Testi in inglese.</summary>
@@ -338,6 +606,73 @@ public sealed record DesktopTexts
         EmptyPublication = "Nothing published yet. Uplink and YouTube are managed from this view.",
         EmptySettings = "Observatory location, language and start with Windows are in this view.",
         EmptyLog = "No log lines to show.",
+        LiveRaw = "Raw",
+        LiveRawTooltip = "Shows the raw version recomputed from the latest frame, without processing.",
+        LiveZoomIn = "Zoom in",
+        LiveZoomOut = "Zoom out",
+        LiveZoomReset = "Reset view",
+        LiveZoomHint = "Wheel to zoom, drag to pan, double-click to reset.",
+        LiveImageName = "Current sky image",
+        LiveDataTitle = "Frame data",
+        LiveDataTime = "Frame time",
+        LiveDataTimeTooltip = "UTC identifier: {0}",
+        LiveDataExposure = "Exposure",
+        LiveDataGain = "Gain",
+        LiveDataMedian = "Median ADU",
+        LiveDataTemperature = "Sensor temperature",
+        LiveOverlaysTitle = "Overlays",
+        LiveOverlayGrid = "Alt/az grid",
+        LiveOverlayCardinal = "Cardinal points",
+        LiveOverlaySatellites = "Satellite tracks",
+        LiveOverlayPending = "Available after calibration.",
+        LiveLoadError = "Cannot show the image: {0}",
+        CameraSourceLabel = "Source",
+        CameraSourceAll = "All sources",
+        CameraSourceSimulator = "Simulator",
+        CameraSourceAscom = "ASCOM (COM driver)",
+        CameraSourceAlpaca = "ASCOM Alpaca (network)",
+        CameraSearchTitle = "Search",
+        CameraSearch = "Search cameras",
+        CameraSearching = "Searching…",
+        CameraFoundLabel = "Cameras found",
+        CameraNoneFound = "No camera found with this filter.",
+        CameraHintAscom = "No ASCOM driver is registered. Install the ASCOM platform and the camera driver, then search again.",
+        CameraHintAlpaca = "No Alpaca camera on the local network. Check that the Alpaca server is running and that the firewall allows UDP discovery on port 32227.",
+        CameraHintSimulator = "The simulator is always available for tests.",
+        CameraConnectionTitle = "Connection",
+        CameraConnect = "Connect camera",
+        CameraConnecting = "Connecting…",
+        CameraConnectedAs = "Connected: {0} ({1})",
+        CameraNoneConnected = "No camera connected.",
+        CameraDisconnectUnavailable = "To change camera, connect another one: disconnecting is not available yet.",
+        CameraSelectFirst = "Select a camera from the list.",
+        CameraSettingsTitle = "Capture settings",
+        CameraGainLabel = "Gain",
+        CameraGainHint = "Whole number, 0 or more.",
+        CameraMaxExposureLabel = "Maximum exposure (ms)",
+        CameraMaxExposureHint = "Milliseconds, greater than zero.",
+        CameraSave = "Save and apply",
+        CameraSaved = "Settings saved and applied.",
+        CameraNoChanges = "No changes to save.",
+        CameraProblemEmpty = "Enter a value.",
+        CameraProblemNotNumber = "Enter a number.",
+        CameraProblemNotInteger = "Gain must be a whole number.",
+        CameraProblemNegative = "Gain cannot be negative.",
+        CameraProblemNotPositive = "The value must be greater than zero.",
+        CameraCalibrationTitle = "Optical calibration",
+        CameraCalibrationEmpty = "Coming in a later version: point collection and the grid preview will appear here.",
+        CameraErrorServiceNotStarted = "The service is not running. Start it, then connect the camera.",
+        CameraErrorMonochrome = "This camera is monochrome. All Sky Brain only supports colour cameras with a Bayer matrix (RGGB), so a colour timelapse is not possible with this one. Choose another camera.",
+        CameraErrorUnsupportedSensor = "This camera's sensor is not supported. All Sky Brain requires an RGGB Bayer matrix. Choose another camera.",
+        CameraErrorDriverExposureLimits = "The driver reports invalid exposure limits (min {0} ms, max {1} ms). All Sky Brain uses min {2} ms and max {3} ms instead. If images are always too dark or too bright, check the maximum exposure below.",
+        CameraErrorDriverExposureLimitsUnknown = "The driver reports invalid exposure limits. All Sky Brain uses safe values. If images are always too dark or too bright, check the maximum exposure below.",
+        CameraErrorCaptureStart = "Capture did not start with this camera. Check gain and maximum exposure, then try again.",
+        CameraErrorDiscovery = "Camera search failed. Check that the ASCOM driver or the Alpaca server is installed and running, then try again.",
+        CameraErrorConnection = "The camera is not responding. Check that it is powered on and connected (USB or network), then try again.",
+        CameraErrorConfigInvalid = "Settings are not valid: fix the highlighted fields and save again.",
+        CameraErrorSaveFailed = "Could not save the settings. Check the permissions of the data folder and try again.",
+        CameraErrorUnknown = "Operation failed. Try again; if the problem persists, check the log.",
+        CameraErrorDetail = "Detail: {0}",
     };
 
     /// <summary>Nome della vista nella barra laterale e come titolo della schermata.</summary>
