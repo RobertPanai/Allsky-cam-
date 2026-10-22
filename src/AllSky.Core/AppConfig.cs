@@ -90,6 +90,12 @@ public sealed record AppConfig
     /// </summary>
     public DetectionConfig Detection { get; init; } = new();
 
+    /// <summary>
+    /// Collegamento a NINA (sezione <c>nina</c>). Spento di default: con <c>enabled</c> falso nessuna connessione e nessuna lettura.
+    /// Le configurazioni precedenti non hanno la sezione e leggono i valori predefiniti.
+    /// </summary>
+    public NinaConfig Nina { get; init; } = new();
+
     public sealed record SiteConfig
     {
         public string Name { get; init; } = "Osservatorio";
@@ -311,6 +317,67 @@ public sealed record AppConfig
         /// Predefinito falso: senza conferma la sorgente "openmeteo" non parte. Non è un errore di validazione.
         /// </summary>
         public bool OpenMeteoAcknowledgedNonCommercial { get; init; } = false;
+    }
+
+    /// <summary>
+    /// Collegamento a NINA (sezione <c>nina</c>). Versionato: le configurazioni precedenti non hanno la sezione.
+    /// La API di NINA (ninaAPI) non ha autenticazione: per questo l'host e' limitato al loopback. Nessun segreto.
+    /// I vincoli di dominio sono in <see cref="ConfigStore"/>: con <c>enabled</c> falso diventano avvisi, non errori.
+    /// </summary>
+    public sealed record NinaConfig
+    {
+        /// <summary>Versione dello schema di questo sotto-oggetto.</summary>
+        public const int CurrentVersion = 1;
+
+        /// <summary>Valori ammessi per <see cref="Source"/>.</summary>
+        public static class Sources
+        {
+            /// <summary>ninaAPI (HTTP locale di NINA). Predefinito.</summary>
+            public const string Api = "api";
+
+            /// <summary>Lettura dei file di log di NINA.</summary>
+            public const string Log = "log";
+        }
+
+        /// <summary>Host ammessi in questa versione: solo il loopback, perche' la API non ha autenticazione.</summary>
+        public static class Hosts
+        {
+            public const string Loopback = "127.0.0.1";
+
+            public const string Localhost = "localhost";
+        }
+
+        /// <summary>Versione dello schema. Le configurazioni precedenti non la hanno: si legge come 1.</summary>
+        public int Version { get; init; } = CurrentVersion;
+
+        /// <summary>Interruttore generale. Predefinito: spento.</summary>
+        public bool Enabled { get; init; } = false;
+
+        /// <summary>Host della ninaAPI. Ammessi solo "127.0.0.1" e "localhost". Predefinito "127.0.0.1".</summary>
+        public string Host { get; init; } = Hosts.Loopback;
+
+        /// <summary>Porta della ninaAPI, da 1 a 65535. Predefinito 1888.</summary>
+        public int Port { get; init; } = 1888;
+
+        /// <summary>Attesa massima per la connessione, in secondi, da 1 a 60. Predefinito 5.</summary>
+        public int ConnectTimeoutSeconds { get; init; } = 5;
+
+        /// <summary>Ritardo massimo tra due tentativi di riconnessione, in secondi, da 5 a 600. Predefinito 60.</summary>
+        public int ReconnectMaxBackoffSeconds { get; init; } = 60;
+
+        /// <summary>Sorgente dei dati: "api" (ninaAPI, predefinito) o "log" (file di log di NINA).</summary>
+        public string Source { get; init; } = Sources.Api;
+
+        /// <summary>
+        /// Cartella dei log di NINA, per la sorgente "log". Null: la cartella predefinita di NINA
+        /// (%localappdata%\NINA\logs), calcolata altrove. Se presente non puo' essere vuota.
+        /// </summary>
+        public string? LogFolder { get; init; } = null;
+
+        /// <summary>
+        /// Correzione manuale dell'orologio tra il PC di NINA e All Sky Brain, in secondi, da -600 a 600. Predefinito 0.
+        /// </summary>
+        public double ClockOffsetSeconds { get; init; } = 0;
     }
 
     public sealed record UiConfig

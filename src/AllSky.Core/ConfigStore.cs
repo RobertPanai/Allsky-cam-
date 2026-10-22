@@ -121,8 +121,87 @@ public sealed class ConfigStore
         ValidateSatellites(config.Satellites, errors);
         ValidateDetection(config.Detection, errors);
         ValidateWeather(config.Weather ?? new(), errors);
+        ValidateNina(config.Nina ?? new(), errors);
 
         return errors;
+    }
+
+    /// <summary>
+    /// Avvisi che non bloccano il salvataggio: i valori di dominio della sezione <c>nina</c> fuori dai limiti quando
+    /// <c>enabled</c> è falso. Con la sezione attiva gli stessi controlli sono errori in <see cref="Validate"/>.
+    /// Il chiamante li scrive nel log; non restituisce errori.
+    /// </summary>
+    public IReadOnlyList<ValidationError> ValidateNinaWarnings(AppConfig config)
+    {
+        ArgumentNullException.ThrowIfNull(config);
+
+        AppConfig.NinaConfig nina = config.Nina ?? new();
+        var warnings = new List<ValidationError>();
+        if (!nina.Enabled)
+        {
+            ValidateNinaDomain(nina, warnings);
+        }
+
+        return warnings;
+    }
+
+    /// <summary>
+    /// Vincoli della sezione <c>nina</c>. La versione si controlla sempre, come nelle altre sezioni. I valori di dominio
+    /// (host, porta, sorgente, tempi, orologio) sono errori solo con <c>enabled</c> vero: con la sezione spenta sono avvisi
+    /// (vedi <see cref="ValidateNinaWarnings"/>), così una configurazione di prova con valori sbagliati non blocca il salvataggio.
+    /// </summary>
+    private static void ValidateNina(AppConfig.NinaConfig nina, List<ValidationError> errors)
+    {
+        const string root = "nina";
+        if (nina.Version < 1 || nina.Version > AppConfig.NinaConfig.CurrentVersion)
+        {
+            errors.Add(new ValidationError(root + ".version", "Versione della sezione NINA non supportata."));
+        }
+
+        if (nina.Enabled)
+        {
+            ValidateNinaDomain(nina, errors);
+        }
+    }
+
+    /// <summary>Regole di dominio di <c>nina</c>. Chiamata con la sezione attiva (errori) o spenta (avvisi).</summary>
+    private static void ValidateNinaDomain(AppConfig.NinaConfig nina, List<ValidationError> errors)
+    {
+        const string root = "nina";
+        if (nina.Host is not (AppConfig.NinaConfig.Hosts.Loopback or AppConfig.NinaConfig.Hosts.Localhost))
+        {
+            errors.Add(new ValidationError(root + ".host", "L'host di NINA deve essere \"127.0.0.1\" o \"localhost\": la API non ha autenticazione."));
+        }
+
+        if (nina.Port < 1 || nina.Port > 65535)
+        {
+            errors.Add(new ValidationError(root + ".port", "La porta di NINA deve essere compresa tra 1 e 65535."));
+        }
+
+        if (nina.ConnectTimeoutSeconds < 1 || nina.ConnectTimeoutSeconds > 60)
+        {
+            errors.Add(new ValidationError(root + ".connectTimeoutSeconds", "Il tempo massimo di connessione deve essere compreso tra 1 e 60 secondi."));
+        }
+
+        if (nina.ReconnectMaxBackoffSeconds < 5 || nina.ReconnectMaxBackoffSeconds > 600)
+        {
+            errors.Add(new ValidationError(root + ".reconnectMaxBackoffSeconds", "Il ritardo massimo di riconnessione deve essere compreso tra 5 e 600 secondi."));
+        }
+
+        if (nina.Source is not (AppConfig.NinaConfig.Sources.Api or AppConfig.NinaConfig.Sources.Log))
+        {
+            errors.Add(new ValidationError(root + ".source", "La sorgente NINA deve essere \"api\" o \"log\"."));
+        }
+
+        if (nina.LogFolder is not null && string.IsNullOrWhiteSpace(nina.LogFolder))
+        {
+            errors.Add(new ValidationError(root + ".logFolder", "La cartella dei log di NINA non può essere vuota: usare null per la predefinita."));
+        }
+
+        if (!InRange(nina.ClockOffsetSeconds, -600, 600))
+        {
+            errors.Add(new ValidationError(root + ".clockOffsetSeconds", "La correzione dell'orologio deve essere compresa tra -600 e 600 secondi."));
+        }
     }
 
     /// <summary>Vincoli della sorgente meteo. Il consenso a Open-Meteo non è un errore: senza di esso la sorgente non parte.</summary>
