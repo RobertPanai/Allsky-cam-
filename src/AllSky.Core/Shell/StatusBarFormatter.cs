@@ -1,4 +1,5 @@
 using System.Globalization;
+using AllSky.Core.Tonight;
 
 namespace AllSky.Core.Shell;
 
@@ -15,13 +16,15 @@ public static class StatusBarFormatter
     /// <summary>Formatta la barra di stato.</summary>
     /// <param name="snapshot">Dati grezzi dal servizio.</param>
     /// <param name="texts">Testi e cultura della lingua scelta.</param>
-    public static StatusBarText Format(StatusBarSnapshot snapshot, DesktopTexts texts)
+    /// <param name="now">Istante di riferimento per il conto alla rovescia del transito; null usa l'orologio di sistema.</param>
+    public static StatusBarText Format(StatusBarSnapshot snapshot, DesktopTexts texts, DateTimeOffset? now = null)
     {
         ArgumentNullException.ThrowIfNull(snapshot);
         ArgumentNullException.ThrowIfNull(texts);
 
         CultureInfo culture = texts.Culture;
         StatusPhase phase = ParsePhase(snapshot.Phase);
+        DateTimeOffset reference = now ?? DateTimeOffset.UtcNow;
 
         return new StatusBarText(
             Camera: FormatCamera(snapshot, texts),
@@ -33,7 +36,27 @@ public static class StatusBarFormatter
             LastFrame: FormatLastFrame(snapshot.LastFrameTimestamp, texts),
             Disk: FormatDisk(snapshot.DiskFreeGb, texts),
             Publications: FormatPublications(snapshot.Publication, texts),
-            PhaseKind: phase);
+            PhaseKind: phase,
+            NextPass: FormatNextPass(snapshot, texts, reference));
+    }
+
+    /// <summary>
+    /// Transito: "ISS · tra 2 h 14 min", oppure "ISS in corso". Senza dati, "n/d".
+    /// </summary>
+    private static StatusBarItem FormatNextPass(StatusBarSnapshot snapshot, DesktopTexts texts, DateTimeOffset now)
+    {
+        if (string.IsNullOrWhiteSpace(snapshot.PassTarget) || snapshot.PassStartUtc is not { } start)
+        {
+            return Missing(texts.PassStatusLabel, texts);
+        }
+
+        if (snapshot.PassInProgress || start <= now)
+        {
+            return Known(texts.PassStatusLabel, string.Format(texts.Culture, texts.PassInProgressValue, snapshot.PassTarget));
+        }
+
+        string countdown = TonightFormatter.FormatCountdown(now, start, texts);
+        return Known(texts.PassStatusLabel, string.Format(texts.Culture, texts.PassNextValue, snapshot.PassTarget, countdown));
     }
 
     /// <summary>Traduce la fase del servizio ("day", "twilight", "night") in <see cref="StatusPhase"/>.</summary>

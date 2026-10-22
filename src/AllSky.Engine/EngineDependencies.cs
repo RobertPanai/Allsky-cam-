@@ -1,6 +1,7 @@
 using AllSky.Capture;
 using AllSky.Core;
 using AllSky.Publish;
+using AllSky.Satellites;
 using AllSky.Timelapse;
 
 namespace AllSky.Engine;
@@ -23,6 +24,10 @@ namespace AllSky.Engine;
 /// Crea la maschera informativa per un job di timelapse, con la configurazione in quel momento. Chiamata solo se
 /// <c>overlay.applyToTimelapse</c> e' vero. Null = nessuna maschera (il timelapse usa i frame puliti).
 /// </param>
+/// <param name="TleFetcher">
+/// Sorgente dei TLE per la previsione dei passaggi (P4.3). Null = previsione non disponibile. Il Desktop passa la sorgente CelesTrak.
+/// </param>
+/// <param name="OrbitPropagators">Crea i propagatori SGP4 dai TLE. Null = previsione non disponibile. Il Desktop passa SGP.NET.</param>
 public sealed record EngineDependencies(
     IClock Clock,
     ICameraProvider CameraProvider,
@@ -34,4 +39,6 @@ public sealed record EngineDependencies(
     Action<string, Exception?>? Log = null,
     Func<string?>? LocateFfmpeg = null,
     IPublisher? Publisher = null,
-    Func<AppConfig, IFrameOverlay?>? FrameOverlayFactory = null);
+    Func<AppConfig, IFrameOverlay?>? FrameOverlayFactory = null,
+    ITleFetcher? TleFetcher = null,
+    IOrbitPropagatorFactory? OrbitPropagators = null);

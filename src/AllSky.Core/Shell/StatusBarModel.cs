@@ -44,6 +44,9 @@ public enum PublicationStatus
 /// <param name="LastFrameTimestamp">Istante in UTC dell'ultimo frame archiviato; null se non c'è.</param>
 /// <param name="DiskFreeGb">Spazio libero sul volume dell'archivio, in GB; null se non leggibile.</param>
 /// <param name="Publication">Stato delle pubblicazioni.</param>
+/// <param name="PassTarget">Satellite del passaggio in corso o del prossimo, o null se la previsione non ne ha (P4.3).</param>
+/// <param name="PassStartUtc">Inizio di quel passaggio in UTC, o null.</param>
+/// <param name="PassInProgress">Vero se quel passaggio è in corso.</param>
 public sealed record StatusBarSnapshot(
     string? Phase,
     double? SunAltitudeDeg,
@@ -52,7 +55,10 @@ public sealed record StatusBarSnapshot(
     string? CameraName,
     DateTimeOffset? LastFrameTimestamp,
     double? DiskFreeGb,
-    PublicationStatus Publication);
+    PublicationStatus Publication,
+    string? PassTarget = null,
+    DateTimeOffset? PassStartUtc = null,
+    bool PassInProgress = false);
 
 /// <summary>
 /// Una voce della barra di stato, già formattata nella lingua scelta.
@@ -74,6 +80,7 @@ public sealed record StatusBarItem(string Label, string Value, bool Available, s
 /// <param name="Disk">Spazio libero su disco.</param>
 /// <param name="Publications">Stato delle pubblicazioni.</param>
 /// <param name="PhaseKind">Fase in forma tipizzata, per scegliere l'icona.</param>
+/// <param name="NextPass">Prossimo transito di satellite ("Transito"). Null solo nei test che costruiscono il testo a mano.</param>
 public sealed record StatusBarText(
     StatusBarItem Camera,
     StatusBarItem Phase,
@@ -82,4 +89,5 @@ public sealed record StatusBarText(
     StatusBarItem LastFrame,
     StatusBarItem Disk,
     StatusBarItem Publications,
-    StatusPhase PhaseKind);
+    StatusPhase PhaseKind,
+    StatusBarItem? NextPass = null);

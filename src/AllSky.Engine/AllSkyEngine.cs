@@ -113,6 +113,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
         _locateFfmpeg = dependencies.LocateFfmpeg ?? (() => FfmpegLocator.Locate());
         _publisher = dependencies.Publisher;
         _frameOverlayFactory = dependencies.FrameOverlayFactory;
+        InitPassForecasting(dependencies.OrbitPropagators, dependencies.TleFetcher);
 
         AppConfig config;
         try
@@ -170,6 +171,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
         }
 
         StartTimelapseWorker();
+        StartPassForecasting();
         ClearStaleTimelapseMarkers();
 
         if (configError is null && !string.IsNullOrWhiteSpace(config.Camera.Id))
@@ -204,6 +206,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
             _started = false;
         }
 
+        await StopPassForecastingAsync();
         await _control.WaitAsync();
         try
         {

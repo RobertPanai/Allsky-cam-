@@ -17,6 +17,8 @@
     <ProjectReference Include="..\AllSky.Timelapse\AllSky.Timelapse.csproj" />
     <ProjectReference Include="..\AllSky.Publish\AllSky.Publish.csproj" />
     <ProjectReference Include="..\AllSky.Sky\AllSky.Sky.csproj" />
+    <ProjectReference Include="..\AllSky.Satellites\AllSky.Satellites.csproj" />
+    <ProjectReference Include="..\AllSky.Transits\AllSky.Transits.csproj" />
   </ItemGroup>
 
 </Project>

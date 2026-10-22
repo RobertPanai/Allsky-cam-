@@ -856,9 +856,6 @@ public sealed record DesktopTexts
     /// <summary>Titolo della zona YouTube (segnaposto fino a P7.4).</summary>
     public required string PublicationYouTubeTitle { get; init; }
 
-    /// <summary>Testo del segnaposto della zona YouTube.</summary>
-    public required string PublicationYouTubePlaceholder { get; init; }
-
     /// <summary>Testi in italiano (lingua predefinita).</summary>
     public static DesktopTexts Italian { get; } = new()
     {
@@ -1245,7 +1242,6 @@ public sealed record DesktopTexts
         PublicationReasonNoHealth = "Il server non ha la pagina di verifica: controllare l'indirizzo.",
         PublicationReasonOther = "Errore non classificato: vedere il log della pubblicazione.",
         PublicationYouTubeTitle = "YouTube",
-        PublicationYouTubePlaceholder = "Caricamento automatico su YouTube: in arrivo. Qui compariranno accesso, stato dell'ultimo caricamento e impostazioni.",
         OvlSun = "Sole",
         OvlMoon = "Luna",
         OvlPhase = "fase",
@@ -1301,6 +1297,97 @@ public sealed record DesktopTexts
         CalibCardinalEast = "E",
         CalibCardinalSouth = "S",
         CalibCardinalWest = "O",
+        PassListTitle = "Prossimi passaggi",
+        PassStatusDisabled = "Previsioni satelliti disattivate. Si attivano con satellites.enabled nel file di configurazione.",
+        PassStatusWaiting = "In attesa dei dati orbitali (CelesTrak).",
+        PassStatusBlocked = "richieste a CelesTrak sospese: {0}",
+        PassStatusFailed = "dati orbitali non disponibili: {0}",
+        PassNoneInWindow = "Nessun passaggio nella finestra di previsione.",
+        PassInProgress = "in corso",
+        PassTimes = "inizio {0} · culmine {1} · fine {2}",
+        PassMaxElevation = "alt. max {0}",
+        PassDirection = "da {0} a {1}",
+        PassCompassN = "N",
+        PassCompassNE = "NE",
+        PassCompassE = "E",
+        PassCompassSE = "SE",
+        PassCompassS = "S",
+        PassCompassSW = "SO",
+        PassCompassW = "O",
+        PassCompassNW = "NO",
+        PassLightVisible = "visibile a occhio nudo",
+        PassLightLit = "illuminato, cielo non buio",
+        PassLightShadow = "in ombra terrestre",
+        PassTrackServiceOff = "previsioni satelliti disattivate (satellites.enabled nella configurazione).",
+        PassTrackNoCalibration = "serve una calibrazione valida: vedi la vista Camera.",
+        PassTrackNoPasses = "nessun passaggio in corso o imminente.",
+        PassStatusLabel = "Transito",
+        PassNextValue = "{0} · {1}",
+        PassInProgressValue = "{0} in corso",
+        YouTubeConnected = "Account collegato",
+        YouTubeNotConnected = "Account non collegato",
+        YouTubeAutomaticOn = "Caricamento automatico attivo",
+        YouTubeAutomaticOff = "Caricamento automatico spento",
+        YouTubeNextUpload = "Prossimo caricamento: {0}",
+        YouTubeNoNextUpload = "Nessun caricamento programmato",
+        YouTubeLastUpload = "Ultimo caricamento: notte del {0}, registrato il {1}",
+        YouTubeNoUploadYet = "Nessun caricamento completato finora",
+        YouTubeOpenVideo = "Apri il video su YouTube",
+        YouTubeLastProblem = "Ultimo problema: {0}",
+        YouTubeProblemAuthRequired = "Accesso non valido o revocato: collega di nuovo l'account.",
+        YouTubeProblemLoginDenied = "Autorizzazione negata nel browser.",
+        YouTubeProblemLoginTimedOut = "Nessuna risposta dal browser entro il tempo limite. Riprova.",
+        YouTubeProblemCredentialsMissing = "Inserisci client ID e client secret.",
+        YouTubeProblemLoginFailed = "Collegamento non riuscito. Controlla la connessione e le credenziali.",
+        YouTubeProblemSecretUnavailable = "La protezione dei segreti non è disponibile su questo sistema.",
+        YouTubeProblemQuota = "Quota giornaliera di YouTube esaurita: nuovo tentativo domani.",
+        YouTubeProblemUploadFailed = "Caricamento non riuscito per questa notte. Vedi il log.",
+        YouTubeProblemNeedsReview = "Esito incerto: controlla su YouTube prima di ricaricare.",
+        YouTubeProblemRetry = "Errore temporaneo: nuovo tentativo programmato.",
+        YouTubeProblemSettingsInvalid = "Impostazioni o modelli non validi: nessuna chiamata a YouTube.",
+        YouTubeProblemSettingsNotSaved = "Le credenziali sono salvate, ma le impostazioni no. Riprova.",
+        YouTubeProblemUnavailable = "Caricamento YouTube non disponibile in questo avvio. Vedi il log.",
+        YouTubeOutcomeCompleted = "Video caricato.",
+        YouTubeOutcomeAlreadyUploaded = "La notte risulta già caricata.",
+        YouTubeOutcomeInProgress = "Caricamento in corso o in attesa di un nuovo tentativo.",
+        YouTubeOutcomeNoNight = "Nessuna notte completata con timelapse pronto.",
+        YouTubeOutcomeDailyLimit = "Limite giornaliero di caricamenti raggiunto.",
+        YouTubeOutcomeNotDue = "Caricamento non ancora dovuto.",
+        YouTubeOutcomeSlotMissed = "L'ora prevista è passata oltre la finestra di recupero: nessun caricamento per oggi.",
+        YouTubeProblemDailyTime = "L'ora deve avere il formato HH:mm, per esempio 12:30.",
+        YouTubeProblemPrivacy = "Scegli una privacy dall'elenco.",
+        YouTubeProblemTag = "Un tag è vuoto.",
+        YouTubeProblemCategory = "L'ID categoria deve contenere solo cifre.",
+        YouTubeSaveFailed = "Salvataggio non riuscito. Controlla i campi evidenziati e i permessi della cartella dati.",
+        YouTubePrivacyPrivate = "Privato",
+        YouTubePrivacyUnlisted = "Non in elenco",
+        YouTubePrivacyPublic = "Pubblico",
+        YouTubeAccountTitle = "Account Google",
+        YouTubeClientIdLabel = "Client ID",
+        YouTubeClientSecretLabel = "Client secret",
+        YouTubeSecretNote = "Il client secret viene cifrato al collegamento e non viene mai mostrato né riletto. Per cambiarlo, collega di nuovo l'account.",
+        YouTubeLogin = "Collega account",
+        YouTubeLoginCancel = "Annulla collegamento",
+        YouTubeLoginWaiting = "In attesa dell'autorizzazione nel browser...",
+        YouTubeLogout = "Scollega account",
+        YouTubeLoginDone = "Account collegato. Il caricamento automatico è attivo.",
+        YouTubeLogoutDone = "Account scollegato. Il caricamento automatico è spento.",
+        YouTubeTestingWarning = "Con l'app OAuth in stato «Testing» Google fa scadere il collegamento dopo 7 giorni, e il caricamento notturno si fermerebbe. Passa l'app in «In production» nella Google Cloud Console. Istruzioni: docs/YOUTUBE-OAUTH.md.",
+        YouTubeSettingsTitle = "Impostazioni YouTube",
+        YouTubeDailyTimeLabel = "Ora del caricamento (HH:mm)",
+        YouTubePrivacyLabel = "Privacy",
+        YouTubeTagsLabel = "Tag (separati da virgola)",
+        YouTubeCategoryLabel = "ID categoria",
+        YouTubeCategoryHint = "Numero della categoria YouTube. Predefinito 28, da verificare sulla documentazione YouTube.",
+        YouTubeSave = "Salva impostazioni",
+        YouTubeSaved = "Impostazioni salvate.",
+        YouTubeUploadTitle = "Caricamento",
+        YouTubeUploadNow = "Carica ora la notte scorsa",
+        YouTubeUploadConfirm = "Caricare ora su YouTube il timelapse della notte più recente completata? Il video usa la privacy scelta nelle impostazioni.",
+        YouTubeUploadConfirmRisk = "Il caricamento precedente di questa notte non è andato a buon fine o è incerto. Se il video esiste già su YouTube, ricaricarlo crea un duplicato. Continuare?",
+        YouTubeConfirmButton = "Conferma",
+        YouTubeCancelButton = "Annulla",
+        YouTubeUploadRunning = "Caricamento in corso...",
     };
 
     /// <summary>Testi in inglese.</summary>
@@ -1689,7 +1776,6 @@ public sealed record DesktopTexts
         PublicationReasonNoHealth = "The server has no health check page: check the address.",
         PublicationReasonOther = "Unclassified error: see the publishing log.",
         PublicationYouTubeTitle = "YouTube",
-        PublicationYouTubePlaceholder = "Automatic YouTube upload: coming soon. Sign-in, last upload status and settings will appear here.",
         OvlSun = "Sun",
         OvlMoon = "Moon",
         OvlPhase = "phase",
@@ -1745,6 +1831,97 @@ public sealed record DesktopTexts
         CalibCardinalEast = "E",
         CalibCardinalSouth = "S",
         CalibCardinalWest = "W",
+        PassListTitle = "Upcoming passes",
+        PassStatusDisabled = "Satellite forecasts are off. Turn them on with satellites.enabled in the configuration file.",
+        PassStatusWaiting = "Waiting for orbital data (CelesTrak).",
+        PassStatusBlocked = "CelesTrak requests suspended: {0}",
+        PassStatusFailed = "orbital data unavailable: {0}",
+        PassNoneInWindow = "No passes in the forecast window.",
+        PassInProgress = "in progress",
+        PassTimes = "start {0} · peak {1} · end {2}",
+        PassMaxElevation = "max alt. {0}",
+        PassDirection = "from {0} to {1}",
+        PassCompassN = "N",
+        PassCompassNE = "NE",
+        PassCompassE = "E",
+        PassCompassSE = "SE",
+        PassCompassS = "S",
+        PassCompassSW = "SW",
+        PassCompassW = "W",
+        PassCompassNW = "NW",
+        PassLightVisible = "visible to the naked eye",
+        PassLightLit = "sunlit, sky not dark",
+        PassLightShadow = "in Earth's shadow",
+        PassTrackServiceOff = "satellite forecasts are off (satellites.enabled in the configuration).",
+        PassTrackNoCalibration = "a valid calibration is needed: see the Camera view.",
+        PassTrackNoPasses = "no pass in progress or imminent.",
+        PassStatusLabel = "Transit",
+        PassNextValue = "{0} · {1}",
+        PassInProgressValue = "{0} in progress",
+        YouTubeConnected = "Account connected",
+        YouTubeNotConnected = "Account not connected",
+        YouTubeAutomaticOn = "Automatic upload on",
+        YouTubeAutomaticOff = "Automatic upload off",
+        YouTubeNextUpload = "Next upload: {0}",
+        YouTubeNoNextUpload = "No upload scheduled",
+        YouTubeLastUpload = "Last upload: night of {0}, recorded on {1}",
+        YouTubeNoUploadYet = "No upload completed yet",
+        YouTubeOpenVideo = "Open the video on YouTube",
+        YouTubeLastProblem = "Last problem: {0}",
+        YouTubeProblemAuthRequired = "Access is invalid or revoked: connect the account again.",
+        YouTubeProblemLoginDenied = "Authorization denied in the browser.",
+        YouTubeProblemLoginTimedOut = "No response from the browser before the time limit. Try again.",
+        YouTubeProblemCredentialsMissing = "Enter the client ID and client secret.",
+        YouTubeProblemLoginFailed = "Connection failed. Check the connection and the credentials.",
+        YouTubeProblemSecretUnavailable = "Secret protection is not available on this system.",
+        YouTubeProblemQuota = "Daily YouTube quota used up: next attempt tomorrow.",
+        YouTubeProblemUploadFailed = "Upload failed for this night. See the log.",
+        YouTubeProblemNeedsReview = "Outcome uncertain: check on YouTube before uploading again.",
+        YouTubeProblemRetry = "Temporary error: a new attempt is scheduled.",
+        YouTubeProblemSettingsInvalid = "Settings or templates are invalid: no call to YouTube.",
+        YouTubeProblemSettingsNotSaved = "The credentials are saved, but the settings are not. Try again.",
+        YouTubeProblemUnavailable = "YouTube upload is not available in this session. See the log.",
+        YouTubeOutcomeCompleted = "Video uploaded.",
+        YouTubeOutcomeAlreadyUploaded = "This night is already uploaded.",
+        YouTubeOutcomeInProgress = "Upload in progress or waiting for another attempt.",
+        YouTubeOutcomeNoNight = "No completed night with a timelapse ready.",
+        YouTubeOutcomeDailyLimit = "Daily upload limit reached.",
+        YouTubeOutcomeNotDue = "Upload not due yet.",
+        YouTubeOutcomeSlotMissed = "The scheduled time passed outside the catch-up window: no upload today.",
+        YouTubeProblemDailyTime = "The time must use HH:mm, for example 12:30.",
+        YouTubeProblemPrivacy = "Choose a privacy setting from the list.",
+        YouTubeProblemTag = "A tag is empty.",
+        YouTubeProblemCategory = "The category ID must contain digits only.",
+        YouTubeSaveFailed = "Save failed. Check the highlighted fields and the data folder permissions.",
+        YouTubePrivacyPrivate = "Private",
+        YouTubePrivacyUnlisted = "Unlisted",
+        YouTubePrivacyPublic = "Public",
+        YouTubeAccountTitle = "Google account",
+        YouTubeClientIdLabel = "Client ID",
+        YouTubeClientSecretLabel = "Client secret",
+        YouTubeSecretNote = "The client secret is encrypted when you connect and is never shown or read back. To change it, connect the account again.",
+        YouTubeLogin = "Connect account",
+        YouTubeLoginCancel = "Cancel connection",
+        YouTubeLoginWaiting = "Waiting for authorization in the browser...",
+        YouTubeLogout = "Disconnect account",
+        YouTubeLoginDone = "Account connected. Automatic upload is on.",
+        YouTubeLogoutDone = "Account disconnected. Automatic upload is off.",
+        YouTubeTestingWarning = "With the OAuth app in «Testing» status, Google expires the connection after 7 days, and the nightly upload would stop. Move the app to «In production» in the Google Cloud Console. Instructions: docs/YOUTUBE-OAUTH.md.",
+        YouTubeSettingsTitle = "YouTube settings",
+        YouTubeDailyTimeLabel = "Upload time (HH:mm)",
+        YouTubePrivacyLabel = "Privacy",
+        YouTubeTagsLabel = "Tags (comma-separated)",
+        YouTubeCategoryLabel = "Category ID",
+        YouTubeCategoryHint = "YouTube category number. Default 28, to be checked in the YouTube documentation.",
+        YouTubeSave = "Save settings",
+        YouTubeSaved = "Settings saved.",
+        YouTubeUploadTitle = "Upload",
+        YouTubeUploadNow = "Upload last night now",
+        YouTubeUploadConfirm = "Upload the timelapse of the most recent completed night to YouTube now? The video uses the privacy set in the settings.",
+        YouTubeUploadConfirmRisk = "The previous upload of this night failed or is uncertain. If the video already exists on YouTube, uploading it again creates a duplicate. Continue?",
+        YouTubeConfirmButton = "Confirm",
+        YouTubeCancelButton = "Cancel",
+        YouTubeUploadRunning = "Upload in progress...",
     };
 
     /// <summary>Nome della vista nella barra laterale e come titolo della schermata.</summary>
@@ -2270,4 +2447,277 @@ public sealed record DesktopTexts
 
     /// <summary>Età di un dato; {0} è la durata.</summary>
     public required string TonightAgo { get; init; }
+
+    /// <summary>Titolo della carta dei prossimi passaggi.</summary>
+    public required string PassListTitle { get; init; }
+
+    /// <summary>Messaggio quando la previsione è spenta.</summary>
+    public required string PassStatusDisabled { get; init; }
+
+    /// <summary>Messaggio quando la previsione non ha ancora dati.</summary>
+    public required string PassStatusWaiting { get; init; }
+
+    /// <summary>Messaggio di blocco; {0} è la spiegazione tecnica.</summary>
+    public required string PassStatusBlocked { get; init; }
+
+    /// <summary>Messaggio di errore; {0} è la spiegazione tecnica.</summary>
+    public required string PassStatusFailed { get; init; }
+
+    /// <summary>Messaggio quando la previsione è valida ma vuota.</summary>
+    public required string PassNoneInWindow { get; init; }
+
+    /// <summary>Stato di un passaggio in corso.</summary>
+    public required string PassInProgress { get; init; }
+
+    /// <summary>Orari di inizio, culminazione e fine; segnaposto in ordine.</summary>
+    public required string PassTimes { get; init; }
+
+    /// <summary>Altezza massima; {0} è il valore già formattato.</summary>
+    public required string PassMaxElevation { get; init; }
+
+    /// <summary>Direzione del passaggio; {0} inizio, {1} fine.</summary>
+    public required string PassDirection { get; init; }
+
+    /// <summary>Punto cardinale nord.</summary>
+    public required string PassCompassN { get; init; }
+
+    /// <summary>Punto cardinale nord-est.</summary>
+    public required string PassCompassNE { get; init; }
+
+    /// <summary>Punto cardinale est.</summary>
+    public required string PassCompassE { get; init; }
+
+    /// <summary>Punto cardinale sud-est.</summary>
+    public required string PassCompassSE { get; init; }
+
+    /// <summary>Punto cardinale sud.</summary>
+    public required string PassCompassS { get; init; }
+
+    /// <summary>Punto cardinale sud-ovest.</summary>
+    public required string PassCompassSW { get; init; }
+
+    /// <summary>Punto cardinale ovest.</summary>
+    public required string PassCompassW { get; init; }
+
+    /// <summary>Punto cardinale nord-ovest.</summary>
+    public required string PassCompassNW { get; init; }
+
+    /// <summary>Condizione: satellite illuminato e cielo buio.</summary>
+    public required string PassLightVisible { get; init; }
+
+    /// <summary>Condizione: satellite illuminato ma cielo non buio.</summary>
+    public required string PassLightLit { get; init; }
+
+    /// <summary>Condizione: satellite in ombra.</summary>
+    public required string PassLightShadow { get; init; }
+
+    /// <summary>Motivo: tracce non disponibili perché la previsione è spenta.</summary>
+    public required string PassTrackServiceOff { get; init; }
+
+    /// <summary>Motivo: tracce non disponibili senza calibrazione.</summary>
+    public required string PassTrackNoCalibration { get; init; }
+
+    /// <summary>Messaggio quando non ci sono tracce da mostrare.</summary>
+    public required string PassTrackNoPasses { get; init; }
+
+    /// <summary>Etichetta della voce della barra di stato.</summary>
+    public required string PassStatusLabel { get; init; }
+
+    /// <summary>Valore della barra di stato: nome del satellite e conto alla rovescia.</summary>
+    public required string PassNextValue { get; init; }
+
+    /// <summary>Valore della barra di stato per un passaggio in corso; {0} è il nome.</summary>
+    public required string PassInProgressValue { get; init; }
+
+    /// <summary>Riga: account collegato.</summary>
+    public required string YouTubeConnected { get; init; }
+
+    /// <summary>Riga: account non collegato.</summary>
+    public required string YouTubeNotConnected { get; init; }
+
+    /// <summary>Riga: caricamento automatico attivo.</summary>
+    public required string YouTubeAutomaticOn { get; init; }
+
+    /// <summary>Riga: caricamento automatico spento.</summary>
+    public required string YouTubeAutomaticOff { get; init; }
+
+    /// <summary>Prossimo caricamento; {0} è la data e l'ora locali.</summary>
+    public required string YouTubeNextUpload { get; init; }
+
+    /// <summary>Nessun caricamento programmato.</summary>
+    public required string YouTubeNoNextUpload { get; init; }
+
+    /// <summary>Ultimo caricamento; {0} è la notte, {1} la data di registrazione.</summary>
+    public required string YouTubeLastUpload { get; init; }
+
+    /// <summary>Nessun caricamento completato.</summary>
+    public required string YouTubeNoUploadYet { get; init; }
+
+    /// <summary>Pulsante: apre il video nel browser.</summary>
+    public required string YouTubeOpenVideo { get; init; }
+
+    /// <summary>Riga del problema; {0} è il testo del problema.</summary>
+    public required string YouTubeLastProblem { get; init; }
+
+    /// <summary>Problema: accesso non valido.</summary>
+    public required string YouTubeProblemAuthRequired { get; init; }
+
+    /// <summary>Problema: autorizzazione negata.</summary>
+    public required string YouTubeProblemLoginDenied { get; init; }
+
+    /// <summary>Problema: nessuna risposta dal browser.</summary>
+    public required string YouTubeProblemLoginTimedOut { get; init; }
+
+    /// <summary>Problema: credenziali mancanti.</summary>
+    public required string YouTubeProblemCredentialsMissing { get; init; }
+
+    /// <summary>Problema: collegamento non riuscito.</summary>
+    public required string YouTubeProblemLoginFailed { get; init; }
+
+    /// <summary>Problema: protezione dei segreti assente.</summary>
+    public required string YouTubeProblemSecretUnavailable { get; init; }
+
+    /// <summary>Problema: quota esaurita.</summary>
+    public required string YouTubeProblemQuota { get; init; }
+
+    /// <summary>Problema: caricamento permanentemente fallito.</summary>
+    public required string YouTubeProblemUploadFailed { get; init; }
+
+    /// <summary>Problema: esito incerto.</summary>
+    public required string YouTubeProblemNeedsReview { get; init; }
+
+    /// <summary>Problema: errore temporaneo.</summary>
+    public required string YouTubeProblemRetry { get; init; }
+
+    /// <summary>Problema: impostazioni non valide.</summary>
+    public required string YouTubeProblemSettingsInvalid { get; init; }
+
+    /// <summary>Problema: credenziali sì, impostazioni no.</summary>
+    public required string YouTubeProblemSettingsNotSaved { get; init; }
+
+    /// <summary>Problema: caricamento YouTube non disponibile.</summary>
+    public required string YouTubeProblemUnavailable { get; init; }
+
+    /// <summary>Esito: video caricato.</summary>
+    public required string YouTubeOutcomeCompleted { get; init; }
+
+    /// <summary>Esito: notte già caricata.</summary>
+    public required string YouTubeOutcomeAlreadyUploaded { get; init; }
+
+    /// <summary>Esito: in corso o in attesa.</summary>
+    public required string YouTubeOutcomeInProgress { get; init; }
+
+    /// <summary>Esito: nessuna notte pronta.</summary>
+    public required string YouTubeOutcomeNoNight { get; init; }
+
+    /// <summary>Esito: limite giornaliero.</summary>
+    public required string YouTubeOutcomeDailyLimit { get; init; }
+
+    /// <summary>Esito: non ancora dovuto.</summary>
+    public required string YouTubeOutcomeNotDue { get; init; }
+
+    /// <summary>Esito: ora saltata.</summary>
+    public required string YouTubeOutcomeSlotMissed { get; init; }
+
+    /// <summary>Errore di campo: ora.</summary>
+    public required string YouTubeProblemDailyTime { get; init; }
+
+    /// <summary>Errore di campo: privacy.</summary>
+    public required string YouTubeProblemPrivacy { get; init; }
+
+    /// <summary>Errore di campo: tag vuoto.</summary>
+    public required string YouTubeProblemTag { get; init; }
+
+    /// <summary>Errore di campo: categoria.</summary>
+    public required string YouTubeProblemCategory { get; init; }
+
+    /// <summary>Salvataggio non riuscito.</summary>
+    public required string YouTubeSaveFailed { get; init; }
+
+    /// <summary>Nome della privacy: privato.</summary>
+    public required string YouTubePrivacyPrivate { get; init; }
+
+    /// <summary>Nome della privacy: non in elenco.</summary>
+    public required string YouTubePrivacyUnlisted { get; init; }
+
+    /// <summary>Nome della privacy: pubblico.</summary>
+    public required string YouTubePrivacyPublic { get; init; }
+
+    /// <summary>Titolo della sezione account.</summary>
+    public required string YouTubeAccountTitle { get; init; }
+
+    /// <summary>Etichetta del campo client ID.</summary>
+    public required string YouTubeClientIdLabel { get; init; }
+
+    /// <summary>Etichetta del campo client secret.</summary>
+    public required string YouTubeClientSecretLabel { get; init; }
+
+    /// <summary>Nota sul client secret: non viene mai riletto.</summary>
+    public required string YouTubeSecretNote { get; init; }
+
+    /// <summary>Pulsante: collega l'account.</summary>
+    public required string YouTubeLogin { get; init; }
+
+    /// <summary>Pulsante: annulla il collegamento in corso.</summary>
+    public required string YouTubeLoginCancel { get; init; }
+
+    /// <summary>Messaggio durante il collegamento.</summary>
+    public required string YouTubeLoginWaiting { get; init; }
+
+    /// <summary>Pulsante: scollega l'account.</summary>
+    public required string YouTubeLogout { get; init; }
+
+    /// <summary>Esito: collegamento riuscito.</summary>
+    public required string YouTubeLoginDone { get; init; }
+
+    /// <summary>Esito: scollegamento riuscito.</summary>
+    public required string YouTubeLogoutDone { get; init; }
+
+    /// <summary>Avviso sullo stato Testing di Google (scadenza 7 giorni).</summary>
+    public required string YouTubeTestingWarning { get; init; }
+
+    /// <summary>Titolo della sezione impostazioni YouTube.</summary>
+    public required string YouTubeSettingsTitle { get; init; }
+
+    /// <summary>Etichetta dell'ora di caricamento.</summary>
+    public required string YouTubeDailyTimeLabel { get; init; }
+
+    /// <summary>Etichetta della privacy.</summary>
+    public required string YouTubePrivacyLabel { get; init; }
+
+    /// <summary>Etichetta dei tag.</summary>
+    public required string YouTubeTagsLabel { get; init; }
+
+    /// <summary>Etichetta dell'ID categoria.</summary>
+    public required string YouTubeCategoryLabel { get; init; }
+
+    /// <summary>Suggerimento sull'ID categoria.</summary>
+    public required string YouTubeCategoryHint { get; init; }
+
+    /// <summary>Pulsante: salva le impostazioni YouTube.</summary>
+    public required string YouTubeSave { get; init; }
+
+    /// <summary>Esito: impostazioni salvate.</summary>
+    public required string YouTubeSaved { get; init; }
+
+    /// <summary>Titolo della sezione caricamento.</summary>
+    public required string YouTubeUploadTitle { get; init; }
+
+    /// <summary>Pulsante: carica la notte più recente completata.</summary>
+    public required string YouTubeUploadNow { get; init; }
+
+    /// <summary>Conferma prima del caricamento manuale.</summary>
+    public required string YouTubeUploadConfirm { get; init; }
+
+    /// <summary>Seconda conferma: rischio di duplicato.</summary>
+    public required string YouTubeUploadConfirmRisk { get; init; }
+
+    /// <summary>Pulsante di conferma.</summary>
+    public required string YouTubeConfirmButton { get; init; }
+
+    /// <summary>Pulsante di annullamento.</summary>
+    public required string YouTubeCancelButton { get; init; }
+
+    /// <summary>Messaggio durante il caricamento.</summary>
+    public required string YouTubeUploadRunning { get; init; }
 }
