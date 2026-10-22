@@ -98,7 +98,7 @@ Layout (`overlay.layout`, classe `OverlayLayout`, `versione` = 1). I nomi delle 
   - `posizione`: `TL`, `TR`, `BL`, `BR`, `BandaAlta`, `BandaBassa`.
   - `formato`: `pattern` e `fuso` (`"locale"` o `"utc"`) per `dataOra`; `decimali` e `mostraFase` per `sole`/`luna`; `maxElementi` per `satelliti`; `campi` per `meteo` (`temperatura`, `umidita`, `pressione`, `vento`, `nuvole`, `pioggia`, `luminositaCielo`); `fileLogo`, `altezzaMaxPercento`, `opacita` per `logo`; `testo` per `testoLibero`; `mostraGain` per `esposizione`.
 - Predefinito: maschera `cerchio` (centro 0,5/0,5, raggio 0,5, esterno opaco, sfumatura 0,02), scala testo 0,028, margine 0,02. Widget attivi: `dataOra` in `BL`, `sole` in `BR`, `luna` in `BR` (ordine 1). Spenti: `satelliti`, `meteo`, `logo`, `testoLibero`, `esposizione`, `bussola`.
-- Stato dei widget: `meteo` e `satelliti` non ricevono ancora dati dall'applicazione (vedi "Limiti noti" nel README). `bussola` è sempre omesso dal compositore, che lo segnala come non disponibile.
+- Stato dei widget: `meteo` riceve dati solo con una sorgente configurata in `weather` (vedi README, sezione «Meteo»). `satelliti` riceve i nomi dei passaggi dal sidecar; il collegamento in overlay non è ancora verificato a schermo. `bussola` è sempre omesso dal compositore, che lo segnala come non disponibile.
 
 ### `capture`: cattura
 
@@ -142,6 +142,12 @@ Layout (`overlay.layout`, classe `OverlayLayout`, `versione` = 1). I nomi delle 
 
 | Chiave | Tipo | Predefinito | Validazione | Stato | Descrizione |
 |---|---|---|---|---|---|
+| `weather.version` | intero | `1` | nessuna | letto | Versione dello schema del sotto-oggetto. |
+| `weather.source` | testo | `none` | `none`, `ascom` o `openmeteo` | letto | Sorgente meteo. `none` non avvia alcun fornitore. |
+| `weather.ascomProgId` | testo o `null` | `null` | obbligatorio con `source` = `ascom` | letto | ProgID del driver ASCOM ObservingConditions. |
+| `weather.readTimeoutSeconds` | intero | `5` | da 1 a 60 | letto | Attesa massima per ogni lettura. |
+| `weather.maxAgeMinutes` | intero | `30` | da 1 a 1440 | letto | Dopo questa età il dato meteo non viene più usato. |
+| `weather.openMeteoAcknowledgedNonCommercial` | booleano | `false` | nessuna | letto | Senza `true` la sorgente `openmeteo` non parte; il motivo va nel log, non è un errore di validazione. |
 | `satellites.version` | intero | `1` | nessuna | letto | Versione dello schema del sotto-oggetto. |
 | `satellites.enabled` | booleano | `false` | nessuna | letto | Interruttore generale. Con `false` non parte alcuna richiesta a CelesTrak. Non c'è un interruttore nella UI: si modifica `config.json`. |
 | `satellites.targets` | lista di `{ "noradId", "name" }` | `[{ "noradId": 25544, "name": "ISS (ZARYA)" }]` | da 1 a 99999 per `noradId`; massimo 20 elementi; nessun duplicato; `[]` ammesso | letto | Satelliti da seguire, per numero NORAD. `name` serve solo alla visualizzazione; vuoto: si mostra il numero. Oltre 99999 il TLE non è disponibile. |

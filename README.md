@@ -72,7 +72,7 @@ Dal menu dell'icona nell'area di notifica: **Apri All Sky Brain** apre la finest
 
 La barra laterale contiene, dall'alto in basso: **Stanotte**, **Live**, **Camera**, **Notti**, **Eventi**, **Pubblicazione**, **Impostazioni**, **Log**. Con **Ctrl+1** … **Ctrl+7** si aprono le viste Live, Camera, Notti, Pubblicazione, Impostazioni, Log ed Eventi, in quest'ordine. **Stanotte** non ha una scorciatoia numerica: si raggiunge con il mouse, con le frecce o con Tab. **Ctrl+R** attiva o disattiva la notte rossa.
 
-- **Stanotte**: l'immagine del cielo della notte in corso. Una linea temporale da tramonto ad alba, con le fasce dei crepuscoli civile, nautico e astronomico e le curve di altezza di Sole e Luna (altezze geometriche, senza rifrazione atmosferica). Carte con la fase della Luna, il prossimo transito previsto e l'ultima meteora registrata, e lo stato della cattura. Il meteo non è ancora disponibile (vedi «Limiti noti»).
+- **Stanotte**: l'immagine del cielo della notte in corso. Una linea temporale da tramonto ad alba, con le fasce dei crepuscoli civile, nautico e astronomico e le curve di altezza di Sole e Luna (altezze geometriche, senza rifrazione atmosferica). Carte con la fase della Luna, il prossimo transito previsto e l'ultima meteora registrata, e lo stato della cattura. Il meteo compare se è configurato (vedi «Meteo»).
 - **Live**: l'ultimo frame, con zoom e spostamento. Commutazione tra immagine grezza ed elaborata, pannello con i dati del frame (esposizione, guadagno, mediana, temperatura). Overlay di griglia alt/az e tracce dei satelliti: disponibili dopo la calibrazione ottica.
 - **Camera**: ricerca e collegamento della camera (simulatore, ASCOM, Alpaca), impostazioni di cattura, messaggi d'errore leggibili, calibrazione ottica (dal Sole o inserita a mano).
 - **Notti**: elenco delle notti, keogram come barra di scorrimento temporale, startrails, riproduzione del timelapse, pulsante **Rigenera timelapse**.
@@ -94,7 +94,7 @@ Per modificarla: **Impostazioni > Maschera** (editor). L'editor mostra un'antepr
 
 Widget disponibili: **Data e ora** (attivo, in basso a sinistra), **Altezza del Sole** e **Luna: altezza e fase** (attivi, in basso a destra), **Satelliti in transito** (spento), **Meteo** (spento), **Logo**, **Testo libero**, **Esposizione**, **Bussola**. Sono spenti per predefinito tutti tranne i tre indicati come attivi.
 
-Stato dei dati: il widget **Satelliti** e il widget **Meteo** non ricevono ancora dati dall'applicazione, quindi non mostrano valori. Il widget **Bussola** non è ancora disponibile e viene omesso (vedi «Limiti noti»).
+Stato dei dati: il widget **Meteo** mostra i valori solo se una sorgente è configurata. Il widget **Satelliti** riceve i nomi dei passaggi dal sidecar: il collegamento in overlay non è ancora verificato a schermo. Il widget **Bussola** non è ancora disponibile e viene omesso (vedi «Limiti noti»).
 
 Configurazione in `config.json`:
 
@@ -160,12 +160,13 @@ Con l'app OAuth in stato **Testing** di Google, il collegamento scade dopo 7 gio
 
 ## Meteo
 
-Il codice per due sorgenti meteo è presente nel progetto `AllSky.Weather`:
+La sezione `weather` di `config.json` sceglie la sorgente (`source`):
 
-- **ASCOM ObservingConditions**: legge una stazione meteo o un sensore ASCOM installato sul computer.
-- **Open-Meteo** (opt-in, spento): dati di previsione online. Il servizio è gratuito per **uso non commerciale**. I dati sono di Open-Meteo, licenza CC BY 4.0, e l'attribuzione va mostrata dove compaiono.
+- `none` (predefinito): nessuna sorgente meteo.
+- `ascom`: legge una stazione meteo o un sensore ASCOM installato sul computer. Richiede `ascomProgId`, il nome ProgID del driver ObservingConditions.
+- `openmeteo` (opt-in, spento): dati di previsione online. Il servizio è gratuito per **uso non commerciale**: la sorgente parte solo con `openMeteoAcknowledgedNonCommercial: true`. Latitudine e longitudine vengono da `site`. I dati sono di Open-Meteo, licenza CC BY 4.0, e l'attribuzione viene scritta nel sidecar dei frame.
 
-**In questa versione le due sorgenti non sono collegate all'applicazione**: non esiste una chiave di configurazione per attivarle e l'Engine non le utilizza. Di conseguenza il meteo non compare in Stanotte, nella maschera né nel sidecar dei frame. La sezione va letta come stato del codice, non come funzione disponibile.
+Il fornitore meteo viene ricreato quando cambia la sezione, senza riavviare l'app. Le sorgenti sono collegate all'Engine e finiscono nel sidecar dei frame (campo `weather`). **Non verificato**: il driver ASCOM non è stato provato con una stazione reale, e le unità restituite da Open-Meteo sono una congettura da controllare sui dati veri.
 
 ## Notte rossa
 
@@ -213,8 +214,7 @@ Elenco dello stato al momento della stesura. Le fonti sono nel registro di svilu
 - **Soglie non tarate**: il rilevamento di meteore, bolidi e transiti è stato provato solo su immagini sintetiche (scie inserite artificialmente nel cielo). Le soglie vanno tarate su cielo reale. Il confermatore dei transiti può dare falsi positivi quando il bordo di una nuvola è allineato alla traccia prevista.
 - **Interfaccia non vista su schermo**: la finestra desktop è stata compilata e testata in automatico, ma non è mai stata avviata e osservata su un PC Windows. Disposizione, icone, focus, barra di stato e notte rossa vanno controllati a mano.
 - **Camera ZWO monocromatica**: il driver ASCOM ASICamera2 riporta la camera come `Monochrome` e All Sky Brain la rifiuta. Il modello e il tipo di sensore delle camere ZWO vanno confermati sul PC reale. I limiti di esposizione ZWO (correzione della 0.2.1) non sono stati provati con la camera reale.
-- **Meteo non collegato**: vedi la sezione «Meteo». Le sorgenti esistono nel codice, ma non sono attive.
-- **Widget non alimentati**: il widget **Satelliti** della maschera non riceve i nomi dei passaggi; il widget **Meteo** non riceve dati; il widget **Bussola** è sempre omesso.
+- **Widget non verificati**: il widget **Satelliti** della maschera e il widget **Meteo** non sono ancora stati provati a schermo; il widget **Bussola** è sempre omesso.
 - **Calibrazione ottica**: i punti raccolti dal Sole non vengono salvati al riavvio. La rilevazione del Sole è stata provata su dati sintetici.
 - **Posizione della Luna**: l'azimut della Luna nei metadati ha un errore atteso di circa 1°.
 - **Tempo di lettura della camera**: il valore di 2 s per la modalità transito è una stima, non una misura.
