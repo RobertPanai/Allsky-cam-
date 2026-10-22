@@ -16,7 +16,8 @@ namespace AllSky.Desktop.Tests;
 /// Pannello NINA della vista Live con un servizio fake: senza stato NINA e con uno stato sintetico.
 /// Gira solo sul runner Windows, sul thread STA di <see cref="StaRunner"/>.
 /// </summary>
-public sealed class NinaStatusPanelTests : IClassFixture<DesktopFixture>
+[Collection(DesktopCollection.Name)]
+public sealed class NinaStatusPanelTests
 {
     private readonly DesktopFixture _fixture;
 

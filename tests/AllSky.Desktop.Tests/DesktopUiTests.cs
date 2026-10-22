@@ -14,7 +14,8 @@ namespace AllSky.Desktop.Tests;
 /// Test dell'interfaccia WPF senza avviare l'applicazione: risorse del tema, ogni vista, finestra principale e riepilogo.
 /// Tutti i casi girano sul thread STA di <see cref="StaRunner"/> e non mostrano nessuna finestra.
 /// </summary>
-public sealed partial class DesktopUiTests : IClassFixture<DesktopFixture>
+[Collection(DesktopCollection.Name)]
+public sealed partial class DesktopUiTests
 {
     private static readonly string[] SizeKeys =
     [
