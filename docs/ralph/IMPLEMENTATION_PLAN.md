@@ -5,6 +5,7 @@ Branch di lavoro: `ralph/desktop-v1`, partito da `main` @ 885535f. Si lavora sem
 Il piano prevede due rilasci automatici, ciascuno solo se il suo cancello di verifica è verde:
 - **0.3.0** in P8.4, con le funzioni di base (P0–P7), così il PC che ha la 0.2.x riceve presto la richiesta di aggiornamento;
 - **0.4.0** in P10.2, con le funzioni avanzate di P9.
+- **0.5.0** in P16.2, con la fase 3 (P11–P15). **Non avviare la fase 3 senza il via esplicito di Robert.**
 
 Legenda stato: `[ ]` da fare · `[x]` fatto (test verdi) · `[B]` bloccato (motivo in NOTES.md) · `[~]` parziale.
 Legenda modello: **[H]** codice scritto da subagent Haiku 5.5 (`model: "haiku"`) con contratto e criteri dati dal loop ·
@@ -27,6 +28,7 @@ Legenda fatti: **[V]** verificato con fonte (21/10/2026) · **[NV]** da verifica
 8. **Immagini e stile futuristico** in tutta l'app, curati come farebbe un esperto di UI/UX con competenze di astronomia (vedi §5).
 9. **Rilascio automatico** a fine implementazione (P8.4 e P10.2), così l'altro PC riceve l'aggiornamento.
 10. **Funzioni avanzate** (richiesta del 21/10 alle 23:17), in P9: SafetyMonitor Alpaca, SQM stimato, allerte aurora, calibrazione fotometrica sulle stelle note, mappa di costellazioni e pianeti, report via Telegram o email, rete di camere, archivio ricercabile.
+11. **Fase 3** (richiesta del 22/10/2026, **da avviare solo col via di Robert**), in P11–P16: integrazione opzionale con NINA (soggetto puntato con mirino, grafico altezza, distanza dalla Luna, stato di park, log di NINA collegati ai frame), webapp con accesso esterno e ruoli, studio di montaggio per materiale vecchio, colore del video, invio a un bot Telegram; rilascio 0.5.0.
 
 Vincoli che restano in vigore:
 - solo richieste HTTPS in uscita e nessun server esposto;
@@ -34,6 +36,7 @@ Vincoli che restano in vigore:
 - interfaccia in italiano e inglese;
 - nessuna dipendenza GPL;
 - la pubblicazione Uplink esistente non va rotta.
+- **Eccezione solo per la fase 3:** i vincoli «solo richieste HTTPS in uscita e nessun server esposto» valgono finché Robert non decide per iscritto, in P12.0, un accesso esterno; le letture da NINA sono richieste locali verso il PC di NINA (HTTP/WebSocket in LAN o su localhost), da elencare tra le eccezioni.
 
 ## 1. Fatti verificati che guidano il piano
 
@@ -279,6 +282,176 @@ Fatti da verificare prima di ciascun task: tutti [NV] finché non hai letto la f
   - **controllo d'esposizione:** con SafetyMonitor e "Accesso dal browser" spenti e nessun login OAuth in corso, il processo non ha porte in ascolto. Verificalo elencando le porte in ascolto del processo.
   - **riepilogo per Robert** in NOTES.md.
 - [ ] **P10.2 [S] Rilascio automatico 0.4.0.** Stesso cancello e stessi passi di P8.4, con la versione 0.4.0. Il cancello include anche P10.1 `[x]`. Una release 0.3.0 già fatta non è un requisito: se P8.4 era `[B]`, questa release porta tutto.
+
+---
+
+## FASE 3 — Integrazione NINA, accesso remoto, studio di montaggio, colore, Telegram (P11–P16)
+
+> **NON PARTIRE.** Questa fase è scritta il 22/10/2026 su richiesta di Robert ma **non è avviata**. Il loop la inizia solo quando Robert lo scrive esplicitamente ("via alla fase 3"). Prima del via vanno chiuse le decisioni elencate in «Decisioni da prendere con Robert» qui sotto, in particolare P12.0.
+> Rilascio finale: **0.5.0** in P16.2, con lo stesso cancello di P8.4 (nessuna eccezione senza richiesta esplicita di Robert).
+
+### Richieste di Robert (22/10/2026) che questa fase realizza
+
+**NINA (opzionale, pagina «Integrazioni → NINA» a parte, spenta di default; chi non la spunta non vede né usa nulla):**
+1. L'utente collega il software a NINA.
+2. Il software riceve quale soggetto sta puntando il telescopio.
+3. Un **mirino** sull'immagine all-sky segna il punto puntato e ne scrive il nome.
+4. Un **grafico** con altezza del soggetto nella notte (e quanto altro serve a decidere).
+5. Gli **eventi del log di NINA** collegati per timestamp al momento del timelapse e al frame preciso, per fare diagnostica anche visuale (la all-sky di Robert sta sotto il telescopio, che quindi si vede nelle immagini).
+6. La **distanza angolare del soggetto dalla Luna**.
+7. Se il telescopio è in **posizione di park**, letto da NINA.
+
+**Accesso remoto:** una **webapp** accessibile anche dall'esterno **senza VPN**; l'utente loggato può interagire, chi non è loggato come admin può **solo guardare**.
+
+**Studio di montaggio:** selezionare **video vecchi o serie di immagini vecchie** della all-sky, **editarli**, montare timelapse e keogram, **caricarli su YouTube** o **salvarli in locale**.
+
+**Colore:** curare meglio il **bilanciamento colore del video**, oggi poco curato.
+
+**Telegram:** inviare a un **bot Telegram** timelapse, keogram e gli altri prodotti.
+
+### Fatti verificati e da verificare per la fase 3
+
+| Tema | Fatto | Stato |
+|---|---|---|
+| Plugin ninaAPI | Plugin della comunità per NINA (autore christian-photo, licenza MPL-2.0): API web con percorso `v2/api` e WebSocket (pagina «Websocket-V2» nella wiki) | [V] [GitHub](https://github.com/christian-photo/ninaAPI) (README, 22/10/2026) |
+| ninaAPI: dettagli | Porta predefinita, autenticazione, elenco endpoint, nomi esatti dei campi del mount (`parked`, RA/Dec, alt/az, tracking), endpoint della sequenza e del soggetto, endpoint dei log, eventi del WebSocket | **[NV]**: la documentazione in `christian-photo.github.io/github-page/projects/ninaAPI/v2/doc/api` è una pagina generata via JavaScript e non si legge con un fetch semplice. Fonti secondarie (wrapper di terzi) dicono che le informazioni del mount comprendono RA/Dec, alt/az, tracking, parcheggiato/home, slew e coordinate del sito, e usano la porta `1888` nell'esempio di configurazione: **non è una conferma** del valore predefinito. |
+| Cartella dei log di NINA | `%localappdata%\NINA\logs`; livelli Error, Warning, Info, Debug, Trace | [V] [documentazione NINA](https://nighttime-imaging.eu/docs/develop/site/tabs/options/general); **formato delle righe, nome dei file e rotazione [NV]** |
+| NINA di Robert | Versione `3.2.0.9001`, target `net8.0-windows7.0` | [V] dal passaggio di sessione UP Link del 19/10/2026 (documento del Project), non riverificato |
+| Agente esperto UP Link | Conosce il **protocollo del sito** (`docs/UPLINK-SPEC.md`, fixture in `contract/`), non le API interne di NINA: le note `docs/nina-api-notes.md` erano ancora da scrivere il 19/10/2026 | [V] dal passaggio di sessione; quindi **non è una fonte sui campi di NINA** |
+| Principio Uplink | Il client Uplink è solo in uscita (push), non apre porte né ospita server | [V] UPLINK-SPEC §1 |
+| Cloudflare | Sui piani Free/Pro/Business anche via Tunnel lo streaming video è vietato; MJPEG non citato | [V] dal piano v1 (policy Cloudflare); **rilettura [NV]** prima di usarlo |
+| Telegram Bot API | Metodi `sendMessage`, `sendPhoto`, `sendVideo`, `sendDocument`; limiti di dimensione dei file; `getUpdates` in long polling (solo richieste in uscita); server Bot API locale | **[NV]**: tutto da leggere sulla documentazione ufficiale in P15.1 |
+
+### Decisioni da prendere con Robert (prima del via)
+
+1. **NINA:** il plugin ninaAPI è già installato sul PC di NINA? Il PC di NINA e quello della all-sky sono lo stesso? (cambia indirizzo, orologi e firewall).
+2. **Accesso remoto (P12.0):** quale delle opzioni A, B, C sotto. Quali azioni può fare l'utente loggato (solo funzioni dell'app, oppure anche azioni sul telescopio o sulla cupola, che io sconsiglio in v1).
+3. **Vincoli del piano:** il vincolo «nessun server esposto» (§0) e la regola del PROMPT sui listener ammessi vanno **modificati per scritto** da Robert se si sceglie un accesso esterno. Il loop non li cambia da solo.
+4. **Telegram:** ok usare un solo bot e una lista di chat autorizzate; quali prodotti inviare in automatico.
+
+### P11 — Integrazione con NINA (opzionale)
+
+Regole comuni a P11: tutto è **spento di default** (`nina.enabled=false`); la pagina «Integrazioni → NINA» spiega cosa viene letto; nessun dato di NINA lascia il PC se Robert non lo chiede (la pubblicazione sul sito è P11.9, a parte); un errore o un NINA spento **non** deve mai rallentare o fermare la cattura; riconnessione con backoff; sola lettura (nessun comando a NINA in v1).
+
+- [ ] **P11.0 [S] Fatti su NINA e API.** Leggi la documentazione ufficiale di ninaAPI (README, wiki «Websocket-V2», specifica `v2/api`, anche dal sorgente del repository se la pagina web non si legge) e scrivi `docs/NINA-API.md`: porta predefinita, autenticazione, endpoint e **nomi esatti dei campi** per mount (parcheggiato, RA/Dec e la loro epoca J2000 o JNow, alt/az, tracking, slew), sequenza e soggetto in corso (nome, coordinate), eventi del WebSocket, eventuale endpoint dei log. Dai a ogni riga [V] con fonte o [NV]. Verifica anche il formato delle righe di `%localappdata%\NINA\logs` e la rotazione dei file (da un log reale se Robert ne mette uno a disposizione, anonimizzato). Fai **rivedere** da un agente con le istruzioni di `uplink-expert` (Project «codici astrofotografia», `claude/uplink-expert-agent.md`, da lanciare come agente generico in sola lettura sul sito `/home/claude/sito`) solo le parti che toccano il protocollo del sito, non i fatti di NINA. Conclusione: scegli la fonte (ninaAPI, lettura dei log, oppure entrambe) e annota perché.
+  - *Test:* nessun codice; la verifica è che ogni campo usato dai task successivi abbia fonte [V].
+  - *Dip.:* nessuna.
+- [ ] **P11.1 [S] Configurazione e pagina «NINA».** Sezione `nina` in `AppConfig` (spenta; host, porta, chiave se prevista da P11.0, cartella dei log, modalità fonte) con validazione. Nuova vista **Integrazioni → NINA** nella UI (IT/EN, notte rossa): interruttore, campi, pulsante «Prova connessione» con esito comprensibile, stato in barra di stato. Segreti con DPAPI.
+  - *Test:* validazione, round-trip, upgrade da config senza la sezione, vista renderizzata (come i test UI esistenti).
+  - *Dip.:* P11.0.
+- [ ] **P11.2 [H] Client NINA e modello di stato.** `INinaSource` con implementazione per ninaAPI (REST + WebSocket) e, se P11.0 lo prevede, per la lettura dei log. Modello `NinaState` (connesso, mount: parcheggiato/in inseguimento/in slew, coordinate, soggetto in corso, sequenza attiva) con timestamp UTC di lettura. Server finto in-process per i test.
+  - *Test:* risposte finte, disconnessioni, riconnessione con backoff, dati incompleti, nessun blocco del chiamante, nessun segreto nei log.
+  - *Dip.:* P11.0, P11.1.
+- [ ] **P11.3 [S] Mirino e nome del soggetto sull'immagine.** Proietta le coordinate puntate sul frame con il modello fisheye e la calibrazione ottica già presenti (`AllSky.Sky`); disegna un mirino con il nome nella vista Live e, se l'utente lo spunta, come widget nella maschera informativa del timelapse (`applyToTimelapse`). Gestisci: calibrazione assente (messaggio con invito a calibrare), oggetto sotto l'orizzonte o fuori dal cerchio, differenza tra **punto puntato dal mount** e **soggetto in sequenza** (due marcatori distinti, l'utente sceglie quali mostrare), epoca delle coordinate (precessione, da P11.0), ritardo di lettura. **Parallasse:** la all-sky sta vicino al telescopio, quindi per oggetti celesti la direzione coincide; annotalo e non correggere.
+  - *Test:* coordinate note → pixel attesi con tolleranza dichiarata; casi limite; render del mirino a 1280×800 e 1920×1080 in modo normale e rosso notte.
+  - *Dip.:* P11.2, P3.1 e P3.2 (modello fisheye e calibrazione), P1.4 (vista Live), P2.4 (overlay timelapse).
+- [ ] **P11.4 [H] Grafico dell'altezza del soggetto.** Curva altezza/ora della notte con fasce dei crepuscoli, altezza della Luna, transito al meridiano, linea dell'orizzonte utile configurabile, cursore «adesso» e ore rimaste sopra una soglia scelta dall'utente (nessun valore imposto di default senza giustificarlo). Disegno con le primitive WPF già usate, senza librerie nuove. Visibile nella vista Stanotte (P1.11) e nella webapp.
+  - *Test:* curva di un oggetto noto contro un riferimento esterno [NV: indicare la fonte usata]; epoca delle coordinate; cambio soggetto a notte in corso.
+  - *Dip.:* P11.2, `AllSky.Astro`.
+- [ ] **P11.5 [S] Distanza dalla Luna.** Separazione angolare tra il soggetto e la Luna (altezza, fase e illuminazione incluse) nel grafico, in Stanotte e come widget. Avviso configurabile (soglie scelte dall'utente, nessun valore imposto di default senza fonte). Dichiara l'**accuratezza** del calcolo della posizione lunare del modulo `AllSky.Astro` misurandola contro un riferimento esterno [NV].
+  - *Test:* casi con separazioni note, Luna sotto l'orizzonte, soggetto a pochi gradi.
+  - *Dip.:* P11.2, P11.4.
+- [ ] **P11.6 [H] Stato di park.** Indicatore «Parcheggiato / In inseguimento / In slew / Non collegato» in Stanotte, barra di stato, sidecar del frame (`nina.parked`) e widget della maschera. Ogni cambio di stato entra nella cronologia di P11.7.
+  - *Test:* transizioni, valore sconosciuto, NINA scollegato.
+  - *Dip.:* P11.2.
+- [ ] **P11.7 [S] Cronologia eventi NINA collegata ai frame.** Acquisisci gli eventi (dal WebSocket o dalla lettura incrementale dei log, come da P11.0) e salvali in `nights/<notte>/nina-events.jsonl` con **timestamp UTC**, livello, sorgente, messaggio, categoria dedotta (messa a fuoco, meridian flip, dither, guida, errore, slew, cambio filtro: solo se P11.0 le conferma). Collegamento a frame e timelapse **per timestamp**: dato un frame, gli eventi entro ±N secondi; dato un evento, il frame più vicino. **Scarto d'orologio:** se NINA gira su un altro PC, misura e mostra l'offset (con l'orario del server NINA ricevuto dall'API) e permetti una correzione manuale. **Privacy:** passa i messaggi da `LogSecretMask` e rimuovi percorsi, indirizzi IP e nomi utente; nessuna pubblicazione di default.
+  - *Test:* log sintetici (righe di vario formato, righe spezzate, rotazione dei file), ricostruzione dell'indice, offset di orologio, nessun segreto.
+  - *Dip.:* P11.2, P2.1 (sidecar per frame).
+- [ ] **P11.8 [H] Vista «Diagnostica» (visiva).** Nel player della notte e nel dettaglio frame, pannello con gli eventi NINA attorno al frame mostrato; clic su un evento = salta al frame; clic su un frame = elenca gli eventi vicini; **marcatori sulla linea temporale** della notte per tipo (filtri). Opzione per mostrare nel timelapse esportato l'ultimo evento come widget della maschera (spenta). Ricerca di testo.
+  - *Test:* navigazione evento↔frame, filtri, render in rosso notte, notti senza eventi NINA.
+  - *Dip.:* P11.7, P1.6 (vista Notti).
+- [ ] **P11.9 [S] Proposta di contratto Uplink (solo documento).** Se Robert vuole mostrare sul sito soggetto, stato di park o capitoli, scrivi con le istruzioni di `uplink-expert` (procedura «preparare una richiesta di modifica del contratto») una richiesta in `docs/ralph/UPLINK-NINA-RICHIESTA.md`: motivazione, compatibile o no, fixture da cambiare, impatto per repository, ordine di rilascio. **Non** modificare né le fixture né il sito: lo fa Robert con il suo team.
+  - *Test:* nessun codice.
+  - *Dip.:* P11.0.
+- [ ] **P11.10 [S] Verifica P11.** Test con server NINA finto; controllo che con `nina.enabled=false` non parta nessuna connessione né thread; elenco «Da provare con NINA reale» (campi reali, epoca delle coordinate, formato dei log, scarto d'orologio) in NOTES.md.
+  - *Dip.:* P11.1–P11.8.
+
+### P12 — Accesso remoto senza VPN (webapp con login)
+
+> **Questa è la parte più delicata della fase: è l'unica che apre l'osservatorio a Internet.** Parte solo dopo la decisione scritta di Robert in P12.0. Predefinito: **spento**; nessuna esposizione senza opt-in esplicito e password forte.
+
+- [ ] **P12.0 [S] Decisione architetturale con Robert (bloccante).** Presenta, con pro e contro verificati, tre strade e **non scegliere da solo**:
+  - **A. Relay in uscita verso il sito di Robert** (coerente con Uplink): l'app invia stato e immagini al sito; il sito serve la webapp con login. Le azioni dell'utente loggato diventano **comandi in coda** sul sito che l'app preleva (pull), quindi **nessuna porta aperta** sull'osservatorio. Richiede lavoro nel repository del sito e un nuovo contratto (passa dall'agente `uplink-expert`, procedura di richiesta di modifica). Limiti Vercel Hobby già noti: [V] funzioni 300 s, body 4,5 MB, 2.000 operazioni Blob al mese nel piano v1.
+  - **B. Tunnel in uscita di terzi** (per esempio Cloudflare Tunnel o Tailscale Funnel): la webapp locale resta sul PC, il tunnel la rende raggiungibile. Termini d'uso per immagini e video [NV]; per Cloudflare lo streaming video è vietato nei piani gratuiti [V da piano v1].
+  - **C. Apertura di una porta sul router con DDNS e HTTPS**: **sconsigliata** (superficie d'attacco diretta sul PC dell'osservatorio).
+  Scrivi la scelta e le azioni consentite all'utente loggato in `docs/ACCESSO-REMOTO.md` e la modifica scritta ai vincoli di §0 e di `PROMPT.md`.
+  - *Dip.:* decisione di Robert.
+- [ ] **P12.1 [S] Modello di sicurezza.** `docs/SICUREZZA-REMOTA.md`: minacce, ruoli (**visitatore** sola lettura, **utente loggato** interazione, **admin**), cosa è pubblico (per ogni widget un interruttore «visibile ai visitatori»; **predefinito: niente**; posizione esatta dell'osservatorio e log mai pubblici), autenticazione (password con PBKDF2 come già fatto, blocco dopo tentativi falliti, sessioni a scadenza, protezione CSRF, valutare TOTP; scelta e fonte annotate), HTTPS obbligatorio, registro delle azioni (audit), limiti di frequenza, elenco **chiuso** delle azioni che l'utente può compiere. Azioni su telescopio, cupola o alimentazione: **escluse in v1**.
+  - *Dip.:* P12.0.
+- [ ] **P12.2 [H] Ruoli e autorizzazioni nel server web esistente.** Estendi il server opzionale già presente (`ui.webEnabled`, Kestrel, password PBKDF2 + Basic) con ruoli, sessioni, blocco tentativi, audit e **autorizzazione per endpoint**: le scritture richiedono il ruolo, la sola lettura è l'unica cosa ammessa senza login. Nessuna nuova dipendenza NuGet senza licenza verificata.
+  - *Test:* matrice completa endpoint × ruolo (nessuna scrittura senza login), sessione scaduta, tentativi ripetuti, CSRF, nessun segreto nei log.
+  - *Dip.:* P12.1.
+- [ ] **P12.3 [S] Esposizione verso l'esterno.** Implementa l'opzione scelta in P12.0 dietro `IRemoteAccessProvider`. Con A: contratto, coda comandi, scadenza dei comandi e conferma locale per quelli sensibili. Con B: configurazione guidata e controllo che il tunnel non esponga le porte di NINA né dell'app oltre quelle previste.
+  - *Test:* provider finto, perdita di rete, riconnessione, comando duplicato, comando scaduto.
+  - *Dip.:* P12.2.
+- [ ] **P12.4 [H] Webapp per telefono e desktop.** Viste in sola lettura per tutti: immagine live, stato, grafico altezza e distanza Luna, stato di park, ultimo timelapse, keogram. Viste interattive per l'utente loggato: esattamente le azioni dell'elenco chiuso di P12.1. IT/EN, notte rossa, layout a 390 px senza scorrimento orizzontale (checklist della skill `web-ui-review`).
+  - *Test:* Playwright su build statica con server finto: visitatore non vede i pulsanti di scrittura e le chiamate di scrittura falliscono con 401/403.
+  - *Dip.:* P12.2, P11.4 (se NINA attivo).
+- [ ] **P12.5 [S] Verifica di sicurezza indipendente.** Un agente che non ha scritto il codice esegue la checklist di `SICUREZZA-REMOTA.md`: porte in ascolto con la funzione spenta (nessuna), matrice dei ruoli, scansione dei segreti in log e cartella dati, tentativo di accedere senza login a ogni endpoint di scrittura. Esito in NOTES.md con [V]/[NV].
+  - *Dip.:* P12.3, P12.4.
+
+### P13 — Studio di montaggio (materiale vecchio, editing, esportazione)
+
+Obiettivo: partire da **archivi già esistenti** (cartelle di immagini o video della all-sky) e produrre timelapse, keogram e startrails, salvandoli in locale o caricandoli su YouTube. Le operazioni sono **non distruttive** (i file originali non si toccano) e i lavori pesanti girano a **bassa priorità, senza rallentare la cattura**.
+
+- [ ] **P13.1 [S] Progetti e importazione.** Formato di progetto JSON versionato (`.asbproject`: sorgenti, elenco di operazioni, parametri). Sorgenti supportate in v1 [S-scelta]: notti dell'archivio di All Sky Brain, **cartelle di JPEG/PNG** di altri programmi (data e ora da EXIF, da un modello del nome file scelto dall'utente, oppure dalla data del file, con anteprima del risultato) e **video** (frame estratti con `ffmpeg` esterno con le stesse regole di licenza del modulo Timelapse). RAW e FITS: solo se esiste una libreria con licenza permissiva verificata **[NV]**, altrimenti fuori da v1 e annotato.
+  - *Test:* cartelle sintetiche con nomi e date in vari formati, file corrotti, ordinamento, fusi orari, video breve.
+  - *Dip.:* P2.1.
+- [ ] **P13.2 [H] Operazioni di montaggio.** Intervallo di tempo, rimozione manuale e automatica di frame (esposizione anomala, nuvole, frame vuoti), velocità e fps, ritaglio, rotazione e specchio, correzione del colore (P14), maschera informativa (riusa `AllSky.InfoOverlay`: se mancano i sidecar l'app chiede coordinate e calcola Sole e Luna dall'orario; satelliti solo con dati orbitali disponibili), schede titolo di testo, dissolvenze. Ogni operazione ha anteprima su un frame.
+  - *Test:* ogni operazione su sequenze sintetiche con risultato atteso; il progetto salvato e ricaricato dà lo stesso output.
+  - *Dip.:* P13.1, P14.2.
+- [ ] **P13.3 [S] Prodotti da serie arbitrarie.** Timelapse (riusa `AllSky.Timelapse`), **keogram** e **startrails** da qualsiasi serie: per il keogram servono centro e raggio del cerchio, scelti con un selettore sull'immagine o dal modello ottico se presente. Anteprima veloce a risoluzione ridotta, rendering finale in coda.
+  - *Test:* serie sintetica con cerchio noto; keogram atteso; annullamento a metà.
+  - *Dip.:* P13.2.
+- [ ] **P13.4 [H] Esportazione.** Destinazioni: **file locale** (cartella, modello del nome, preset di risoluzione e qualità), **YouTube** (finestra con titolo, descrizione e privacy da modello, riuso del flusso OAuth e dell'upload di P7, pulsante «Carica ora»), **Telegram** (P15). Coda lavori con avanzamento, annullamento e ripresa.
+  - *Test:* destinazioni finte, annullamento, errore di rete a metà, nessun segreto nei log.
+  - *Dip.:* P13.3, P7.2, P15.2.
+- [ ] **P13.5 [H] Vista «Studio».** Selezione sorgente, timeline minimale con anteprima a scorrimento, pannello operazioni, coda lavori. Notte rossa, IT/EN, stati vuoto/caricamento/errore (§5).
+  - *Test:* rendering come per le altre viste; flusso completo con sorgente sintetica.
+  - *Dip.:* P13.2–P13.4.
+- [ ] **P13.6 [S] Verifica P13.** Misura l'impatto sulla cattura: con un montaggio in corso, la latenza del ciclo di cattura non deve peggiorare oltre una soglia dichiarata e misurata (annotare i numeri). Prova con una vera cartella di immagini vecchie di Robert ([NV] finché non c'è).
+  - *Dip.:* P13.1–P13.5.
+
+### P14 — Bilanciamento colore del video
+
+Premessa: Robert segnala che il colore del timelapse è poco curato. **Prima si misura, poi si corregge**: non assumere la causa.
+
+- [ ] **P14.1 [S] Diagnosi misurata.** Leggi la catena attuale (`AllSky.Processing`, `AllSky.Imaging`, `AllSky.Timelapse`) e scrivi uno strumento di metriche: **flicker di luminanza** (deviazione della media per frame dopo aver tolto il trend lento), **deriva cromatica** del fondo cielo (R/G e B/G nel tempo), **continuità giorno/crepuscolo/notte**, bande agli scatti di esposizione automatica, colore delle stelle. Applicalo alla notte simulata (cartella `smoke2`) e, appena disponibili, a frame reali di Robert. Elenca i difetti **con i numeri**. Verifica anche cosa fa l'encoder dei metadati colore del video (matrice, intervallo, formato dei pixel) con `ffprobe` [NV].
+  - *Test:* le metriche danno valori noti su sequenze sintetiche con difetti iniettati.
+  - *Dip.:* P2.x, notte simulata di P8.2.
+- [ ] **P14.2 [S] Correzioni.** In base a P14.1: livellamento temporale dei guadagni del bilanciamento e dello stretch con costanti di tempo legate all'altezza del Sole; compensazione dei cambi di esposizione e guadagno (i valori sono noti dai sidecar); riduzione del flicker residuo senza cancellare meteore e stelle; gestione di alte luci e nuvole di giorno; trasferimento morbido giorno→notte; neutralizzazione del fondo cielo con le stelle come controllo; rumore temporale opzionale solo dove non c'è movimento. Preset **[S-scelta]** «Naturale», «Neutro», «Profondo». Ogni correzione ha un parametro e si disattiva.
+  - *Test:* le metriche di P14.1 migliorano di una soglia dichiarata sulle sequenze sintetiche e sulla notte simulata; nessuna regressione sulle immagini singole (golden test esistenti).
+  - *Dip.:* P14.1.
+- [ ] **P14.3 [H] Metadati colore e codifica.** Il video esce con matrice, intervallo e formato dei pixel dichiarati in modo coerente con la sorgente (es. BT.709, formato 4:2:0, dichiarati nel contenitore) così che browser, YouTube e lettori mostrino gli stessi colori. Verifica sulla documentazione di FFmpeg e sul comportamento dell'encoder `h264_mf` su Windows **[NV]**.
+  - *Test:* decodifica di un frame e confronto con la sorgente entro una differenza di colore dichiarata (metrica annotata); `ffprobe` mostra i metadati attesi.
+  - *Dip.:* P14.1.
+- [ ] **P14.4 [H] Pannello «Colore del timelapse».** Confronto prima/dopo su frame scelti, cursori (forza dello smoothing, temperatura, tinta, saturazione, rimozione del gradiente), preset salvabili, usato anche dallo Studio (P13).
+  - *Test:* render in modo normale e rosso notte; i preset si salvano e si ricaricano.
+  - *Dip.:* P14.2.
+
+### P15 — Invio a un bot Telegram
+
+Estende P9.7 (report e allerte): qui si inviano **i prodotti** (timelapse, keogram, startrails, clip di meteore e transiti). Se P9.7 non è ancora fatto, i due task condividono il client Telegram.
+
+- [ ] **P15.1 [S] Fatti su Telegram.** Leggi la documentazione ufficiale della Bot API e annota con fonte: metodi per foto, video, documenti e messaggi; **limiti di dimensione** per ogni tipo e per l'invio da parte dei bot; `getUpdates` in long polling (richieste solo in uscita); server Bot API locale e suoi limiti; limiti di frequenza. Tutto è [NV] finché non è letto.
+  - *Dip.:* nessuna.
+- [ ] **P15.2 [H] Invio dei prodotti.** Configurazione (token del bot e chat autorizzate, cifrati con DPAPI, mai nei log), pagina «Integrazioni → Telegram» con prova di invio, invio **automatico** a fine notte dei prodotti scelti e invio **manuale** da Eventi, Notti e Studio. Se il file supera il limite: ricodifica a una dimensione bersaglio, oppure invia keogram e startrails e un link al video, secondo la scelta dell'utente. Coda con ritentativi e limite giornaliero.
+  - *Test:* handler HTTP finto, file sopra e sotto il limite, errore 429, nessun segreto nei log.
+  - *Dip.:* P15.1, P9.7 (client condiviso), P5.3.
+- [ ] **P15.3 [H] Comandi di sola lettura (facoltativo).** Con `getUpdates` in long polling (nessuna porta aperta) il bot risponde a `/stato`, `/ultimo` (ultimo frame), `/keogram`, solo alle chat autorizzate; nessun comando che modifichi l'osservatorio.
+  - *Test:* chat non autorizzata ignorata, comandi sconosciuti, flood.
+  - *Dip.:* P15.2.
+
+### P16 — Verifica finale e rilascio 0.5.0
+- [ ] **P16.1 [S] Verifica finale fase 3.** Come P8.2, più: con NINA, Telegram e accesso remoto **spenti** nessuna porta in ascolto e nessuna connessione in uscita oltre a quelle già previste; test di sicurezza di P12.5 verde; test del montaggio con serie sintetica; riepilogo per Robert in NOTES.md con la sezione **«Da provare con NINA reale e sul PC con la ZWO»**.
+- [ ] **P16.2 [S] Rilascio automatico 0.5.0.** Stesso cancello e stessi passi di P8.4, con la versione 0.5.0. Il cancello include P16.1 `[x]` e, se P12 è stato fatto, P12.5 `[x]`. Niente rilascio con P12 a metà.
+
+### Altre idee proposte (non pianificate: servono la scelta di Robert)
+1. **Campo inquadrato del telescopio sulla all-sky:** disegnare il rettangolo del campo (focale, sensore, angolo del rotatore) oltre al mirino. Verifica anche l'allineamento tra puntamento NINA e telescopio visibile nell'immagine, utile a controllare la calibrazione ottica.
+2. **Capitoli automatici su YouTube** dalla cronologia NINA (messa a fuoco, meridian flip, cambio soggetto) nella descrizione del video.
+3. **Perché ho perso tempo:** correlare i frame scartati o il peggioramento di HFR e guida in NINA con le nuvole viste dalla all-sky, e dare un «indice di efficienza della notte» (ore di cielo utile contro ore di integrazione).
+4. **Allerta cielo che peggiora** verso NINA tramite il SafetyMonitor di P9.5, così la sequenza si può fermare prima che arrivino le nuvole.
+5. **Rugiada e condensa sulla cupola** dalla perdita di nitidezza (già nel piano v1 come sperimentale), da collegare allo stato di park.
 
 ---
 

@@ -171,3 +171,10 @@ Una voce per iterazione, la più recente in fondo. Formato:
   - L'encoder di prova è **libx264 (GPL)** con `AllowGpl=true`, solo per il test locale. L'encoder del prodotto su Windows è `h264_mf` e non è stato provato. Su quel PC va verificato in P8.2/Windows.
   - La classificazione dell'evento (bolide) riguarda una scia sintetica: non dice nulla sulla soglia reale.
 - Da provare sul PC con la ZWO: overlay informativo sul timelapse; encoder `h264_mf` in edizione N e normale; scia reale; maschera.
+
+## 2026-10-22 (15:00) — Fase 3 scritta nel piano (NON avviata)
+- Su richiesta di Robert, `IMPLEMENTATION_PLAN.md` contiene ora la **fase 3 (P11–P16, 32 task)**: integrazione opzionale NINA (soggetto, mirino, grafico altezza, distanza dalla Luna, park, log collegati ai frame), accesso remoto con ruoli, studio di montaggio per materiale vecchio, colore del video, invio a un bot Telegram, rilascio 0.5.0. `PROMPT.md` vieta di iniziarla senza il via di Robert.
+- Fatti verificati il 22/10/2026: plugin ninaAPI (christian-photo, MPL-2.0, REST `v2/api` + WebSocket, README su GitHub); cartella dei log di NINA `%localappdata%\NINA\logs` con livelli Error..Trace (documentazione NINA).
+- **Non verificato:** porta predefinita, autenticazione, endpoint e nomi dei campi di ninaAPI (la pagina della documentazione è generata da JavaScript e non si legge con un fetch); formato righe e rotazione dei log; limiti Telegram. Sono i primi task (P11.0, P15.1).
+- L'agente esperto UP Link conosce il protocollo del sito, non le API interne di NINA (le note `nina-api-notes.md` erano da scrivere al 19/10): lo si usa per rivedere le parti che toccano il contratto Uplink (P11.0, P11.9, P12.3 opzione A), non come fonte sui campi di NINA. Non è registrato come tipo di agente in questa sessione: va lanciato come agente generico con le sue istruzioni (Project, `claude/uplink-expert-agent.md`).
+- Il vincolo «nessun server esposto» entra in conflitto con l'accesso esterno: la scelta (relay in uscita verso il sito, tunnel di terzi, porta aperta) è una decisione di Robert (P12.0).
