@@ -579,7 +579,7 @@ public class CameraView : UserControl
         _gainBox.TextChanged += (_, _) => RenderProblems();
         stack.Children.Add(_gainBox);
         stack.Children.Add(BuildBodyText(_texts.CameraGainHint, "Brush.TextTertiary", "Size.Caption"));
-        _gainProblem = BuildBodyText(string.Empty, "Brush.Error", Size.Body);
+        _gainProblem = BuildBodyText(string.Empty, "Brush.Error", "Size.Body");
         stack.Children.Add(_gainProblem);
 
         stack.Children.Add(BuildLabel(_texts.CameraMaxExposureLabel));
@@ -587,7 +587,7 @@ public class CameraView : UserControl
         _exposureBox.TextChanged += (_, _) => RenderProblems();
         stack.Children.Add(_exposureBox);
         stack.Children.Add(BuildBodyText(_texts.CameraMaxExposureHint, "Brush.TextTertiary", "Size.Caption"));
-        _exposureProblem = BuildBodyText(string.Empty, "Brush.Error", Size.Body);
+        _exposureProblem = BuildBodyText(string.Empty, "Brush.Error", "Size.Body");
         stack.Children.Add(_exposureProblem);
 
         _saveButton = BuildButton(_texts.CameraSave, primary: true);
