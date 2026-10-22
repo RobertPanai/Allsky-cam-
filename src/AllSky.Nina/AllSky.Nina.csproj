@@ -10,6 +10,11 @@
 
   <!-- Nessuna dipendenza NuGet: HTTP e JSON sono System.Net.Http e System.Text.Json del framework. -->
   <ItemGroup>
+    <ProjectReference Include="..\AllSky.Sky\AllSky.Sky.csproj" />
+    <ProjectReference Include="..\AllSky.Astro\AllSky.Astro.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="AllSky.Nina.Tests" />
   </ItemGroup>
 
