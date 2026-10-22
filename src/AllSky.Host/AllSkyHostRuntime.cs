@@ -1,4 +1,5 @@
 using AllSky.Core.Publication;
+using AllSky.Core.YouTube;
 using AllSky.Engine;
 using AllSky.Updates;
 using Microsoft.AspNetCore.Builder;
@@ -20,13 +21,15 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
     private readonly IPublishSettingsService _publishSettings;
     private readonly UpdateService _updates;
     private readonly UpdateSettingsStore _updateStore;
+    private readonly YouTubeServices? _youTube;
     private readonly TaskCompletionSource _stopped = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly object _gate = new();
     private Task? _stopTask;
 
     /// <summary>Crea il runtime: usato solo da <see cref="AllSkyHost"/>.</summary>
-    internal AllSkyHostRuntime(WebApplication? app, AllSkyEngine engine, CancellationTokenSource shutdown, DailyFileLog log, string? url, PublishServices? publishing, UpdateService updates, UpdateSettingsStore updateStore)
+    internal AllSkyHostRuntime(WebApplication? app, AllSkyEngine engine, CancellationTokenSource shutdown, DailyFileLog log, string? url, PublishServices? publishing, UpdateService updates, UpdateSettingsStore updateStore, YouTubeServices? youTube = null)
     {
+        _youTube = youTube;
         _app = app;
         _engine = engine;
         _shutdown = shutdown;
@@ -72,6 +75,12 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
     /// di pubblicazione lo stato e' "disabled" e i salvataggi sono rifiutati. Resta valido fino all'arresto dell'Host.
     /// </summary>
     public IPublishSettingsService PublishSettings => _publishSettings;
+
+    /// <summary>
+    /// Caricamento automatico su YouTube per la vista Pubblicazione. Se il modulo non e' partito in questo avvio, restituisce
+    /// un servizio che mostra il problema. Resta valido fino all'arresto dell'Host.
+    /// </summary>
+    public IYouTubeService YouTube => (IYouTubeService?)_youTube?.Service ?? UnavailableYouTubeService.Instance;
 
     /// <summary>
     /// Attende l'arresto dell'Host. Se <paramref name="cancellationToken"/> viene annullato, l'Host si arresta
@@ -129,6 +138,19 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
                 await HostPublishing.StopPublisherAsync(_publishing, _log);
             }
 
+            // Il caricamento YouTube si ferma prima del motore; un caricamento interrotto riprende dal registro.
+            if (_youTube is not null)
+            {
+                try
+                {
+                    await _youTube.StopAsync();
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    _log.Write("Arresto del caricamento YouTube non pulito", ex);
+                }
+            }
+
             try
             {
                 await _engine.StopAsync();
@@ -141,6 +163,11 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
             if (_publishing is not null)
             {
                 await _publishing.DisposeAsync();
+            }
+
+            if (_youTube is not null)
+            {
+                await _youTube.DisposeAsync();
             }
 
             if (_app is not null)

@@ -163,6 +163,8 @@ public enum YouTubeUploadOutcomeKind
     DailyLimitReached,
     NotDue,
     SlotMissed,
+    /// <summary>Il caricamento non è disponibile in questo avvio.</summary>
+    Unavailable,
 }
 
 /// <summary>Esito di <see cref="IYouTubeService.UploadLastNightNowAsync"/>.</summary>

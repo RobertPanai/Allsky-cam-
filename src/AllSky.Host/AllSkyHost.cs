@@ -97,6 +97,7 @@ public static class AllSkyHost
         UpdateServices updates = UpdateServices.Create(options.UpdateBackend, dataFolder);
 
         AllSkyEngine? engine = null;
+        YouTubeServices? youTube = null;
         WebApplication? app = null;
         var shutdown = new CancellationTokenSource();
         bool ready = false;
@@ -114,7 +115,9 @@ public static class AllSkyHost
                 ConfigPath: configPath,
                 Log: log.Write,
                 Publisher: publishing?.Publisher,
-                FrameOverlayFactory: options.FrameOverlayFactory));
+                FrameOverlayFactory: options.FrameOverlayFactory,
+                TleFetcher: options.TleFetcher,
+                OrbitPropagators: options.OrbitPropagators));
 
             await engine.StartAsync(cancellationToken);
 
@@ -123,6 +126,10 @@ public static class AllSkyHost
             {
                 await HostPublishing.StartPublisherAsync(publishing, log);
             }
+
+            // Il caricamento YouTube parte dopo il motore: il primo tick puo' leggere l'archivio gia' attivo.
+            youTube = YouTubeServices.TryCreate(options, dataFolder, engine, log);
+            youTube?.Start();
 
             var context = new HostContext(engine, log, shutdown.Token, logFolder, webRoot, publishing, sanitize, updates);
             string? url = null;
@@ -146,7 +153,7 @@ public static class AllSkyHost
                 : $"AllSky Host in ascolto su {url}" + (lan ? " e sulla rete locale" : string.Empty) + ".");
             ready = true;
             updates.Service.Start();
-            return new AllSkyHostRuntime(app, engine, shutdown, log, url, publishing, updates.Service, updates.Store);
+            return new AllSkyHostRuntime(app, engine, shutdown, log, url, publishing, updates.Service, updates.Store, youTube);
         }
         finally
         {
@@ -164,6 +171,12 @@ public static class AllSkyHost
                 {
                     await HostPublishing.StopPublisherAsync(publishing, log);
                     await publishing.DisposeAsync();
+                }
+
+                if (youTube is not null)
+                {
+                    await youTube.StopAsync();
+                    await youTube.DisposeAsync();
                 }
 
                 if (engine is not null)

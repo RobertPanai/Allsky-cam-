@@ -1388,6 +1388,113 @@ public sealed record DesktopTexts
         YouTubeConfirmButton = "Conferma",
         YouTubeCancelButton = "Annulla",
         YouTubeUploadRunning = "Caricamento in corso...",
+        MaskNav = "Maschera",
+        MaskTitle = "Maschera del timelapse",
+        MaskDescription = "Scegli cosa mostrare ai bordi del timelapse, dove e in che ordine. Le modifiche valgono dopo il salvataggio.",
+        MaskPreviewName = "Anteprima della maschera sull'ultimo frame",
+        MaskPreviewSample = "Nessun frame ancora: anteprima su un cielo di esempio.",
+        MaskPreviewUpdating = "Aggiornamento anteprima…",
+        MaskPreviewError = "Anteprima non disponibile: {0}",
+        MaskPreviewPaused = "Anteprima sospesa: correggere i valori evidenziati.",
+        MaskOmitted = "Non entrano nel frame e vengono omessi: {0}",
+        MaskWidgetsTitle = "Widget",
+        MaskWidgetsHint = "Attiva, sposta e configura ciò che compare sul frame. L'ordine conta solo dentro la stessa posizione.",
+        MaskWidgetEnabled = "Mostra {0}",
+        MaskWidgetUnavailable = "Non ancora disponibile: arriverà con la geometria del cielo.",
+        MaskMoveUp = "Sposta su",
+        MaskMoveDown = "Sposta giù",
+        MaskRemove = "Rimuovi",
+        MaskAddText = "Aggiungi testo libero",
+        MaskAddLogo = "Carica logo PNG…",
+        MaskPosition = "Posizione",
+        MaskFormat = "Formato",
+        MaskPosTL = "In alto a sinistra",
+        MaskPosTR = "In alto a destra",
+        MaskPosBL = "In basso a sinistra",
+        MaskPosBR = "In basso a destra",
+        MaskPosBandaAlta = "Banda alta (nera)",
+        MaskPosBandaBassa = "Banda bassa (nera)",
+        MaskKindDataOra = "Data e ora",
+        MaskKindSole = "Altezza del Sole",
+        MaskKindLuna = "Luna: altezza e fase",
+        MaskKindSatelliti = "Satelliti in transito",
+        MaskKindMeteo = "Meteo",
+        MaskKindLogo = "Logo",
+        MaskKindTestoLibero = "Testo libero",
+        MaskKindEsposizione = "Esposizione",
+        MaskKindBussola = "Bussola",
+        MaskFieldPattern = "Formato data e ora",
+        MaskFieldPatternHint = "Formato .NET, per esempio yyyy-MM-dd HH:mm:ss",
+        MaskFieldFuso = "Fuso orario",
+        MaskFuseLocale = "Locale",
+        MaskFuseUtc = "UTC",
+        MaskFieldDecimali = "Decimali",
+        MaskFieldMostraFase = "Mostra la fase",
+        MaskFieldMaxElementi = "Satelliti massimi",
+        MaskFieldCampi = "Campi meteo",
+        MaskFieldFileLogo = "File del logo",
+        MaskFieldAltezzaLogo = "Altezza massima (% del frame)",
+        MaskFieldOpacita = "Opacità (%)",
+        MaskFieldTesto = "Testo",
+        MaskFieldMostraGain = "Mostra il gain",
+        MaskMeteoTemperatura = "Temperatura",
+        MaskMeteoUmidita = "Umidità",
+        MaskMeteoPressione = "Pressione",
+        MaskMeteoVento = "Vento",
+        MaskMeteoNuvole = "Nuvole",
+        MaskMeteoPioggia = "Pioggia",
+        MaskMeteoLuminositaCielo = "Luminosità del cielo",
+        MaskSectionMask = "Maschera",
+        MaskModeNone = "Nessuna",
+        MaskModeCircle = "Cerchio del cielo",
+        MaskModeBands = "Bande nere",
+        MaskCenterX = "Centro orizzontale (%)",
+        MaskCenterY = "Centro verticale (%)",
+        MaskRadius = "Raggio (% dell'altezza)",
+        MaskEdge = "Esterno",
+        MaskEdgeOpaque = "Opaco",
+        MaskEdgeFeather = "Sfumato",
+        MaskFeather = "Sfumatura (% dell'altezza)",
+        MaskBandTop = "Banda superiore (%)",
+        MaskBandBottom = "Banda inferiore (%)",
+        MaskSectionText = "Testo",
+        MaskTextScale = "Scala del testo (% dell'altezza)",
+        MaskMargin = "Margine (% dell'altezza)",
+        MaskSectionLogos = "Loghi",
+        MaskLogosHint = "I loghi vengono copiati nella cartella dati: l'app non usa file esterni. PNG, massimo 2 MB.",
+        MaskLogoCount = "{0} loghi nella cartella dati",
+        MaskNoLogoFiles = "Nessun logo nella cartella dati.",
+        MaskLogoImported = "Logo copiato come {0}.",
+        MaskLogoErrNotPng = "Il file non è un PNG (estensione .png richiesta).",
+        MaskLogoErrSignature = "Il file non ha la firma PNG.",
+        MaskLogoErrTooBig = "Il logo supera 2 MB.",
+        MaskLogoErrDimensions = "Il logo è troppo grande: massimo 4000 × 4000 px.",
+        MaskLogoErrRead = "Impossibile leggere il file del logo.",
+        MaskLogoErrMissingFile = "Il file scelto non esiste più.",
+        MaskLogoErrName = "Nome del file non valido.",
+        MaskLogoErrWrite = "Copia nella cartella dati non riuscita. Controllare i permessi.",
+        MaskLogoMissing = "Logo mancante nella cartella dati: {0}",
+        MaskLogoCleaned = "{0} loghi non più usati sono stati rimossi.",
+        MaskSectionApply = "Applica a",
+        MaskApplyTimelapse = "Timelapse",
+        MaskApplyLive = "Vista dal vivo",
+        MaskApplyPublish = "Pubblicazione Uplink",
+        MaskApplyLiveNote = "Non ancora attivo: il flusso dal vivo non usa ancora la maschera.",
+        MaskApplyPublishNote = "Non ancora attivo: le immagini pubblicate non usano ancora la maschera.",
+        MaskReset = "Ripristina predefiniti",
+        MaskResetConfirm = "Ripristinare il layout predefinito? Le modifiche non salvate andranno perse.",
+        MaskResetDone = "Predefiniti ripristinati. Salva per applicarli.",
+        MaskSave = "Salva maschera",
+        MaskSaving = "Salvataggio in corso…",
+        MaskSaved = "Maschera salvata. Vale per i prossimi timelapse e rigenerazioni.",
+        MaskSaveInvalid = "Correggere i valori evidenziati prima di salvare.",
+        MaskSaveError = "Salvataggio non riuscito. Controllare i permessi della cartella dati e riprovare.",
+        MaskSaveRejected = "Salvataggio non riuscito: {0}",
+        MaskDirty = "Modifiche non salvate.",
+        MaskLoadWarnings = "Il layout salvato è stato corretto: {0}",
+        MaskInvalidField = "Valore non valido: {0}",
+        MaskMeteoNoField = "Scegli almeno un campo meteo.",
+        MaskBusy = "Operazione in corso…",
     };
 
     /// <summary>Testi in inglese.</summary>
@@ -1922,6 +2029,113 @@ public sealed record DesktopTexts
         YouTubeConfirmButton = "Confirm",
         YouTubeCancelButton = "Cancel",
         YouTubeUploadRunning = "Upload in progress...",
+        MaskNav = "Mask",
+        MaskTitle = "Timelapse mask",
+        MaskDescription = "Choose what appears at the edges of the timelapse, where and in which order. Changes apply after saving.",
+        MaskPreviewName = "Mask preview on the latest frame",
+        MaskPreviewSample = "No frame yet: preview on a sample sky.",
+        MaskPreviewUpdating = "Updating preview…",
+        MaskPreviewError = "Preview unavailable: {0}",
+        MaskPreviewPaused = "Preview paused: fix the highlighted values.",
+        MaskOmitted = "Do not fit in the frame and are omitted: {0}",
+        MaskWidgetsTitle = "Widgets",
+        MaskWidgetsHint = "Enable, move and configure what appears on the frame. Order only matters within the same position.",
+        MaskWidgetEnabled = "Show {0}",
+        MaskWidgetUnavailable = "Not available yet: it will arrive with the sky geometry.",
+        MaskMoveUp = "Move up",
+        MaskMoveDown = "Move down",
+        MaskRemove = "Remove",
+        MaskAddText = "Add free text",
+        MaskAddLogo = "Load PNG logo…",
+        MaskPosition = "Position",
+        MaskFormat = "Format",
+        MaskPosTL = "Top left",
+        MaskPosTR = "Top right",
+        MaskPosBL = "Bottom left",
+        MaskPosBR = "Bottom right",
+        MaskPosBandaAlta = "Top band (black)",
+        MaskPosBandaBassa = "Bottom band (black)",
+        MaskKindDataOra = "Date and time",
+        MaskKindSole = "Sun altitude",
+        MaskKindLuna = "Moon: altitude and phase",
+        MaskKindSatelliti = "Satellites in transit",
+        MaskKindMeteo = "Weather",
+        MaskKindLogo = "Logo",
+        MaskKindTestoLibero = "Free text",
+        MaskKindEsposizione = "Exposure",
+        MaskKindBussola = "Compass",
+        MaskFieldPattern = "Date and time format",
+        MaskFieldPatternHint = ".NET format, for example yyyy-MM-dd HH:mm:ss",
+        MaskFieldFuso = "Time zone",
+        MaskFuseLocale = "Local",
+        MaskFuseUtc = "UTC",
+        MaskFieldDecimali = "Decimals",
+        MaskFieldMostraFase = "Show the phase",
+        MaskFieldMaxElementi = "Maximum satellites",
+        MaskFieldCampi = "Weather fields",
+        MaskFieldFileLogo = "Logo file",
+        MaskFieldAltezzaLogo = "Maximum height (% of frame)",
+        MaskFieldOpacita = "Opacity (%)",
+        MaskFieldTesto = "Text",
+        MaskFieldMostraGain = "Show gain",
+        MaskMeteoTemperatura = "Temperature",
+        MaskMeteoUmidita = "Humidity",
+        MaskMeteoPressione = "Pressure",
+        MaskMeteoVento = "Wind",
+        MaskMeteoNuvole = "Clouds",
+        MaskMeteoPioggia = "Rain",
+        MaskMeteoLuminositaCielo = "Sky brightness",
+        MaskSectionMask = "Mask",
+        MaskModeNone = "None",
+        MaskModeCircle = "Sky circle",
+        MaskModeBands = "Black bands",
+        MaskCenterX = "Horizontal centre (%)",
+        MaskCenterY = "Vertical centre (%)",
+        MaskRadius = "Radius (% of height)",
+        MaskEdge = "Outside",
+        MaskEdgeOpaque = "Opaque",
+        MaskEdgeFeather = "Feathered",
+        MaskFeather = "Feather (% of height)",
+        MaskBandTop = "Top band (%)",
+        MaskBandBottom = "Bottom band (%)",
+        MaskSectionText = "Text",
+        MaskTextScale = "Text scale (% of height)",
+        MaskMargin = "Margin (% of height)",
+        MaskSectionLogos = "Logos",
+        MaskLogosHint = "Logos are copied into the data folder: the app never uses external files. PNG, 2 MB maximum.",
+        MaskLogoCount = "{0} logos in the data folder",
+        MaskNoLogoFiles = "No logos in the data folder.",
+        MaskLogoImported = "Logo copied as {0}.",
+        MaskLogoErrNotPng = "The file is not a PNG (.png extension required).",
+        MaskLogoErrSignature = "The file does not have a PNG signature.",
+        MaskLogoErrTooBig = "The logo is larger than 2 MB.",
+        MaskLogoErrDimensions = "The logo is too large: 4000 × 4000 px maximum.",
+        MaskLogoErrRead = "The logo file cannot be read.",
+        MaskLogoErrMissingFile = "The chosen file no longer exists.",
+        MaskLogoErrName = "Invalid file name.",
+        MaskLogoErrWrite = "Copy to the data folder failed. Check permissions.",
+        MaskLogoMissing = "Logo missing from the data folder: {0}",
+        MaskLogoCleaned = "{0} unused logos were removed.",
+        MaskSectionApply = "Apply to",
+        MaskApplyTimelapse = "Timelapse",
+        MaskApplyLive = "Live view",
+        MaskApplyPublish = "Uplink publishing",
+        MaskApplyLiveNote = "Not active yet: the live stream does not use the mask yet.",
+        MaskApplyPublishNote = "Not active yet: published images do not use the mask yet.",
+        MaskReset = "Restore defaults",
+        MaskResetConfirm = "Restore the default layout? Unsaved changes will be lost.",
+        MaskResetDone = "Defaults restored. Save to apply them.",
+        MaskSave = "Save mask",
+        MaskSaving = "Saving…",
+        MaskSaved = "Mask saved. It applies to the next timelapses and regenerations.",
+        MaskSaveInvalid = "Fix the highlighted values before saving.",
+        MaskSaveError = "Save failed. Check the data folder permissions and try again.",
+        MaskSaveRejected = "Save failed: {0}",
+        MaskDirty = "Unsaved changes.",
+        MaskLoadWarnings = "The saved layout was corrected: {0}",
+        MaskInvalidField = "Invalid value: {0}",
+        MaskMeteoNoField = "Choose at least one weather field.",
+        MaskBusy = "Working…",
     };
 
     /// <summary>Nome della vista nella barra laterale e come titolo della schermata.</summary>
@@ -2720,4 +2934,325 @@ public sealed record DesktopTexts
 
     /// <summary>Messaggio durante il caricamento.</summary>
     public required string YouTubeUploadRunning { get; init; }
+
+    /// <summary>Testo della maschera: MaskNav.</summary>
+    public required string MaskNav { get; init; }
+
+    /// <summary>Testo della maschera: MaskTitle.</summary>
+    public required string MaskTitle { get; init; }
+
+    /// <summary>Testo della maschera: MaskDescription.</summary>
+    public required string MaskDescription { get; init; }
+
+    /// <summary>Testo della maschera: MaskPreviewName.</summary>
+    public required string MaskPreviewName { get; init; }
+
+    /// <summary>Testo della maschera: MaskPreviewSample.</summary>
+    public required string MaskPreviewSample { get; init; }
+
+    /// <summary>Testo della maschera: MaskPreviewUpdating.</summary>
+    public required string MaskPreviewUpdating { get; init; }
+
+    /// <summary>Testo della maschera: MaskPreviewError.</summary>
+    public required string MaskPreviewError { get; init; }
+
+    /// <summary>Testo della maschera: MaskPreviewPaused.</summary>
+    public required string MaskPreviewPaused { get; init; }
+
+    /// <summary>Testo della maschera: MaskOmitted.</summary>
+    public required string MaskOmitted { get; init; }
+
+    /// <summary>Testo della maschera: MaskWidgetsTitle.</summary>
+    public required string MaskWidgetsTitle { get; init; }
+
+    /// <summary>Testo della maschera: MaskWidgetsHint.</summary>
+    public required string MaskWidgetsHint { get; init; }
+
+    /// <summary>Testo della maschera: MaskWidgetEnabled.</summary>
+    public required string MaskWidgetEnabled { get; init; }
+
+    /// <summary>Testo della maschera: MaskWidgetUnavailable.</summary>
+    public required string MaskWidgetUnavailable { get; init; }
+
+    /// <summary>Testo della maschera: MaskMoveUp.</summary>
+    public required string MaskMoveUp { get; init; }
+
+    /// <summary>Testo della maschera: MaskMoveDown.</summary>
+    public required string MaskMoveDown { get; init; }
+
+    /// <summary>Testo della maschera: MaskRemove.</summary>
+    public required string MaskRemove { get; init; }
+
+    /// <summary>Testo della maschera: MaskAddText.</summary>
+    public required string MaskAddText { get; init; }
+
+    /// <summary>Testo della maschera: MaskAddLogo.</summary>
+    public required string MaskAddLogo { get; init; }
+
+    /// <summary>Testo della maschera: MaskPosition.</summary>
+    public required string MaskPosition { get; init; }
+
+    /// <summary>Testo della maschera: MaskFormat.</summary>
+    public required string MaskFormat { get; init; }
+
+    /// <summary>Testo della maschera: MaskPosTL.</summary>
+    public required string MaskPosTL { get; init; }
+
+    /// <summary>Testo della maschera: MaskPosTR.</summary>
+    public required string MaskPosTR { get; init; }
+
+    /// <summary>Testo della maschera: MaskPosBL.</summary>
+    public required string MaskPosBL { get; init; }
+
+    /// <summary>Testo della maschera: MaskPosBR.</summary>
+    public required string MaskPosBR { get; init; }
+
+    /// <summary>Testo della maschera: MaskPosBandaAlta.</summary>
+    public required string MaskPosBandaAlta { get; init; }
+
+    /// <summary>Testo della maschera: MaskPosBandaBassa.</summary>
+    public required string MaskPosBandaBassa { get; init; }
+
+    /// <summary>Testo della maschera: MaskKindDataOra.</summary>
+    public required string MaskKindDataOra { get; init; }
+
+    /// <summary>Testo della maschera: MaskKindSole.</summary>
+    public required string MaskKindSole { get; init; }
+
+    /// <summary>Testo della maschera: MaskKindLuna.</summary>
+    public required string MaskKindLuna { get; init; }
+
+    /// <summary>Testo della maschera: MaskKindSatelliti.</summary>
+    public required string MaskKindSatelliti { get; init; }
+
+    /// <summary>Testo della maschera: MaskKindMeteo.</summary>
+    public required string MaskKindMeteo { get; init; }
+
+    /// <summary>Testo della maschera: MaskKindLogo.</summary>
+    public required string MaskKindLogo { get; init; }
+
+    /// <summary>Testo della maschera: MaskKindTestoLibero.</summary>
+    public required string MaskKindTestoLibero { get; init; }
+
+    /// <summary>Testo della maschera: MaskKindEsposizione.</summary>
+    public required string MaskKindEsposizione { get; init; }
+
+    /// <summary>Testo della maschera: MaskKindBussola.</summary>
+    public required string MaskKindBussola { get; init; }
+
+    /// <summary>Testo della maschera: MaskFieldPattern.</summary>
+    public required string MaskFieldPattern { get; init; }
+
+    /// <summary>Testo della maschera: MaskFieldPatternHint.</summary>
+    public required string MaskFieldPatternHint { get; init; }
+
+    /// <summary>Testo della maschera: MaskFieldFuso.</summary>
+    public required string MaskFieldFuso { get; init; }
+
+    /// <summary>Testo della maschera: MaskFuseLocale.</summary>
+    public required string MaskFuseLocale { get; init; }
+
+    /// <summary>Testo della maschera: MaskFuseUtc.</summary>
+    public required string MaskFuseUtc { get; init; }
+
+    /// <summary>Testo della maschera: MaskFieldDecimali.</summary>
+    public required string MaskFieldDecimali { get; init; }
+
+    /// <summary>Testo della maschera: MaskFieldMostraFase.</summary>
+    public required string MaskFieldMostraFase { get; init; }
+
+    /// <summary>Testo della maschera: MaskFieldMaxElementi.</summary>
+    public required string MaskFieldMaxElementi { get; init; }
+
+    /// <summary>Testo della maschera: MaskFieldCampi.</summary>
+    public required string MaskFieldCampi { get; init; }
+
+    /// <summary>Testo della maschera: MaskFieldFileLogo.</summary>
+    public required string MaskFieldFileLogo { get; init; }
+
+    /// <summary>Testo della maschera: MaskFieldAltezzaLogo.</summary>
+    public required string MaskFieldAltezzaLogo { get; init; }
+
+    /// <summary>Testo della maschera: MaskFieldOpacita.</summary>
+    public required string MaskFieldOpacita { get; init; }
+
+    /// <summary>Testo della maschera: MaskFieldTesto.</summary>
+    public required string MaskFieldTesto { get; init; }
+
+    /// <summary>Testo della maschera: MaskFieldMostraGain.</summary>
+    public required string MaskFieldMostraGain { get; init; }
+
+    /// <summary>Testo della maschera: MaskMeteoTemperatura.</summary>
+    public required string MaskMeteoTemperatura { get; init; }
+
+    /// <summary>Testo della maschera: MaskMeteoUmidita.</summary>
+    public required string MaskMeteoUmidita { get; init; }
+
+    /// <summary>Testo della maschera: MaskMeteoPressione.</summary>
+    public required string MaskMeteoPressione { get; init; }
+
+    /// <summary>Testo della maschera: MaskMeteoVento.</summary>
+    public required string MaskMeteoVento { get; init; }
+
+    /// <summary>Testo della maschera: MaskMeteoNuvole.</summary>
+    public required string MaskMeteoNuvole { get; init; }
+
+    /// <summary>Testo della maschera: MaskMeteoPioggia.</summary>
+    public required string MaskMeteoPioggia { get; init; }
+
+    /// <summary>Testo della maschera: MaskMeteoLuminositaCielo.</summary>
+    public required string MaskMeteoLuminositaCielo { get; init; }
+
+    /// <summary>Testo della maschera: MaskSectionMask.</summary>
+    public required string MaskSectionMask { get; init; }
+
+    /// <summary>Testo della maschera: MaskModeNone.</summary>
+    public required string MaskModeNone { get; init; }
+
+    /// <summary>Testo della maschera: MaskModeCircle.</summary>
+    public required string MaskModeCircle { get; init; }
+
+    /// <summary>Testo della maschera: MaskModeBands.</summary>
+    public required string MaskModeBands { get; init; }
+
+    /// <summary>Testo della maschera: MaskCenterX.</summary>
+    public required string MaskCenterX { get; init; }
+
+    /// <summary>Testo della maschera: MaskCenterY.</summary>
+    public required string MaskCenterY { get; init; }
+
+    /// <summary>Testo della maschera: MaskRadius.</summary>
+    public required string MaskRadius { get; init; }
+
+    /// <summary>Testo della maschera: MaskEdge.</summary>
+    public required string MaskEdge { get; init; }
+
+    /// <summary>Testo della maschera: MaskEdgeOpaque.</summary>
+    public required string MaskEdgeOpaque { get; init; }
+
+    /// <summary>Testo della maschera: MaskEdgeFeather.</summary>
+    public required string MaskEdgeFeather { get; init; }
+
+    /// <summary>Testo della maschera: MaskFeather.</summary>
+    public required string MaskFeather { get; init; }
+
+    /// <summary>Testo della maschera: MaskBandTop.</summary>
+    public required string MaskBandTop { get; init; }
+
+    /// <summary>Testo della maschera: MaskBandBottom.</summary>
+    public required string MaskBandBottom { get; init; }
+
+    /// <summary>Testo della maschera: MaskSectionText.</summary>
+    public required string MaskSectionText { get; init; }
+
+    /// <summary>Testo della maschera: MaskTextScale.</summary>
+    public required string MaskTextScale { get; init; }
+
+    /// <summary>Testo della maschera: MaskMargin.</summary>
+    public required string MaskMargin { get; init; }
+
+    /// <summary>Testo della maschera: MaskSectionLogos.</summary>
+    public required string MaskSectionLogos { get; init; }
+
+    /// <summary>Testo della maschera: MaskLogosHint.</summary>
+    public required string MaskLogosHint { get; init; }
+
+    /// <summary>Testo della maschera: MaskLogoCount.</summary>
+    public required string MaskLogoCount { get; init; }
+
+    /// <summary>Testo della maschera: MaskNoLogoFiles.</summary>
+    public required string MaskNoLogoFiles { get; init; }
+
+    /// <summary>Testo della maschera: MaskLogoImported.</summary>
+    public required string MaskLogoImported { get; init; }
+
+    /// <summary>Testo della maschera: MaskLogoErrNotPng.</summary>
+    public required string MaskLogoErrNotPng { get; init; }
+
+    /// <summary>Testo della maschera: MaskLogoErrSignature.</summary>
+    public required string MaskLogoErrSignature { get; init; }
+
+    /// <summary>Testo della maschera: MaskLogoErrTooBig.</summary>
+    public required string MaskLogoErrTooBig { get; init; }
+
+    /// <summary>Testo della maschera: MaskLogoErrDimensions.</summary>
+    public required string MaskLogoErrDimensions { get; init; }
+
+    /// <summary>Testo della maschera: MaskLogoErrRead.</summary>
+    public required string MaskLogoErrRead { get; init; }
+
+    /// <summary>Testo della maschera: MaskLogoErrMissingFile.</summary>
+    public required string MaskLogoErrMissingFile { get; init; }
+
+    /// <summary>Testo della maschera: MaskLogoErrName.</summary>
+    public required string MaskLogoErrName { get; init; }
+
+    /// <summary>Testo della maschera: MaskLogoErrWrite.</summary>
+    public required string MaskLogoErrWrite { get; init; }
+
+    /// <summary>Testo della maschera: MaskLogoMissing.</summary>
+    public required string MaskLogoMissing { get; init; }
+
+    /// <summary>Testo della maschera: MaskLogoCleaned.</summary>
+    public required string MaskLogoCleaned { get; init; }
+
+    /// <summary>Testo della maschera: MaskSectionApply.</summary>
+    public required string MaskSectionApply { get; init; }
+
+    /// <summary>Testo della maschera: MaskApplyTimelapse.</summary>
+    public required string MaskApplyTimelapse { get; init; }
+
+    /// <summary>Testo della maschera: MaskApplyLive.</summary>
+    public required string MaskApplyLive { get; init; }
+
+    /// <summary>Testo della maschera: MaskApplyPublish.</summary>
+    public required string MaskApplyPublish { get; init; }
+
+    /// <summary>Testo della maschera: MaskApplyLiveNote.</summary>
+    public required string MaskApplyLiveNote { get; init; }
+
+    /// <summary>Testo della maschera: MaskApplyPublishNote.</summary>
+    public required string MaskApplyPublishNote { get; init; }
+
+    /// <summary>Testo della maschera: MaskReset.</summary>
+    public required string MaskReset { get; init; }
+
+    /// <summary>Testo della maschera: MaskResetConfirm.</summary>
+    public required string MaskResetConfirm { get; init; }
+
+    /// <summary>Testo della maschera: MaskResetDone.</summary>
+    public required string MaskResetDone { get; init; }
+
+    /// <summary>Testo della maschera: MaskSave.</summary>
+    public required string MaskSave { get; init; }
+
+    /// <summary>Testo della maschera: MaskSaving.</summary>
+    public required string MaskSaving { get; init; }
+
+    /// <summary>Testo della maschera: MaskSaved.</summary>
+    public required string MaskSaved { get; init; }
+
+    /// <summary>Testo della maschera: MaskSaveInvalid.</summary>
+    public required string MaskSaveInvalid { get; init; }
+
+    /// <summary>Testo della maschera: MaskSaveError.</summary>
+    public required string MaskSaveError { get; init; }
+
+    /// <summary>Testo della maschera: MaskSaveRejected.</summary>
+    public required string MaskSaveRejected { get; init; }
+
+    /// <summary>Testo della maschera: MaskDirty.</summary>
+    public required string MaskDirty { get; init; }
+
+    /// <summary>Testo della maschera: MaskLoadWarnings.</summary>
+    public required string MaskLoadWarnings { get; init; }
+
+    /// <summary>Testo della maschera: MaskInvalidField.</summary>
+    public required string MaskInvalidField { get; init; }
+
+    /// <summary>Testo della maschera: MaskMeteoNoField.</summary>
+    public required string MaskMeteoNoField { get; init; }
+
+    /// <summary>Testo della maschera: MaskBusy.</summary>
+    public required string MaskBusy { get; init; }
 }

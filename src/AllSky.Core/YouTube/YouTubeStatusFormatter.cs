@@ -101,7 +101,8 @@ public static class YouTubeStatusFormatter
         or YouTubeUploadOutcomeKind.QuotaBlocked
         or YouTubeUploadOutcomeKind.AuthRequired
         or YouTubeUploadOutcomeKind.Failed
-        or YouTubeUploadOutcomeKind.ConfigError;
+        or YouTubeUploadOutcomeKind.ConfigError
+        or YouTubeUploadOutcomeKind.Unavailable;
 
     /// <summary>Vero se, dopo questo esito, la conferma dell'utente può sbloccare il caricamento della notte.</summary>
     public static bool CanForceRetry(YouTubeUploadOutcomeKind kind) => kind is

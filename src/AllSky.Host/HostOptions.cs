@@ -1,5 +1,6 @@
 using AllSky.Core;
 using AllSky.Publish;
+using AllSky.Satellites;
 using AllSky.Timelapse;
 using AllSky.Updates;
 
@@ -48,4 +49,18 @@ public sealed record HostOptions(
     /// lascia gli aggiornamenti disabilitati. Il Tray la crea, non l'Host, perché Velopack è solo Windows.
     /// </summary>
     public IUpdateBackend? UpdateBackend { get; init; }
+
+    /// <summary>
+    /// Apre l'URL di autorizzazione Google nel browser durante il collegamento YouTube. Null usa il browser predefinito di
+    /// Windows. Serve ai test per non aprire nulla.
+    /// </summary>
+    public Func<Uri, CancellationToken, Task>? YouTubeOpenBrowser { get; init; }
+
+    /// <summary>
+    /// Sorgente dei TLE per la previsione dei passaggi (P4.3). Null = previsione non disponibile. Il Desktop passa CelesTrak.
+    /// </summary>
+    public ITleFetcher? TleFetcher { get; init; }
+
+    /// <summary>Propagatori SGP4 per la previsione (P4.3). Null = previsione non disponibile. Il Desktop passa SGP.NET.</summary>
+    public IOrbitPropagatorFactory? OrbitPropagators { get; init; }
 }

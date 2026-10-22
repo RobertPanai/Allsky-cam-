@@ -48,6 +48,7 @@ internal static class ShellIcons
     internal static readonly Geometry Image = Build("M3.5,5.5 H20.5 V18.5 H3.5 Z M3.5,15.5 L8.5,10.5 L12.5,14.5 L15.5,11.5 L20.5,16.5");
 
     /// <summary>Cilindro, per lo spazio su disco.</summary>
+    internal static readonly Geometry Satellite = Build("M9.5,14.5 L14.5,9.5 L16.5,11.5 L11.5,16.5 Z M4,11 L7,8 M6.5,13.5 L9,11 M15,17 L17,19 M14.5,19.5 L19,15 M4,5.5 L6,7.5");
     internal static readonly Geometry Disk = Build("M5,6 V18 A7,3 0 0 0 19,18 V6 M5,6 A7,3 0 0 1 19,6 A7,3 0 0 1 5,6 Z");
 
     /// <summary>Icona della vista corrispondente alla voce della barra laterale.</summary>

@@ -117,6 +117,9 @@ public sealed class WpfOverlayRenderer
         return new OverlayTimingReport(tempi[tempi.Count / 2], tempi[0], tempi[^1], esecuzioni);
     }
 
+    /// <summary>Svuota la cache dei loghi (per esempio dopo la pulizia della cartella loghi). Solo thread STA.</summary>
+    public void SvuotaCacheLoghi() => _loghi.Clear();
+
     /// <summary>Vero se il tempo di un frame resta sotto il budget.</summary>
     public static bool EntroBudget(TimeSpan tempo) => tempo.TotalMilliseconds < BudgetMs;
 

@@ -166,13 +166,11 @@ public sealed class PassForecaster
             catch (Exception ex)
             {
                 // La sorgente non deve bloccare il servizio: si conservano i TLE noti e si segnala il problema.
-                lock (_gate)
-                {
-                    _status = PassForecastStatus.Failed;
-                    _message = $"errore nel recupero dei dati orbitali: {ex.Message}";
-                }
-
-                return false;
+                // L'errore entra nello stato TLE, così i ricalcoli successivi lo mantengono.
+                _tleStatus = TleFetchStatus.Failed;
+                _tleMessage = $"errore nel recupero dei dati orbitali: {ex.Message}";
+                Compute(settings, now);
+                return true;
             }
 
             _tles = result.Sets

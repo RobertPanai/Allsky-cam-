@@ -82,6 +82,8 @@ internal static class Program
             {
                 UpdateBackend = VelopackBackend.Create(),
                 FrameOverlayFactory = WpfFrameOverlay.CreateFactory(paths.DataFolder),
+                TleFetcher = PassForecastWiring.CreateTleFetcher(paths.DataFolder),
+                OrbitPropagators = new AllSky.Satellites.Sgp4.SgpNetPropagatorFactory(),
             };
             using var startCts = new CancellationTokenSource(StartTimeout);
 

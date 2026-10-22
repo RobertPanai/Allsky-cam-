@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AllSky.Host\AllSky.Host.csproj" />
+    <ProjectReference Include="..\AllSky.Satellites.Sgp4\AllSky.Satellites.Sgp4.csproj" />
     <ProjectReference Include="..\AllSky.Updates\AllSky.Updates.csproj" />
     <ProjectReference Include="..\AllSky.InfoOverlay\AllSky.InfoOverlay.csproj" />
   </ItemGroup>

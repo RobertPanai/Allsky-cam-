@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using AllSky.Core;
+using AllSky.Core.Passes;
 using AllSky.Core.Tonight;
 using AllSky.Desktop.Views.Live;
 using AllSky.Engine;
@@ -51,8 +52,8 @@ public sealed class TonightView : UserControl
     private readonly TextBlock _weather = new();
 
     private readonly TextBlock _nextChange = new();
-    private readonly TextBlock _nextTransit = new();
-    private readonly TextBlock _transitHint = new();
+    private readonly StackPanel _passRows = new();
+    private readonly TextBlock _passHint = new();
     private readonly TextBlock _lastMeteor = new();
     private readonly TextBlock _meteorHint = new();
 
@@ -179,10 +180,13 @@ public sealed class TonightView : UserControl
         stack.Children.Add(CreatePanelTitle(_texts.TonightEventsTitle));
         stack.Children.Add(Row(_texts.TonightNextChange, _nextChange));
 
-        _nextTransit.Text = _texts.TonightNoTransit;
-        stack.Children.Add(Row(_texts.TonightNextTransit, _nextTransit));
-        _transitHint.Text = _texts.TonightTransitPending;
-        stack.Children.Add(Hint(_transitHint));
+        // Prossimi passaggi dei satelliti (P4.3): sostituisce il segnaposto del transito.
+        var passCaption = new TextBlock { Text = _texts.PassListTitle, Margin = new Thickness(0, 12, 0, 4) };
+        passCaption.SetResourceReference(TextBlock.ForegroundProperty, "Brush.TextSecondary");
+        passCaption.SetResourceReference(TextBlock.FontSizeProperty, "Size.Body");
+        stack.Children.Add(passCaption);
+        stack.Children.Add(_passRows);
+        stack.Children.Add(Hint(_passHint));
 
         _lastMeteor.Text = _texts.TonightNoMeteor;
         stack.Children.Add(Row(_texts.TonightLastMeteor, _lastMeteor));
@@ -375,6 +379,7 @@ public sealed class TonightView : UserControl
             StatusDto status = _service.GetStatus();
             AppConfig config = _service.GetConfig();
             TimeZoneInfo tz = TonightSite.ResolveTimeZone(config.Site.Timezone);
+            PassPanelData passes = PassPanel(now, tz);
 
             TonightSnapshot? snapshot = null;
             string? error = null;
@@ -389,13 +394,13 @@ public sealed class TonightView : UserControl
 
             byte[]? jpeg = _service.GetLatestJpeg(false);
             BitmapSource? image = jpeg is null ? null : FrameDecoder.Decode(jpeg);
-            return new TonightLoad(now, tz, snapshot, error, status, image);
+            return new TonightLoad(now, tz, snapshot, error, status, image, passes);
         }
         catch (Exception ex)
         {
             // Un errore di lettura non deve chiudere la vista: si mostra nella linea di stato.
             string message = string.Format(_texts.Culture, _texts.TonightLoadError, ex.Message);
-            return new TonightLoad(now, TimeZoneInfo.Utc, null, message, null, null);
+            return new TonightLoad(now, TimeZoneInfo.Utc, null, message, null, null, null);
         }
     }
 
@@ -403,6 +408,7 @@ public sealed class TonightView : UserControl
     {
         ApplyImage(load.Image);
         ApplyCapture(load.Status, load.Now);
+        ApplyPasses(load.Passes);
 
         if (load.Snapshot is not { } snapshot)
         {
@@ -455,24 +461,12 @@ public sealed class TonightView : UserControl
 
     private void ApplyEvents(TonightTimeline timeline, DateTimeOffset now, TimeZoneInfo tz)
     {
-        // Il prossimo cambio di fase è calcolato; il transito e la meteora arrivano con P4 e P5 e per ora non ci sono.
+        // Il prossimo cambio di fase è calcolato; i passaggi arrivano dalla previsione (P4.3); la meteora arriva con P5.
         TonightUpcoming upcoming = new(timeline.NextChangeAfter(now), null, null);
 
         _nextChange.Text = upcoming.NextChange is { } change
             ? TonightFormatter.PhaseName(change.To, _texts) + ", " + TonightFormatter.FormatCountdown(now, change.AtUtc, _texts)
             : _texts.NotAvailable;
-
-        if (upcoming.NextTransit is { } transit)
-        {
-            _nextTransit.Text = transit.Target + ", " + TonightFormatter.FormatCountdown(now, transit.StartUtc, _texts);
-            _transitHint.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            _nextTransit.Text = _texts.TonightNoTransit;
-            _transitHint.Text = _texts.TonightTransitPending;
-            _transitHint.Visibility = Visibility.Visible;
-        }
 
         if (upcoming.LastMeteorUtc is { } meteor)
         {
@@ -485,6 +479,61 @@ public sealed class TonightView : UserControl
             _meteorHint.Text = _texts.TonightMeteorPending;
             _meteorHint.Visibility = Visibility.Visible;
         }
+    }
+
+    /// <summary>Previsione dei passaggi in forma di carta (P4.3). Senza servizio di previsione, un messaggio di spegnimento.</summary>
+    private PassPanelData PassPanel(DateTimeOffset now, TimeZoneInfo tz)
+    {
+        if (_service is not AllSky.Core.Passes.IPassForecastService forecast)
+        {
+            return new PassPanelData(_texts.PassStatusDisabled, Array.Empty<PassRowData>());
+        }
+
+        return PassFormatter.Panel(forecast.GetForecast(), now, tz, _texts);
+    }
+
+    private void ApplyPasses(PassPanelData? passes)
+    {
+        _passRows.Children.Clear();
+        if (passes is null)
+        {
+            _passHint.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        foreach (PassRowData row in passes.Rows)
+        {
+            _passRows.Children.Add(PassRowView(row));
+        }
+
+        _passHint.Text = passes.Hint ?? string.Empty;
+        _passHint.Visibility = string.IsNullOrEmpty(passes.Hint) ? Visibility.Collapsed : Visibility.Visible;
+    }
+
+    private UIElement PassRowView(PassRowData row)
+    {
+        var stack = new StackPanel { Margin = new Thickness(0, 4, 0, 4) };
+
+        var title = new TextBlock { TextWrapping = TextWrapping.Wrap };
+        title.Inlines.Add(new System.Windows.Documents.Run(row.Target + " · "));
+        title.Inlines.Add(new System.Windows.Documents.Run(row.When) { FontWeight = row.InProgress ? FontWeights.SemiBold : FontWeights.Normal });
+        title.SetResourceReference(TextBlock.ForegroundProperty, "Brush.Text");
+        title.SetResourceReference(TextBlock.FontFamilyProperty, "Font.Mono");
+        title.SetResourceReference(TextBlock.FontSizeProperty, "Size.Caption");
+        stack.Children.Add(title);
+
+        var times = new TextBlock { Text = row.Times, TextWrapping = TextWrapping.Wrap };
+        times.SetResourceReference(TextBlock.ForegroundProperty, "Brush.TextSecondary");
+        times.SetResourceReference(TextBlock.FontSizeProperty, "Size.Caption");
+        stack.Children.Add(times);
+
+        var details = new TextBlock { Text = row.Details, TextWrapping = TextWrapping.Wrap };
+        details.SetResourceReference(TextBlock.ForegroundProperty, "Brush.TextTertiary");
+        details.SetResourceReference(TextBlock.FontSizeProperty, "Size.Caption");
+        stack.Children.Add(details);
+
+        AutomationProperties.SetName(stack, row.Target + ", " + row.When);
+        return stack;
     }
 
     private void ApplySegments(TonightTimeline timeline, TimeZoneInfo tz)
@@ -564,5 +613,6 @@ public sealed class TonightView : UserControl
         TonightSnapshot? Snapshot,
         string? Error,
         StatusDto? Status,
-        BitmapSource? Image);
+        BitmapSource? Image,
+        PassPanelData? Passes);
 }

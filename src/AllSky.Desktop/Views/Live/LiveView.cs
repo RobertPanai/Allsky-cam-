@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AllSky.Core;
 using AllSky.Core.Live;
+using AllSky.Core.Passes;
 using AllSky.Engine;
 
 namespace AllSky.Desktop.Views.Live;
@@ -38,6 +39,15 @@ public sealed class LiveView : UserControl
     private readonly TextBlock _zoomLabel = new();
     private readonly CheckBox _rawToggle = new();
     private readonly Dictionary<FrameDataField, TextBlock> _dataValues = new();
+
+    // Tracce previste dei satelliti (P4.3). Il canvas condivide zoom e pan dell'immagine: coordinate nel frame di calibrazione.
+    private readonly Canvas _tracks = new() { IsHitTestVisible = false, Visibility = Visibility.Collapsed };
+    private readonly ScaleTransform _trackScale = new();
+    private readonly TranslateTransform _trackTranslate = new();
+    private CheckBox? _satelliteToggle;
+    private PassTrackState? _trackState;
+    private double _refWidth;
+    private double _refHeight;
 
     private ZoomPanState _zoomPan = ZoomPan.Reset;
     private double _imageWidth;
@@ -136,6 +146,8 @@ public sealed class LiveView : UserControl
         _viewport.SetResourceReference(Panel.BackgroundProperty, "Brush.Surface1");
         _viewport.ToolTip = _texts.LiveZoomHint;
         _viewport.Children.Add(_image);
+        _tracks.RenderTransform = new TransformGroup { Children = { _trackScale, _trackTranslate } };
+        _viewport.Children.Add(_tracks);
         _viewport.Children.Add(_status);
         _viewport.SizeChanged += (_, _) => ApplyTransform();
         _viewport.MouseWheel += OnMouseWheel;
@@ -170,7 +182,8 @@ public sealed class LiveView : UserControl
         overlayStack.Children.Add(CreatePanelTitle(_texts.LiveOverlaysTitle));
         overlayStack.Children.Add(CreateOverlayToggle(_texts.LiveOverlayGrid));
         overlayStack.Children.Add(CreateOverlayToggle(_texts.LiveOverlayCardinal));
-        overlayStack.Children.Add(CreateOverlayToggle(_texts.LiveOverlaySatellites));
+        _satelliteToggle = CreateSatelliteToggle();
+        overlayStack.Children.Add(_satelliteToggle);
         var overlayPanel = new Border { Style = PanelStyle(), Margin = new Thickness(0, 16, 0, 0), Child = overlayStack };
         stack.Children.Add(overlayPanel);
 
@@ -240,6 +253,23 @@ public sealed class LiveView : UserControl
         ToolTipService.SetShowOnDisabled(toggle, true);
         AutomationProperties.SetName(toggle, text);
         AutomationProperties.SetHelpText(toggle, _texts.LiveOverlayPending);
+        return toggle;
+    }
+
+    /// <summary>Interruttore delle tracce previste: attivo solo con previsione accesa e calibrazione valida.</summary>
+    private CheckBox CreateSatelliteToggle()
+    {
+        var toggle = new CheckBox
+        {
+            Content = _texts.LiveOverlaySatellites,
+            IsEnabled = false,
+            ToolTip = _texts.PassStatusDisabled,
+            Margin = new Thickness(0, 4, 0, 4),
+        };
+        ToolTipService.SetShowOnDisabled(toggle, true);
+        AutomationProperties.SetName(toggle, _texts.LiveOverlaySatellites);
+        toggle.Checked += (_, _) => RebuildTracks();
+        toggle.Unchecked += (_, _) => RebuildTracks();
         return toggle;
     }
 
@@ -323,12 +353,13 @@ public sealed class LiveView : UserControl
             StatusDto status = _service.GetStatus();
             byte[]? jpeg = _service.GetLatestJpeg(raw);
             BitmapSource? image = jpeg is null ? null : FrameDecoder.Decode(jpeg);
-            return new LiveLoad(image, ToFrameData(status.LastFrame), null);
+            PassTrackState? tracks = (_service as IPassForecastService)?.GetTracks();
+            return new LiveLoad(image, ToFrameData(status.LastFrame), null, tracks);
         }
         catch (Exception ex)
         {
             // Un errore di lettura o decodifica non deve chiudere la vista: si mostra nel riquadro.
-            return new LiveLoad(null, LiveFrameData.Empty, ex.Message);
+            return new LiveLoad(null, LiveFrameData.Empty, ex.Message, null);
         }
     }
 
@@ -355,6 +386,7 @@ public sealed class LiveView : UserControl
         }
 
         ApplyTransform();
+        ApplyTracks(load.Tracks);
 
         foreach (FrameDataItem item in LiveFrameDataFormatter.Format(load.Data, _texts))
         {
@@ -389,6 +421,100 @@ public sealed class LiveView : UserControl
         _translate.Y = _zoomPan.OffsetY;
         _zoomLabel.Text = Math.Round(_zoomPan.Zoom * 100).ToString("0", CultureInfo.InvariantCulture) + "%";
         _viewport.Cursor = _zoomPan.Zoom > ZoomPan.MinZoom ? Cursors.Hand : Cursors.Arrow;
+        UpdateTrackTransform();
+    }
+
+    /// <summary>Stessa trasformazione dell'immagine: il frame di calibrazione va sulla dimensione mostrata.</summary>
+    private void UpdateTrackTransform()
+    {
+        if (_refWidth <= 0 || _refHeight <= 0)
+        {
+            return;
+        }
+
+        _trackScale.ScaleX = _zoomPan.Zoom * _contentWidth / _refWidth;
+        _trackScale.ScaleY = _zoomPan.Zoom * _contentHeight / _refHeight;
+        _trackTranslate.X = _zoomPan.OffsetX;
+        _trackTranslate.Y = _zoomPan.OffsetY;
+    }
+
+    private void ApplyTracks(PassTrackState? state)
+    {
+        _trackState = state;
+        if (_satelliteToggle is { } toggle)
+        {
+            if (state is { Available: true })
+            {
+                toggle.IsEnabled = true;
+                toggle.ToolTip = state.Paths.Count == 0 ? _texts.PassTrackNoPasses : null;
+            }
+            else
+            {
+                toggle.IsChecked = false;
+                toggle.IsEnabled = false;
+                toggle.ToolTip = state?.Block switch
+                {
+                    PassTrackBlock.NoCalibration => _texts.PassTrackNoCalibration,
+                    PassTrackBlock.ServiceOff => _texts.PassTrackServiceOff,
+                    _ => _texts.PassStatusDisabled,
+                };
+            }
+        }
+
+        RebuildTracks();
+    }
+
+    /// <summary>Ridisegna le tracce: solo se l'interruttore è acceso e l'immagine è visibile.</summary>
+    private void RebuildTracks()
+    {
+        PassTrackState? state = _trackState;
+        if (state is not null)
+        {
+            _refWidth = state.ReferenceWidthPx > 0 ? state.ReferenceWidthPx : _imageWidth;
+            _refHeight = state.ReferenceHeightPx > 0 ? state.ReferenceHeightPx : _imageHeight;
+        }
+
+        _tracks.Children.Clear();
+        bool show = _satelliteToggle?.IsChecked == true && state is { Available: true } && _image.Source is not null;
+        _tracks.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+        if (!show || state is null)
+        {
+            return;
+        }
+
+        foreach (PassTrackPath path in state.Paths)
+        {
+            foreach (IReadOnlyList<PassTrackPoint> run in path.Runs)
+            {
+                if (run.Count < 2)
+                {
+                    continue;
+                }
+
+                var segment = new PolyLineSegment();
+                for (int i = 1; i < run.Count; i++)
+                {
+                    segment.Points.Add(new Point(run[i].X, run[i].Y));
+                }
+
+                var figure = new PathFigure { StartPoint = new Point(run[0].X, run[0].Y), IsClosed = false, IsFilled = false };
+                figure.Segments.Add(segment);
+                var geometry = new PathGeometry();
+                geometry.Figures.Add(figure);
+
+                var line = new System.Windows.Shapes.Path
+                {
+                    Data = geometry,
+                    StrokeThickness = 2,
+                    StrokeLineJoin = PenLineJoin.Round,
+                    IsHitTestVisible = false,
+                };
+                line.SetResourceReference(System.Windows.Shapes.Shape.StrokeProperty, "Brush.Accent");
+                _tracks.Children.Add(line);
+            }
+        }
+
+        UpdateTrackTransform();
     }
 
     private void ZoomBy(double factor)
@@ -455,5 +581,5 @@ public sealed class LiveView : UserControl
     }
 
     /// <summary>Esito di un caricamento in background.</summary>
-    private sealed record LiveLoad(BitmapSource? Image, LiveFrameData Data, string? Error);
+    private sealed record LiveLoad(BitmapSource? Image, LiveFrameData Data, string? Error, PassTrackState? Tracks);
 }

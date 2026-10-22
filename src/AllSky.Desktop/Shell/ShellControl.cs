@@ -89,6 +89,7 @@ internal sealed class ShellControl : Grid
     private readonly ContentControl _content;
     private readonly TextBlock _errorText;
     private readonly StatusBarPanel _statusBar;
+    private readonly AllSky.Core.Passes.IPassForecastService? _passes;
     private ShellView _current;
     private bool _syncing;
 
@@ -166,6 +167,7 @@ internal sealed class ShellControl : Grid
 
         // Barra di stato su tutta la larghezza, in basso.
         _statusBar = new StatusBarPanel(texts, theme);
+        _passes = service as AllSky.Core.Passes.IPassForecastService;
         Grid.SetColumn(_statusBar, 0);
         Grid.SetColumnSpan(_statusBar, 2);
         Grid.SetRow(_statusBar, 1);
@@ -180,7 +182,9 @@ internal sealed class ShellControl : Grid
     {
         ArgumentNullException.ThrowIfNull(status);
 
-        _statusBar.Show(StatusBarFormatter.Format(ToSnapshot(status), _texts));
+        (string? passTarget, DateTimeOffset? passStart, bool passInProgress) = NextPass();
+        _statusBar.Show(StatusBarFormatter.Format(
+            ToSnapshot(status, passTarget, passStart, passInProgress), _texts));
 
         bool hasError = !string.IsNullOrWhiteSpace(status.Error);
         _errorText.Text = hasError ? $"{_texts.ErrorLabel}: {status.Error}" : string.Empty;
@@ -339,7 +343,7 @@ internal sealed class ShellControl : Grid
     /// Dallo stato del servizio alla barra di stato. Le pubblicazioni non sono ancora nello stato del servizio:
     /// restano "n/d" finché il servizio non le espone.
     /// </summary>
-    private static StatusBarSnapshot ToSnapshot(StatusDto status) => new(
+    private static StatusBarSnapshot ToSnapshot(StatusDto status, string? passTarget, DateTimeOffset? passStart, bool passInProgress) => new(
         Phase: status.Phase,
         SunAltitudeDeg: status.SunAltitudeDeg,
         MoonAltitudeDeg: status.MoonAltitudeDeg,
@@ -347,7 +351,23 @@ internal sealed class ShellControl : Grid
         CameraName: status.Camera.Name,
         LastFrameTimestamp: status.LastFrame?.Timestamp,
         DiskFreeGb: status.Disk?.FreeGb,
-        Publication: PublicationStatus.Unknown);
+        Publication: PublicationStatus.Unknown,
+        PassTarget: passTarget,
+        PassStartUtc: passStart,
+        PassInProgress: passInProgress);
+
+    /// <summary>Passaggio in corso, o prossimo, per la barra di stato (P4.3). Nessuno se la previsione non è disponibile.</summary>
+    private (string? Target, DateTimeOffset? Start, bool InProgress) NextPass()
+    {
+        if (_passes is null)
+        {
+            return (null, null, false);
+        }
+
+        AllSky.Core.Passes.PassForecastSnapshot forecast = _passes.GetForecast();
+        AllSky.Core.Passes.PassForecastItem? item = forecast.Current ?? forecast.Next;
+        return item is null ? (null, null, false) : (item.Target, item.StartUtc, forecast.Current is not null);
+    }
 
     private static UIElement? CreateView(ShellView view, DesktopTexts texts, ThemeManager theme,
         AllSky.Engine.IAllSkyService? service, AllSky.Host.AllSkyHostRuntime? runtime, AllSky.Core.AppPaths? paths)

@@ -70,6 +70,10 @@ internal sealed class StatusBarPanel : Border
         _items.Children.Add(CreateItem(text.LastFrame, ShellIcons.Image));
         _items.Children.Add(CreateItem(text.Disk, ShellIcons.Disk));
         _items.Children.Add(CreateItem(text.Publications, ShellIcons.Upload));
+        if (text.NextPass is { } nextPass)
+        {
+            _items.Children.Add(CreateItem(nextPass, ShellIcons.Satellite));
+        }
     }
 
     /// <summary>Una voce: icona, etichetta e valore. Il valore mancante è in colore terziario, con tooltip.</summary>

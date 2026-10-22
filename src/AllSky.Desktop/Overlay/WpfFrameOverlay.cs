@@ -62,6 +62,10 @@ public sealed class WpfFrameOverlay : IFrameOverlay
         };
     }
 
+    /// <summary>Svuota la cache dei loghi del renderer condiviso, sul thread STA.</summary>
+    public static Task InvalidaCacheLoghiAsync() =>
+        Worker.Value.EseguiAsync(renderer => { renderer.SvuotaCacheLoghi(); return true; });
+
     /// <inheritdoc />
     public Task<byte[]> ApplyAsync(byte[] jpeg, FrameSidecar? sidecar, CancellationToken ct)
     {
