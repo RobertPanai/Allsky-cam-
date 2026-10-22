@@ -19,6 +19,10 @@ namespace AllSky.Engine;
 /// Publisher della pubblicazione periodica, facoltativo. Ogni frame elaborato gli viene offerto dopo l'archiviazione.
 /// Il ciclo di vita (avvio e arresto) non e' dell'Engine: lo gestisce l'Host. Null = nessuna pubblicazione.
 /// </param>
+/// <param name="FrameOverlayFactory">
+/// Crea la maschera informativa per un job di timelapse, con la configurazione in quel momento. Chiamata solo se
+/// <c>overlay.applyToTimelapse</c> e' vero. Null = nessuna maschera (il timelapse usa i frame puliti).
+/// </param>
 public sealed record EngineDependencies(
     IClock Clock,
     ICameraProvider CameraProvider,
@@ -29,4 +33,5 @@ public sealed record EngineDependencies(
     string ConfigPath,
     Action<string, Exception?>? Log = null,
     Func<string?>? LocateFfmpeg = null,
-    IPublisher? Publisher = null);
+    IPublisher? Publisher = null,
+    Func<AppConfig, IFrameOverlay?>? FrameOverlayFactory = null);

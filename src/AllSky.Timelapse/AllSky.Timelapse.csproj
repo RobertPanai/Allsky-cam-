@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AllSky.Core\AllSky.Core.csproj" />
+    <ProjectReference Include="..\AllSky.Archive\AllSky.Archive.csproj" />
   </ItemGroup>
 
 </Project>

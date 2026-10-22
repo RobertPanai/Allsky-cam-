@@ -1,4 +1,6 @@
+using AllSky.Core;
 using AllSky.Publish;
+using AllSky.Timelapse;
 using AllSky.Updates;
 
 namespace AllSky.Host;
@@ -34,6 +36,12 @@ public sealed record HostOptions(
     /// (lo gestisce chi l'ha creato). Serve ai test.
     /// </summary>
     public HttpMessageHandler? PublishHttpHandler { get; init; }
+
+    /// <summary>
+    /// Maschera informativa del timelapse (P2.4). La chiama l'Engine solo per i job con <c>overlay.applyToTimelapse</c>
+    /// attivo, passando la configurazione del momento. Null = nessuna maschera. Su Windows la crea il Desktop.
+    /// </summary>
+    public Func<AppConfig, IFrameOverlay?>? FrameOverlayFactory { get; init; }
 
     /// <summary>
     /// Sorgente degli aggiornamenti. Su Windows il Tray passa il backend Velopack; null (o un'installazione non aggiornabile)

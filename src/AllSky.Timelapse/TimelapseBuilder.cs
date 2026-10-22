@@ -164,7 +164,7 @@ public sealed class TimelapseBuilder : ITimelapseBuilder
 
         try
         {
-            bool inputComplete = await FeedFramesAsync(process, jpegPaths, progress, ct);
+            bool inputComplete = await FeedFramesAsync(process, jpegPaths, options.Overlay, progress, ct);
 
             await process.WaitForExitAsync(ct);
             await Task.WhenAll(stderrTask, stdoutTask);
@@ -201,12 +201,14 @@ public sealed class TimelapseBuilder : ITimelapseBuilder
     }
 
     /// <summary>
-    /// Copia i JPEG su stdin, uno alla volta. Restituisce false se ffmpeg ha chiuso l'ingresso prima della fine.
+    /// Copia i JPEG su stdin, uno alla volta. Con una maschera, ogni frame viene composto prima dell'invio.
+    /// Restituisce false se ffmpeg ha chiuso l'ingresso prima della fine.
     /// Gli errori di lettura dei file (es. file mancante) non vengono nascosti: si propagano.
     /// </summary>
     private static async Task<bool> FeedFramesAsync(
         Process process,
         IReadOnlyList<string> jpegPaths,
+        FrameOverlayPlan? overlay,
         IProgress<double>? progress,
         CancellationToken ct)
     {
@@ -219,31 +221,12 @@ public sealed class TimelapseBuilder : ITimelapseBuilder
             {
                 ct.ThrowIfCancellationRequested();
 
-                await using var source = new FileStream(
-                    jpegPaths[i],
-                    FileMode.Open,
-                    FileAccess.Read,
-                    FileShare.Read,
-                    BufferSize,
-                    FileOptions.Asynchronous | FileOptions.SequentialScan);
-
-                while (true)
+                bool written = overlay is null
+                    ? await CopyFrameAsync(stdin, jpegPaths[i], buffer, ct)
+                    : await WriteComposedAsync(stdin, await FrameOverlayStep.ComposeAsync(jpegPaths[i], i, overlay, ct), ct);
+                if (!written)
                 {
-                    int read = await source.ReadAsync(buffer.AsMemory(), ct);
-                    if (read == 0)
-                    {
-                        break;
-                    }
-
-                    try
-                    {
-                        await stdin.WriteAsync(buffer.AsMemory(0, read), ct);
-                    }
-                    catch (IOException)
-                    {
-                        // ffmpeg ha chiuso lo stdin: il codice di uscita e lo stderr spiegano il motivo.
-                        return false;
-                    }
+                    return false;
                 }
 
                 progress?.Report((double)(i + 1) / jpegPaths.Count);
@@ -270,6 +253,51 @@ public sealed class TimelapseBuilder : ITimelapseBuilder
             catch (IOException)
             {
             }
+        }
+    }
+
+    /// <summary>Copia un JPEG su disco verso stdin a blocchi. False se ffmpeg ha chiuso l'ingresso.</summary>
+    private static async Task<bool> CopyFrameAsync(Stream stdin, string path, byte[] buffer, CancellationToken ct)
+    {
+        await using var source = new FileStream(
+            path,
+            FileMode.Open,
+            FileAccess.Read,
+            FileShare.Read,
+            BufferSize,
+            FileOptions.Asynchronous | FileOptions.SequentialScan);
+
+        while (true)
+        {
+            int read = await source.ReadAsync(buffer.AsMemory(), ct);
+            if (read == 0)
+            {
+                return true;
+            }
+
+            try
+            {
+                await stdin.WriteAsync(buffer.AsMemory(0, read), ct);
+            }
+            catch (IOException)
+            {
+                // ffmpeg ha chiuso lo stdin: il codice di uscita e lo stderr spiegano il motivo.
+                return false;
+            }
+        }
+    }
+
+    /// <summary>Invia un JPEG gia' composto in memoria. False se ffmpeg ha chiuso l'ingresso.</summary>
+    private static async Task<bool> WriteComposedAsync(Stream stdin, byte[] jpeg, CancellationToken ct)
+    {
+        try
+        {
+            await stdin.WriteAsync(jpeg.AsMemory(), ct);
+            return true;
+        }
+        catch (IOException)
+        {
+            return false;
         }
     }
 

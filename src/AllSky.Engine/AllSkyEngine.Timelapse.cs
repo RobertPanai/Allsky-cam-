@@ -1,5 +1,6 @@
 using System.Threading.Channels;
 using AllSky.Archive;
+using AllSky.Core;
 using AllSky.Timelapse;
 
 namespace AllSky.Engine;
@@ -11,6 +12,9 @@ namespace AllSky.Engine;
 public sealed partial class AllSkyEngine
 {
     private const int FramePageSize = 500;
+
+    /// <summary>Frame di un job: identificatore (per il sidecar) e percorso del JPEG archiviato.</summary>
+    private sealed record TimelapseFrame(string Id, string Path);
 
     private readonly List<JobState> _jobs = new();   // _gate
     private Channel<string>? _timelapseQueue;        // _gate
@@ -138,8 +142,8 @@ public sealed partial class AllSkyEngine
         try
         {
             archive.SetTimelapseState(nightId, TimelapseState.Generating);
-            List<string> paths = CollectFramePaths(archive, nightId);
-            if (paths.Count == 0)
+            List<TimelapseFrame> frames = CollectFrames(archive, nightId);
+            if (frames.Count == 0)
             {
                 throw new EngineException("La notte non contiene frame da montare.");
             }
@@ -150,13 +154,23 @@ public sealed partial class AllSkyEngine
                 throw new EngineException("ffmpeg non trovato: installarlo nella cartella tools/ffmpeg accanto all'applicazione oppure nel PATH di sistema.");
             }
 
+            // Configurazione letta adesso: una rigenerazione usa il layout e le opzioni correnti.
+            AppConfig config = ConfigSnapshot();
+            var failedFrames = new HashSet<int>();
             var options = new TimelapseOptions
             {
-                Fps = ConfigSnapshot().Products.TimelapseFps,
+                Fps = config.Products.TimelapseFps,
                 FfmpegPath = ffmpeg,
+                Overlay = BuildTimelapseOverlay(archive, nightId, frames, config, failedFrames),
             };
             var progress = new ActionProgress(p => SetJobProgress(nightId, p));
+            List<string> paths = frames.Select(f => f.Path).ToList();
             await _timelapse.BuildAsync(paths, archive.GetProductPath(nightId, NightProduct.Timelapse), options, progress, ct);
+
+            if (failedFrames.Count > 0)
+            {
+                _log($"Timelapse della notte {nightId}: {failedFrames.Count} frame montati senza maschera", null);
+            }
 
             // Il file esiste: senza marker lo stato risulta "ready".
             archive.SetTimelapseState(nightId, TimelapseState.None);
@@ -229,9 +243,50 @@ public sealed partial class AllSkyEngine
         }
     }
 
-    private static List<string> CollectFramePaths(NightArchive archive, string nightId)
+    /// <summary>
+    /// Maschera del timelapse, o null se disattivata. Il sidecar del frame N e' quello del frame N (orario N); se manca,
+    /// <see cref="NightArchive.GetFrameSidecar"/> lo ricostruisce. Un frame in errore viene montato senza maschera.
+    /// </summary>
+    private FrameOverlayPlan? BuildTimelapseOverlay(
+        NightArchive archive,
+        string nightId,
+        IReadOnlyList<TimelapseFrame> frames,
+        AppConfig config,
+        HashSet<int> failedFrames)
     {
-        var paths = new List<string>();
+        if (!config.Overlay.ApplyToTimelapse || _frameOverlayFactory is null)
+        {
+            return null;
+        }
+
+        IFrameOverlay? overlay = _frameOverlayFactory(config);
+        if (overlay is null)
+        {
+            return null;
+        }
+
+        var site = new ObservingSite
+        {
+            LatitudeDeg = config.Site.Latitude,
+            LongitudeDeg = config.Site.Longitude,
+        };
+
+        // Il montaggio e' sequenziale e i tentativi di codifica ripassano gli stessi indici: il set evita di contarli due volte.
+        return new FrameOverlayPlan(
+            overlay,
+            index => archive.GetFrameSidecar(nightId, frames[index].Id, site),
+            (index, ex) =>
+            {
+                if (failedFrames.Add(index))
+                {
+                    _log($"Maschera non applicata al frame {frames[index].Id}: il frame viene montato senza maschera", ex);
+                }
+            });
+    }
+
+    private static List<TimelapseFrame> CollectFrames(NightArchive archive, string nightId)
+    {
+        var frames = new List<TimelapseFrame>();
         int offset = 0;
         while (true)
         {
@@ -241,7 +296,7 @@ public sealed partial class AllSkyEngine
                 string path = archive.GetFramePath(nightId, frame.Id);
                 if (File.Exists(path))
                 {
-                    paths.Add(path);
+                    frames.Add(new TimelapseFrame(frame.Id, path));
                 }
             }
 
@@ -253,6 +308,6 @@ public sealed partial class AllSkyEngine
             offset += page.Count;
         }
 
-        return paths;
+        return frames;
     }
 }

@@ -20,4 +20,10 @@ public sealed record TimelapseOptions
 
     /// <summary>Percorso dell'eseguibile ffmpeg, normalmente trovato con <see cref="FfmpegLocator"/>.</summary>
     public string? FfmpegPath { get; init; }
+
+    /// <summary>
+    /// Maschera informativa da applicare a ogni frame prima della codifica (P2.4). Null (predefinito) = frame invariati
+    /// e nessuna chiamata alla maschera.
+    /// </summary>
+    public FrameOverlayPlan? Overlay { get; init; }
 }

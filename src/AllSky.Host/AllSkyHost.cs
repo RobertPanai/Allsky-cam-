@@ -113,7 +113,8 @@ public static class AllSkyHost
                 JpegEncoder: encoder,
                 ConfigPath: configPath,
                 Log: log.Write,
-                Publisher: publishing?.Publisher));
+                Publisher: publishing?.Publisher,
+                FrameOverlayFactory: options.FrameOverlayFactory));
 
             await engine.StartAsync(cancellationToken);
 

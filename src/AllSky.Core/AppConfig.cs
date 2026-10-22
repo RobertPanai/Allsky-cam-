@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace AllSky.Core;
 
 /// <summary>Lingua della UI. Serializzata come stringa camelCase ("it", "en").</summary>
@@ -112,8 +114,18 @@ public sealed record AppConfig
         public string? ImagePath { get; init; } = null;
     }
 
+    /// <summary>
+    /// Sovrapposizioni dell'immagine. Le proprieta' <c>enabled</c>, <c>showTime</c>, <c>showSensorTemp</c> e <c>label</c>
+    /// sono la scritta testuale del flusso di elaborazione. Dal P2.4 il sotto-oggetto ospita anche la maschera informativa
+    /// (<see cref="ApplyToTimelapse"/>, <see cref="Layout"/>): le configurazioni precedenti non le hanno e leggono i valori predefiniti.
+    /// </summary>
     public sealed record OverlayConfig
     {
+        /// <summary>Versione dello schema del sotto-oggetto. Le configurazioni precedenti non la hanno: si legge come 1.</summary>
+        public const int CurrentVersion = 1;
+
+        public int Version { get; init; } = CurrentVersion;
+
         public bool Enabled { get; init; } = true;
 
         public bool ShowTime { get; init; } = true;
@@ -121,6 +133,24 @@ public sealed record AppConfig
         public bool ShowSensorTemp { get; init; } = true;
 
         public string Label { get; init; } = "";
+
+        /// <summary>Applica la maschera informativa ai frame del timelapse, nel momento del montaggio. Predefinito: spento.</summary>
+        public bool ApplyToTimelapse { get; init; } = false;
+
+        /// <summary>Riservato al flusso dal vivo. Non ancora collegato: il valore non cambia nulla.</summary>
+        public bool ApplyToLive { get; init; } = false;
+
+        /// <summary>
+        /// Riservato alle immagini pubblicate (Uplink). Lasciato falso, il contratto delle immagini gia' inviate non cambia.
+        /// Non ancora collegato.
+        /// </summary>
+        public bool ApplyToPublish { get; init; } = false;
+
+        /// <summary>
+        /// Layout della maschera (<c>OverlayLayout</c> in AllSky.InfoOverlay), come JSON grezzo: Core non dipende da InfoOverlay.
+        /// Null = layout predefinito. Il file viene letto da <c>OverlayLayoutCodec</c>, che tollera i valori errati.
+        /// </summary>
+        public JsonElement? Layout { get; init; } = null;
     }
 
     public sealed record CaptureConfig

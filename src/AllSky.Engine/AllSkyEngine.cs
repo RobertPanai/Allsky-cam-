@@ -38,6 +38,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
     private readonly Action<string, Exception?> _log;
     private readonly Func<string?> _locateFfmpeg;
     private readonly IPublisher? _publisher;
+    private readonly Func<AppConfig, IFrameOverlay?>? _frameOverlayFactory;
 
     // Serializza connessione, riavvio del ciclo e arresto. Mai tenuto durante l'emissione di eventi.
     private readonly SemaphoreSlim _control = new(1, 1);
@@ -111,6 +112,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
         _log = dependencies.Log ?? ((_, _) => { });
         _locateFfmpeg = dependencies.LocateFfmpeg ?? (() => FfmpegLocator.Locate());
         _publisher = dependencies.Publisher;
+        _frameOverlayFactory = dependencies.FrameOverlayFactory;
 
         AppConfig config;
         try

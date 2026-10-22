@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AllSky.Core;
+using AllSky.Desktop.Overlay;
 using AllSky.Host;
 using AllSky.Tray.Updates;
 using Velopack;
@@ -80,6 +81,7 @@ internal static class Program
             var options = new HostOptions(paths.ConfigPath, paths.DataFolder, paths.WebRoot)
             {
                 UpdateBackend = VelopackBackend.Create(),
+                FrameOverlayFactory = WpfFrameOverlay.CreateFactory(paths.DataFolder),
             };
             using var startCts = new CancellationTokenSource(StartTimeout);
 
