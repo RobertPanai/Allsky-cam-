@@ -371,8 +371,7 @@ public sealed class LiveView : UserControl
             return LiveFrameData.Empty;
         }
 
-        // La temperatura del sensore non è nel DTO dell'Engine: resta "n/d" finché il servizio non la espone.
-        return new LiveFrameData(last.Id, last.Timestamp, last.ExposureMs, last.Gain, last.MedianAdu, null);
+        return new LiveFrameData(last.Id, last.Timestamp, last.ExposureMs, last.Gain, last.MedianAdu, last.SensorTempC);
     }
 
     private void ApplyTransform()

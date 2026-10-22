@@ -2,6 +2,7 @@ using System.Text.Json;
 using AllSky.Archive;
 using AllSky.Astro;
 using AllSky.Core;
+using AllSky.Weather;
 using Xunit;
 
 namespace AllSky.Archive.Tests;
@@ -77,14 +78,27 @@ public sealed class FrameSidecarTests : IDisposable
     }
 
     [Fact]
-    public void Weather_AndSatellites_RoundTripWhenPresent()
+    public void Weather_RoundTrip_KeepsNullForMissingFields()
     {
         NightArchive archive = NewArchive();
-        using JsonDocument weather = JsonDocument.Parse("{\"cloudCoverPct\":12.5}");
+        var meteo = new WeatherSnapshot(
+            new DateTimeOffset(2026, 10, 19, 20, 59, 0, TimeSpan.Zero),
+            TemperatureC: 11.5,
+            HumidityPercent: 80,
+            PressureHpa: null,
+            DewPointC: null,
+            CloudCoverPercent: 12.5,
+            WindSpeedMs: 3.2,
+            WindGustMs: null,
+            WindDirectionDeg: 270,
+            RainRateMmH: 0,
+            SkyTemperatureC: null,
+            SkyQualityMagArcsec2: 20.8,
+            Source: "Open-Meteo");
         using JsonDocument sats = JsonDocument.Parse("[{\"name\":\"ISS\"}]");
         FrameSidecar withExtras = CaptureSidecar(NightFrame()) with
         {
-            Weather = weather.RootElement.Clone(),
+            Weather = meteo,
             Satellites = sats.RootElement.Clone(),
         };
 
@@ -92,8 +106,43 @@ public sealed class FrameSidecarTests : IDisposable
         FrameSidecar? back = archive.ReadSidecar("2026-10-19", "20261019T210000Z");
 
         Assert.NotNull(back);
-        Assert.Equal(12.5, back!.Weather!.Value.GetProperty("cloudCoverPct").GetDouble());
+        Assert.Equal(meteo, back!.Weather);
+        Assert.Null(back.Weather!.PressureHpa);
         Assert.Equal("ISS", back.Satellites!.Value[0].GetProperty("name").GetString());
+
+        string text = File.ReadAllText(archive.GetSidecarPath("2026-10-19", "20261019T210000Z"));
+        Assert.Contains("\"cloudCoverPercent\": 12.5", text);
+        Assert.Contains("\"pressureHpa\": null", text);
+    }
+
+    [Fact]
+    public void SourceFailure_SidecarStillWritten_WithWeatherNull()
+    {
+        NightArchive archive = NewArchive();
+        var provider = new CachedWeatherSnapshotProvider(new ThrowingWeatherSource(), new FixedClock());
+
+        WeatherSnapshot? meteo = provider.GetAsync(CancellationToken.None).GetAwaiter().GetResult();
+        FrameSidecar sidecar = CaptureSidecar(NightFrame()) with { Weather = meteo };
+        bool ok = FrameSidecars.TryWrite(archive, sidecar, (_, _) => { });
+
+        Assert.True(ok);
+        FrameSidecar? back = archive.ReadSidecar("2026-10-19", "20261019T210000Z");
+        Assert.NotNull(back);
+        Assert.Null(back!.Weather);
+        Assert.Equal(8000.0, back.ExposureMs);
+    }
+
+    private sealed class FixedClock : IWeatherClock
+    {
+        public DateTimeOffset UtcNow => new(2026, 10, 19, 21, 0, 0, TimeSpan.Zero);
+    }
+
+    private sealed class ThrowingWeatherSource : IWeatherSource
+    {
+        public string Name => "guasto";
+
+        public Task<WeatherSnapshot?> ReadAsync(CancellationToken ct) =>
+            throw new InvalidOperationException("sorgente non disponibile (finta)");
     }
 
     [Fact]

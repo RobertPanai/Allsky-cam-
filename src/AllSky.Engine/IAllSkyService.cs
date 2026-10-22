@@ -30,6 +30,12 @@ public interface IAllSkyService
     /// <summary>Connette la camera e avvia la cattura. Non lancia per errori di connessione: li riporta nel risultato.</summary>
     Task<ConnectResult> ConnectCameraAsync(string id, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Ferma la cattura, rilascia la camera e azzera l'errore di connessione. Senza camera collegata non fa nulla.
+    /// Non lancia per errori del driver: il rilascio fallito finisce nel log.
+    /// </summary>
+    Task DisconnectCameraAsync(CancellationToken cancellationToken);
+
     /// <summary>Configurazione corrente (<c>GET /api/config</c>).</summary>
     AppConfig GetConfig();
 

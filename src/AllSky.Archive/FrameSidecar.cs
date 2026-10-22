@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AllSky.Weather;
 
 namespace AllSky.Archive;
 
@@ -7,7 +8,7 @@ namespace AllSky.Archive;
 /// Metadati di un frame archiviato, salvati accanto al JPEG come <c>&lt;frame&gt;.json</c>.
 /// Il JPEG resta pulito: la maschera informativa si disegna al momento della composizione del timelapse.
 /// Angoli in gradi; <see cref="PhaseOfDay"/> e' "day", "twilight" o "night". I campi legati a sorgenti non ancora
-/// attive (<see cref="Weather"/>, <see cref="Satellites"/>) restano null fino ai rispettivi task.
+/// attive (<see cref="Satellites"/>) restano null fino al rispettivo task.
 /// </summary>
 public sealed record FrameSidecar
 {
@@ -48,8 +49,11 @@ public sealed record FrameSidecar
     /// <summary>Frazione illuminata della Luna in percentuale, da 0 a 100.</summary>
     public double? MoonIlluminationPercent { get; init; }
 
-    /// <summary>Riservato a P6 (meteo). Null finche' la sorgente meteo non scrive il campo.</summary>
-    public JsonElement? Weather { get; init; }
+    /// <summary>
+    /// Meteo al momento della cattura, o null se non c'e' una sorgente o non ha restituito dati.
+    /// I singoli campi mancanti dentro la lettura restano null (vedi <see cref="WeatherSnapshot"/>).
+    /// </summary>
+    public WeatherSnapshot? Weather { get; init; }
 
     /// <summary>Riservato a P4 (satelliti in transito). Null finche' il rilevamento non scrive il campo.</summary>
     public JsonElement? Satellites { get; init; }

@@ -403,6 +403,207 @@ public sealed record DesktopTexts
     /// <summary>Riga di dettaglio sotto un errore; {0} è il testo tecnico, già ridotto a una riga.</summary>
     public required string CameraErrorDetail { get; init; }
 
+    /// <summary>Pulsante per scollegare la camera collegata.</summary>
+    public required string CameraDiscButton { get; init; }
+
+    /// <summary>Stato mentre la camera si scollega.</summary>
+    public required string CameraDiscBusy { get; init; }
+
+    /// <summary>Conferma dopo la disconnessione.</summary>
+    public required string CameraDiscDone { get; init; }
+
+    /// <summary>Titolo della sezione impostazioni Uplink nella vista Pubblicazione.</summary>
+    public required string PublicationSettingsTitle { get; init; }
+
+    /// <summary>Interruttore "pubblica sul server".</summary>
+    public required string PublicationEnabled { get; init; }
+
+    /// <summary>Etichetta dell'indirizzo del server.</summary>
+    public required string PublicationServerUrl { get; init; }
+
+    /// <summary>Suggerimento sotto l'indirizzo del server.</summary>
+    public required string PublicationServerUrlHint { get; init; }
+
+    /// <summary>Etichetta dell'identificativo del dispositivo.</summary>
+    public required string PublicationDeviceId { get; init; }
+
+    /// <summary>Suggerimento sotto l'identificativo del dispositivo.</summary>
+    public required string PublicationDeviceIdHint { get; init; }
+
+    /// <summary>Etichetta del nome del profilo.</summary>
+    public required string PublicationProfileName { get; init; }
+
+    /// <summary>Etichetta dell'intervallo tra gli invii.</summary>
+    public required string PublicationInterval { get; init; }
+
+    /// <summary>Intervallo di valori ammessi: {0} minimo, {1} massimo, {2} predefinito.</summary>
+    public required string PublicationRangeHint { get; init; }
+
+    /// <summary>Etichetta del lato lungo dell'immagine.</summary>
+    public required string PublicationLongEdge { get; init; }
+
+    /// <summary>Etichetta della qualità JPEG.</summary>
+    public required string PublicationJpegQuality { get; init; }
+
+    /// <summary>Etichetta del token.</summary>
+    public required string PublicationTokenLabel { get; init; }
+
+    /// <summary>Riga dello stato di un segreto: {0} = impostato o non impostato.</summary>
+    public required string PublicationSecretStatus { get; init; }
+
+    /// <summary>Stato di un segreto: impostato.</summary>
+    public required string PublicationSecretSet { get; init; }
+
+    /// <summary>Stato di un segreto: non impostato.</summary>
+    public required string PublicationSecretNotSet { get; init; }
+
+    /// <summary>Etichetta del campo per sostituire un segreto (il valore attuale non viene mai riletto).</summary>
+    public required string PublicationSecretReplace { get; init; }
+
+    /// <summary>Spiegazione della gestione dei segreti (cifratura, nessuna visualizzazione).</summary>
+    public required string PublicationSecretHint { get; init; }
+
+    /// <summary>Interruttore per rimuovere il token salvato.</summary>
+    public required string PublicationClearToken { get; init; }
+
+    /// <summary>Etichetta del nome dell'header HTTP aggiuntivo.</summary>
+    public required string PublicationExtraHeaderName { get; init; }
+
+    /// <summary>Etichetta del valore dell'header HTTP aggiuntivo.</summary>
+    public required string PublicationExtraHeaderValue { get; init; }
+
+    /// <summary>Interruttore per rimuovere l'header HTTP aggiuntivo salvato.</summary>
+    public required string PublicationClearExtraHeader { get; init; }
+
+    /// <summary>Pulsante "Salva impostazioni".</summary>
+    public required string PublicationSave { get; init; }
+
+    /// <summary>Stato mentre le impostazioni si salvano.</summary>
+    public required string PublicationSaving { get; init; }
+
+    /// <summary>Conferma di salvataggio riuscito.</summary>
+    public required string PublicationSaved { get; init; }
+
+    /// <summary>Messaggio quando il salvataggio non cambierebbe nulla.</summary>
+    public required string PublicationNoChanges { get; init; }
+
+    /// <summary>Messaggio quando il salvataggio viene rifiutato per errori di campo.</summary>
+    public required string PublicationSaveFailed { get; init; }
+
+    /// <summary>Riga di un errore di campo: {0} = nome del campo, {1} = messaggio.</summary>
+    public required string PublicationIssueLine { get; init; }
+
+    /// <summary>Nome generico per un errore che non riguarda un campo preciso.</summary>
+    public required string PublicationFieldGeneral { get; init; }
+
+    /// <summary>Errore quando il modulo di pubblicazione non è partito.</summary>
+    public required string PublicationUnavailable { get; init; }
+
+    /// <summary>Problema di campo: campo vuoto.</summary>
+    public required string PublicationProblemEmpty { get; init; }
+
+    /// <summary>Problema di campo: il testo non è un numero intero.</summary>
+    public required string PublicationProblemNotInteger { get; init; }
+
+    /// <summary>Problema di campo: fuori dall'intervallo. {0} minimo, {1} massimo.</summary>
+    public required string PublicationProblemOutOfRange { get; init; }
+
+    /// <summary>Pulsante "Prova connessione".</summary>
+    public required string PublicationTest { get; init; }
+
+    /// <summary>Stato mentre la prova di connessione è in corso.</summary>
+    public required string PublicationTesting { get; init; }
+
+    /// <summary>Nota sotto il pulsante di prova: usa i valori del modulo, non invia immagini.</summary>
+    public required string PublicationTestNote { get; init; }
+
+    /// <summary>Esito positivo della prova di connessione.</summary>
+    public required string PublicationTestOk { get; init; }
+
+    /// <summary>Esito negativo della prova di connessione: {0} = motivo.</summary>
+    public required string PublicationTestFailed { get; init; }
+
+    /// <summary>Titolo della sezione stato della pubblicazione.</summary>
+    public required string PublicationStatusTitle { get; init; }
+
+    /// <summary>Stato della pubblicazione non ancora noto.</summary>
+    public required string PublicationStateUnknown { get; init; }
+
+    /// <summary>Stato "disabled": pubblicazione spenta.</summary>
+    public required string PublicationStateDisabled { get; init; }
+
+    /// <summary>Suggerimento quando la pubblicazione è spenta.</summary>
+    public required string PublicationStateDisabledHint { get; init; }
+
+    /// <summary>Stato "idle": attiva, in attesa del prossimo invio.</summary>
+    public required string PublicationStateIdle { get; init; }
+
+    /// <summary>Stato "sending": invio in corso.</summary>
+    public required string PublicationStateSending { get; init; }
+
+    /// <summary>Stato "backoff": errore temporaneo, nuovo tentativo programmato.</summary>
+    public required string PublicationStateBackoff { get; init; }
+
+    /// <summary>Stato "suspended": invio sospeso per credenziali rifiutate.</summary>
+    public required string PublicationStateSuspended { get; init; }
+
+    /// <summary>Contatori della coda: {0} in coda, {1} inviate, {2} scartate.</summary>
+    public required string PublicationCounters { get; init; }
+
+    /// <summary>Nessun invio riuscito finora.</summary>
+    public required string PublicationNoSuccessYet { get; init; }
+
+    /// <summary>Ultimo invio riuscito: {0} = orario.</summary>
+    public required string PublicationLastSuccess { get; init; }
+
+    /// <summary>Prossimo tentativo: {0} = orario.</summary>
+    public required string PublicationNextAttempt { get; init; }
+
+    /// <summary>Ultimo errore: {0} = orario, {1} = motivo.</summary>
+    public required string PublicationLastErrorLine { get; init; }
+
+    /// <summary>Motivo: credenziali rifiutate (auth).</summary>
+    public required string PublicationReasonAuth { get; init; }
+
+    /// <summary>Motivo: immagine rifiutata dal server (rejected).</summary>
+    public required string PublicationReasonRejected { get; init; }
+
+    /// <summary>Motivo: immagine troppo grande (too_large).</summary>
+    public required string PublicationReasonTooLarge { get; init; }
+
+    /// <summary>Motivo: risposta del server illeggibile (bad_response).</summary>
+    public required string PublicationReasonBadResponse { get; init; }
+
+    /// <summary>Motivo: errore del server con codice HTTP. {0} = codice.</summary>
+    public required string PublicationReasonServerCode { get; init; }
+
+    /// <summary>Motivo: errore temporaneo del server senza codice.</summary>
+    public required string PublicationReasonServer { get; init; }
+
+    /// <summary>Motivo: il server chiede di rallentare (rate_limited).</summary>
+    public required string PublicationReasonRateLimited { get; init; }
+
+    /// <summary>Motivo: rete non raggiungibile (network).</summary>
+    public required string PublicationReasonNetwork { get; init; }
+
+    /// <summary>Motivo: nessuna risposta in tempo (timeout).</summary>
+    public required string PublicationReasonTimeout { get; init; }
+
+    /// <summary>Motivo: impostazioni non valide (invalid_settings).</summary>
+    public required string PublicationReasonInvalidSettings { get; init; }
+
+    /// <summary>Motivo: il server non espone la pagina di verifica (no_health_endpoint).</summary>
+    public required string PublicationReasonNoHealth { get; init; }
+
+    /// <summary>Motivo: errore non classificato.</summary>
+    public required string PublicationReasonOther { get; init; }
+
+    /// <summary>Titolo della zona YouTube (segnaposto fino a P7.4).</summary>
+    public required string PublicationYouTubeTitle { get; init; }
+
+    /// <summary>Testo del segnaposto della zona YouTube.</summary>
+    public required string PublicationYouTubePlaceholder { get; init; }
+
     /// <summary>Testi in italiano (lingua predefinita).</summary>
     public static DesktopTexts Italian { get; } = new()
     {
@@ -537,6 +738,109 @@ public sealed record DesktopTexts
         CameraErrorSaveFailed = "Impossibile salvare le impostazioni. Controllare i permessi della cartella dati e riprovare.",
         CameraErrorUnknown = "Operazione non riuscita. Riprovare; se il problema continua, consultare il log.",
         CameraErrorDetail = "Dettaglio: {0}",
+        NightsFramesCount = "{0} frame",
+        NightsTimelapseNone = "Timelapse non creato",
+        NightsTimelapseReady = "Timelapse pronto",
+        NightsTimelapseGenerating = "In lavorazione",
+        NightsTimelapseFailed = "Timelapse non riuscito",
+        NightsTimelapseUnknown = "Stato sconosciuto",
+        NightsTimelapseQueued = "In coda o in avvio…",
+        NightsTimelapseProgress = "In lavorazione: {0}%",
+        NightsFramePosition = "Frame {0} di {1}",
+        NightsFrameTimeTooltip = "Istante UTC: {0}",
+        NightsListName = "Elenco delle notti",
+        NightsLoading = "Lettura dell'archivio in corso…",
+        NightsLoadError = "Impossibile leggere l'archivio delle notti: {0}. Controllare la cartella dati e riprovare.",
+        NightsSelectNight = "Selezionare una notte dall'elenco per vederne keogram, startrails e timelapse.",
+        NightsTimelapseTitle = "Timelapse",
+        NightsTimelapsePlay = "Riproduci",
+        NightsTimelapsePause = "Pausa",
+        NightsTimelapseStop = "Stop",
+        NightsTimelapseRegenerate = "Rigenera timelapse",
+        NightsTimelapseRegenerateTooltip = "Ricrea il video dai frame archiviati. Il file attuale viene sostituito al termine.",
+        NightsTimelapseRefused = "Impossibile accodare il timelapse: la notte non ha frame oppure è già in coda.",
+        NightsTimelapseRequested = "Timelapse accodato. Comparirà qui quando sarà pronto.",
+        NightsTimelapseRegenerateError = "Impossibile avviare la rigenerazione: {0}",
+        NightsTimelapseMissingFile = "Il file del timelapse non è presente. Rigenerarlo per crearlo di nuovo.",
+        NightsPlaybackError = "Impossibile riprodurre il timelapse. Verificare che sia installato il codec H.264 (Estensioni video di Windows), poi riprovare.",
+        NightsPlayerName = "Riproduzione del timelapse",
+        NightsKeogramTitle = "Keogram",
+        NightsKeogramName = "Keogram della notte, barra di scorrimento temporale",
+        NightsKeogramHint = "Clic o trascinamento sul keogram per vedere il frame di quel momento. Con il keogram selezionato, le frecce ← e → spostano il frame di uno alla volta.",
+        NightsKeogramMissing = "Keogram non disponibile per questa notte.",
+        NightsStartrailsTitle = "Startrails",
+        NightsStartrailsName = "Startrails della notte",
+        NightsStartrailsMissing = "Startrails non disponibile per questa notte.",
+        NightsFrameTitle = "Frame selezionato",
+        NightsFrameName = "Frame selezionato della notte",
+        NightsFrameMissing = "Il file di questo frame non è più disponibile.",
+        CameraDiscButton = "Scollega",
+        CameraDiscBusy = "Scollegamento in corso…",
+        CameraDiscDone = "Camera scollegata.",
+        PublicationSettingsTitle = "Impostazioni Uplink",
+        PublicationEnabled = "Pubblica sul server",
+        PublicationServerUrl = "Indirizzo del server",
+        PublicationServerUrlHint = "Solo l'indirizzo base, per esempio https://nome-server. Con http sono ammessi solo localhost e 127.0.0.1.",
+        PublicationDeviceId = "Identificativo del dispositivo",
+        PublicationDeviceIdHint = "Lettere, numeri, punto, trattino o underscore. Massimo 64 caratteri.",
+        PublicationProfileName = "Nome del profilo (facoltativo)",
+        PublicationInterval = "Intervallo tra gli invii, in secondi",
+        PublicationRangeHint = "Da {0} a {1}. Predefinito: {2}.",
+        PublicationLongEdge = "Lato lungo dell'immagine, in pixel",
+        PublicationJpegQuality = "Qualità JPEG",
+        PublicationTokenLabel = "Token",
+        PublicationSecretStatus = "Stato: {0}",
+        PublicationSecretSet = "impostato",
+        PublicationSecretNotSet = "non impostato",
+        PublicationSecretReplace = "Sostituisci con un nuovo valore (lascia vuoto per non cambiarlo)",
+        PublicationSecretHint = "Il valore viene cifrato su disco e non viene mai mostrato, nemmeno in parte.",
+        PublicationClearToken = "Rimuovi il token salvato",
+        PublicationExtraHeaderName = "Header HTTP aggiuntivo: nome (facoltativo)",
+        PublicationExtraHeaderValue = "Header HTTP aggiuntivo: valore",
+        PublicationClearExtraHeader = "Rimuovi l'header aggiuntivo salvato",
+        PublicationSave = "Salva impostazioni",
+        PublicationSaving = "Salvataggio in corso…",
+        PublicationSaved = "Impostazioni salvate.",
+        PublicationNoChanges = "Nessuna modifica da salvare.",
+        PublicationSaveFailed = "Impostazioni non salvate. Correggi i campi indicati.",
+        PublicationIssueLine = "{0}: {1}",
+        PublicationFieldGeneral = "Pubblicazione",
+        PublicationUnavailable = "La pubblicazione non è disponibile: il modulo non è partito. Controllare il log dell'applicazione.",
+        PublicationProblemEmpty = "Campo obbligatorio.",
+        PublicationProblemNotInteger = "Inserire un numero intero.",
+        PublicationProblemOutOfRange = "Il valore deve essere compreso tra {0} e {1}.",
+        PublicationTest = "Prova connessione",
+        PublicationTesting = "Prova in corso…",
+        PublicationTestNote = "La prova usa i valori del modulo, anche se non ancora salvati. Non invia immagini.",
+        PublicationTestOk = "Connessione riuscita: il server accetta token e identificativo.",
+        PublicationTestFailed = "Prova non riuscita: {0}",
+        PublicationStatusTitle = "Stato",
+        PublicationStateUnknown = "Stato non disponibile",
+        PublicationStateDisabled = "Spenta",
+        PublicationStateDisabledHint = "Attiva «Pubblica sul server», inserisci indirizzo, identificativo e token, poi salva.",
+        PublicationStateIdle = "Attiva, in attesa del prossimo invio",
+        PublicationStateSending = "Invio in corso",
+        PublicationStateBackoff = "Errore temporaneo: nuovo tentativo programmato",
+        PublicationStateSuspended = "Sospesa: credenziali rifiutate. Salva un token nuovo per riprendere.",
+        PublicationCounters = "In coda: {0} · Inviate: {1} · Scartate: {2}",
+        PublicationNoSuccessYet = "Nessun invio riuscito finora",
+        PublicationLastSuccess = "Ultimo invio riuscito: {0}",
+        PublicationNextAttempt = "Prossimo tentativo: {0}",
+        PublicationLastErrorLine = "Ultimo errore alle {0}: {1}",
+        PublicationReasonAuth = "Il server ha rifiutato token o identificativo.",
+        PublicationReasonRejected = "Il server ha rifiutato l'immagine: scartata, non verrà ritentata.",
+        PublicationReasonTooLarge = "Immagine troppo grande per il server: scartata.",
+        PublicationReasonBadResponse = "Risposta del server non valida: nuovo tentativo più tardi.",
+        PublicationReasonServerCode = "Errore del server (codice {0}).",
+        PublicationReasonServer = "Errore temporaneo del server.",
+        PublicationReasonRateLimited = "Il server chiede di rallentare: nuovo tentativo dopo l'attesa indicata.",
+        PublicationReasonNetwork = "Server non raggiungibile: controllare indirizzo e rete.",
+        PublicationReasonTimeout = "Il server non ha risposto in tempo.",
+        PublicationReasonInvalidSettings = "Indirizzo o impostazioni non validi: controllare il modulo.",
+        PublicationReasonNoHealth = "Il server non ha la pagina di verifica: controllare l'indirizzo.",
+        PublicationReasonOther = "Errore non classificato: vedere il log della pubblicazione.",
+        PublicationYouTubeTitle = "YouTube",
+        PublicationYouTubePlaceholder = "Caricamento automatico su YouTube: in arrivo. Qui compariranno accesso, stato dell'ultimo caricamento e impostazioni.",
     };
 
     /// <summary>Testi in inglese.</summary>
@@ -673,6 +977,109 @@ public sealed record DesktopTexts
         CameraErrorSaveFailed = "Could not save the settings. Check the permissions of the data folder and try again.",
         CameraErrorUnknown = "Operation failed. Try again; if the problem persists, check the log.",
         CameraErrorDetail = "Detail: {0}",
+        NightsFramesCount = "{0} frames",
+        NightsTimelapseNone = "No timelapse yet",
+        NightsTimelapseReady = "Timelapse ready",
+        NightsTimelapseGenerating = "In progress",
+        NightsTimelapseFailed = "Timelapse failed",
+        NightsTimelapseUnknown = "Unknown state",
+        NightsTimelapseQueued = "Queued or starting…",
+        NightsTimelapseProgress = "In progress: {0}%",
+        NightsFramePosition = "Frame {0} of {1}",
+        NightsFrameTimeTooltip = "UTC time: {0}",
+        NightsListName = "Night list",
+        NightsLoading = "Reading the archive…",
+        NightsLoadError = "Cannot read the night archive: {0}. Check the data folder and try again.",
+        NightsSelectNight = "Select a night from the list to see its keogram, startrails and timelapse.",
+        NightsTimelapseTitle = "Timelapse",
+        NightsTimelapsePlay = "Play",
+        NightsTimelapsePause = "Pause",
+        NightsTimelapseStop = "Stop",
+        NightsTimelapseRegenerate = "Regenerate timelapse",
+        NightsTimelapseRegenerateTooltip = "Rebuilds the video from the archived frames. The current file is replaced when done.",
+        NightsTimelapseRefused = "Cannot queue the timelapse: the night has no frames or is already queued.",
+        NightsTimelapseRequested = "Timelapse queued. It will appear here when ready.",
+        NightsTimelapseRegenerateError = "Cannot start regeneration: {0}",
+        NightsTimelapseMissingFile = "The timelapse file is missing. Regenerate it to create it again.",
+        NightsPlaybackError = "Cannot play the timelapse. Check that the H.264 codec is installed (Windows Video Extensions), then try again.",
+        NightsPlayerName = "Timelapse playback",
+        NightsKeogramTitle = "Keogram",
+        NightsKeogramName = "Night keogram, time scrubber",
+        NightsKeogramHint = "Click or drag on the keogram to see the frame at that moment. With the keogram focused, the ← and → arrows move one frame at a time.",
+        NightsKeogramMissing = "No keogram for this night.",
+        NightsStartrailsTitle = "Startrails",
+        NightsStartrailsName = "Night startrails",
+        NightsStartrailsMissing = "No startrails for this night.",
+        NightsFrameTitle = "Selected frame",
+        NightsFrameName = "Selected night frame",
+        NightsFrameMissing = "This frame file is no longer available.",
+        CameraDiscButton = "Disconnect",
+        CameraDiscBusy = "Disconnecting…",
+        CameraDiscDone = "Camera disconnected.",
+        PublicationSettingsTitle = "Uplink settings",
+        PublicationEnabled = "Publish to the server",
+        PublicationServerUrl = "Server address",
+        PublicationServerUrlHint = "Base address only, for example https://server-name. Plain http is allowed only for localhost and 127.0.0.1.",
+        PublicationDeviceId = "Device ID",
+        PublicationDeviceIdHint = "Letters, numbers, dot, dash or underscore. Up to 64 characters.",
+        PublicationProfileName = "Profile name (optional)",
+        PublicationInterval = "Interval between uploads, in seconds",
+        PublicationRangeHint = "From {0} to {1}. Default: {2}.",
+        PublicationLongEdge = "Long edge of the image, in pixels",
+        PublicationJpegQuality = "JPEG quality",
+        PublicationTokenLabel = "Token",
+        PublicationSecretStatus = "Status: {0}",
+        PublicationSecretSet = "set",
+        PublicationSecretNotSet = "not set",
+        PublicationSecretReplace = "Replace with a new value (leave empty to keep the current one)",
+        PublicationSecretHint = "The value is encrypted on disk and is never shown, not even in part.",
+        PublicationClearToken = "Remove the saved token",
+        PublicationExtraHeaderName = "Extra HTTP header: name (optional)",
+        PublicationExtraHeaderValue = "Extra HTTP header: value",
+        PublicationClearExtraHeader = "Remove the saved extra header",
+        PublicationSave = "Save settings",
+        PublicationSaving = "Saving…",
+        PublicationSaved = "Settings saved.",
+        PublicationNoChanges = "Nothing to save.",
+        PublicationSaveFailed = "Settings not saved. Fix the fields listed.",
+        PublicationIssueLine = "{0}: {1}",
+        PublicationFieldGeneral = "Publishing",
+        PublicationUnavailable = "Publishing is unavailable: the module did not start. Check the application log.",
+        PublicationProblemEmpty = "Required field.",
+        PublicationProblemNotInteger = "Enter a whole number.",
+        PublicationProblemOutOfRange = "The value must be between {0} and {1}.",
+        PublicationTest = "Test connection",
+        PublicationTesting = "Testing…",
+        PublicationTestNote = "The test uses the values in the form, even if not saved. It sends no images.",
+        PublicationTestOk = "Connection OK: the server accepts the token and device ID.",
+        PublicationTestFailed = "Test failed: {0}",
+        PublicationStatusTitle = "Status",
+        PublicationStateUnknown = "Status unavailable",
+        PublicationStateDisabled = "Off",
+        PublicationStateDisabledHint = "Turn on «Publish to the server», enter the address, device ID and token, then save.",
+        PublicationStateIdle = "On, waiting for the next upload",
+        PublicationStateSending = "Uploading",
+        PublicationStateBackoff = "Temporary error: next attempt scheduled",
+        PublicationStateSuspended = "Paused: credentials rejected. Save a new token to resume.",
+        PublicationCounters = "Queued: {0} · Sent: {1} · Discarded: {2}",
+        PublicationNoSuccessYet = "No successful upload yet",
+        PublicationLastSuccess = "Last successful upload: {0}",
+        PublicationNextAttempt = "Next attempt: {0}",
+        PublicationLastErrorLine = "Last error at {0}: {1}",
+        PublicationReasonAuth = "The server rejected the token or device ID.",
+        PublicationReasonRejected = "The server rejected the image: discarded, not retried.",
+        PublicationReasonTooLarge = "Image too large for the server: discarded.",
+        PublicationReasonBadResponse = "Invalid server response: will retry later.",
+        PublicationReasonServerCode = "Server error (code {0}).",
+        PublicationReasonServer = "Temporary server error.",
+        PublicationReasonRateLimited = "The server asks to slow down: retrying after the indicated wait.",
+        PublicationReasonNetwork = "Server unreachable: check the address and the network.",
+        PublicationReasonTimeout = "The server did not respond in time.",
+        PublicationReasonInvalidSettings = "Invalid address or settings: check the form.",
+        PublicationReasonNoHealth = "The server has no health check page: check the address.",
+        PublicationReasonOther = "Unclassified error: see the publishing log.",
+        PublicationYouTubeTitle = "YouTube",
+        PublicationYouTubePlaceholder = "Automatic YouTube upload: coming soon. Sign-in, last upload status and settings will appear here.",
     };
 
     /// <summary>Nome della vista nella barra laterale e come titolo della schermata.</summary>
@@ -730,4 +1137,112 @@ public sealed record DesktopTexts
 
         return $"{frameId} ({timestamp.Value.ToLocalTime().ToString("HH:mm:ss", CultureInfo.InvariantCulture)})";
     }
+
+    /// <summary>Numero di frame di una notte, con la parola "frame" o "frames" (segnaposto {0}).</summary>
+    public required string NightsFramesCount { get; init; }
+
+    /// <summary>Stato del timelapse: non creato.</summary>
+    public required string NightsTimelapseNone { get; init; }
+
+    /// <summary>Stato del timelapse: pronto alla riproduzione.</summary>
+    public required string NightsTimelapseReady { get; init; }
+
+    /// <summary>Stato del timelapse: in lavorazione.</summary>
+    public required string NightsTimelapseGenerating { get; init; }
+
+    /// <summary>Stato del timelapse: ultima generazione non riuscita.</summary>
+    public required string NightsTimelapseFailed { get; init; }
+
+    /// <summary>Stato del timelapse non riconosciuto.</summary>
+    public required string NightsTimelapseUnknown { get; init; }
+
+    /// <summary>Avanzamento del timelapse quando è in coda o non ha ancora progresso.</summary>
+    public required string NightsTimelapseQueued { get; init; }
+
+    /// <summary>Avanzamento del timelapse in percentuale intera (segnaposto {0}).</summary>
+    public required string NightsTimelapseProgress { get; init; }
+
+    /// <summary>Posizione del frame selezionato, numerata da 1 (segnaposti {0} e {1}).</summary>
+    public required string NightsFramePosition { get; init; }
+
+    /// <summary>Tooltip con l'istante UTC del frame (segnaposto {0}).</summary>
+    public required string NightsFrameTimeTooltip { get; init; }
+
+    /// <summary>Nome dell'elenco delle notti per le tecnologie di accessibilità.</summary>
+    public required string NightsListName { get; init; }
+
+    /// <summary>Stato di caricamento della vista "Notti".</summary>
+    public required string NightsLoading { get; init; }
+
+    /// <summary>Errore nella lettura dell'archivio (segnaposto {0} con il dettaglio).</summary>
+    public required string NightsLoadError { get; init; }
+
+    /// <summary>Stato vuoto del dettaglio: nessuna notte selezionata.</summary>
+    public required string NightsSelectNight { get; init; }
+
+    /// <summary>Titolo della sezione timelapse.</summary>
+    public required string NightsTimelapseTitle { get; init; }
+
+    /// <summary>Pulsante "Riproduci" del timelapse.</summary>
+    public required string NightsTimelapsePlay { get; init; }
+
+    /// <summary>Pulsante "Pausa" del timelapse.</summary>
+    public required string NightsTimelapsePause { get; init; }
+
+    /// <summary>Pulsante "Stop" del timelapse.</summary>
+    public required string NightsTimelapseStop { get; init; }
+
+    /// <summary>Pulsante "Rigenera timelapse".</summary>
+    public required string NightsTimelapseRegenerate { get; init; }
+
+    /// <summary>Spiegazione del pulsante "Rigenera timelapse", con l'effetto sul file attuale.</summary>
+    public required string NightsTimelapseRegenerateTooltip { get; init; }
+
+    /// <summary>Messaggio quando la rigenerazione non viene accodata.</summary>
+    public required string NightsTimelapseRefused { get; init; }
+
+    /// <summary>Messaggio quando la rigenerazione è stata accodata.</summary>
+    public required string NightsTimelapseRequested { get; init; }
+
+    /// <summary>Errore nell'avvio della rigenerazione (segnaposto {0} con il dettaglio).</summary>
+    public required string NightsTimelapseRegenerateError { get; init; }
+
+    /// <summary>Messaggio quando il file del timelapse manca.</summary>
+    public required string NightsTimelapseMissingFile { get; init; }
+
+    /// <summary>Messaggio quando il lettore non riesce a riprodurre il file, di solito per un codec mancante.</summary>
+    public required string NightsPlaybackError { get; init; }
+
+    /// <summary>Nome del lettore del timelapse per le tecnologie di accessibilità.</summary>
+    public required string NightsPlayerName { get; init; }
+
+    /// <summary>Titolo della sezione keogram.</summary>
+    public required string NightsKeogramTitle { get; init; }
+
+    /// <summary>Nome della barra del keogram per le tecnologie di accessibilità.</summary>
+    public required string NightsKeogramName { get; init; }
+
+    /// <summary>Suggerimento d'uso della barra del keogram, con i comandi da tastiera.</summary>
+    public required string NightsKeogramHint { get; init; }
+
+    /// <summary>Messaggio quando il keogram della notte non esiste.</summary>
+    public required string NightsKeogramMissing { get; init; }
+
+    /// <summary>Titolo della sezione startrails.</summary>
+    public required string NightsStartrailsTitle { get; init; }
+
+    /// <summary>Nome dell'immagine startrails per le tecnologie di accessibilità.</summary>
+    public required string NightsStartrailsName { get; init; }
+
+    /// <summary>Messaggio quando gli startrails della notte non esistono.</summary>
+    public required string NightsStartrailsMissing { get; init; }
+
+    /// <summary>Titolo della sezione del frame selezionato.</summary>
+    public required string NightsFrameTitle { get; init; }
+
+    /// <summary>Nome dell'immagine del frame per le tecnologie di accessibilità.</summary>
+    public required string NightsFrameName { get; init; }
+
+    /// <summary>Messaggio quando il file del frame non esiste più.</summary>
+    public required string NightsFrameMissing { get; init; }
 }

@@ -59,6 +59,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
     private NightArchive _archive;              // _gate
     private string? _configError;               // _gate: errore di configurazione rilevato all'avvio
     private string? _error;                     // _gate: errore di cattura o di connessione
+    private string? _driverWarning;             // _gate: limiti di esposizione del driver sanificati, null se validi
     private IFrameProcessor? _processor;        // _processorGate
     private ICameraSource? _camera;             // _gate
     private string? _cameraId;                  // _gate
@@ -237,6 +238,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
         string kind;
         bool connected;
         string? error;
+        string? warning;
         LastFrameDto? lastFrame;
         bool started;
         DateTimeOffset startedAt;
@@ -251,6 +253,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
             kind = _cameraKind;
             connected = _cameraConnected;
             error = _error ?? _configError;
+            warning = _driverWarning;
             lastFrame = _lastFrame;
             started = _started;
             startedAt = _startedAt;
@@ -274,7 +277,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
             lastFrame,
             Disk(archive, now),
             uptime,
-            error,
+            error ?? warning,
             jobs);
     }
 
@@ -363,6 +366,23 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
         {
             _control.Release();
         }
+    }
+
+    /// <inheritdoc />
+    public async Task DisconnectCameraAsync(CancellationToken cancellationToken)
+    {
+        await _control.WaitAsync(cancellationToken);
+        try
+        {
+            await StopCaptureAsync();
+            SetError(null);
+        }
+        finally
+        {
+            _control.Release();
+        }
+
+        RaiseStatus();
     }
 
     // ---- Configurazione ----
@@ -486,8 +506,14 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
 
         SetError(null);
         PersistCameraId(id);
+        string? warning;
+        lock (_gate)
+        {
+            warning = _driverWarning;
+        }
+
         RaiseStatus();
-        return new ConnectResult(true, null);
+        return new ConnectResult(true, warning);
     }
 
     private ConnectResult ConnectFailed(string message)
@@ -522,12 +548,19 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
             minExposureMs != info.MinExposureMs
             || !ExposureLimits.IsUsable(info.MaxExposureMs)
             || maxExposureMs != Math.Min(config.Camera.MaxExposureMs, info.MaxExposureMs);
-        if (driverLimitsCorrected)
+        // Il testo resta nel log e arriva a ConnectResult.Error / StatusDto.Error: la vista Camera ne ricava i valori.
+        string? driverWarning = driverLimitsCorrected
+            ? $"Limiti di esposizione del driver non validi (min={Fmt(info.MinExposureMs)}, max={Fmt(info.MaxExposureMs)}): " +
+              $"uso min={Fmt(minExposureMs)}, max={Fmt(maxExposureMs)}"
+            : null;
+        if (driverWarning is not null)
         {
-            _log(
-                $"Limiti di esposizione del driver non validi (min={Fmt(info.MinExposureMs)}, max={Fmt(info.MaxExposureMs)}): " +
-                $"uso min={Fmt(minExposureMs)}, max={Fmt(maxExposureMs)}",
-                null);
+            _log(driverWarning, null);
+        }
+
+        lock (_gate)
+        {
+            _driverWarning = driverWarning;
         }
 
         // Gain fisso da configurazione: il controller regola solo l'esposizione.
@@ -579,6 +612,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
             camera = _camera;
             _camera = null;
             _cameraConnected = false;
+            _driverWarning = null;
         }
 
         if (camera is not null)

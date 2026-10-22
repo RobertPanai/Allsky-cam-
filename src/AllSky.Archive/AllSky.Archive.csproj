@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AllSky.Core\AllSky.Core.csproj" />
     <ProjectReference Include="..\AllSky.Astro\AllSky.Astro.csproj" />
+    <ProjectReference Include="..\AllSky.Weather\AllSky.Weather.csproj" />
   </ItemGroup>
 
 </Project>

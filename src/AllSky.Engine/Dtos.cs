@@ -43,7 +43,14 @@ public sealed record CameraStatusDto(string Id, string Name, string Kind, bool C
 /// <param name="ExposureMs">Esposizione in millisecondi.</param>
 /// <param name="Gain">Gain della camera.</param>
 /// <param name="MedianAdu">Mediana ADU del frame grezzo.</param>
-public sealed record LastFrameDto(string Id, DateTimeOffset Timestamp, double ExposureMs, double Gain, int MedianAdu);
+/// <param name="SensorTempC">Temperatura del sensore in gradi Celsius; null se la camera non la riporta.</param>
+public sealed record LastFrameDto(
+    string Id,
+    DateTimeOffset Timestamp,
+    double ExposureMs,
+    double Gain,
+    int MedianAdu,
+    double? SensorTempC = null);
 
 /// <summary>Uso del disco in GB (1 GB = 1024^3 byte).</summary>
 /// <param name="FreeGb">Spazio libero sul volume dell'archivio; null se non leggibile.</param>
@@ -59,7 +66,8 @@ public sealed record JobDto(string Kind, string NightId, double Progress);
 /// <summary>Evento emesso per ogni frame archiviato.</summary>
 /// <param name="Id">Identificativo del frame.</param>
 /// <param name="Timestamp">Istante di cattura in UTC.</param>
-public sealed record FrameEvent(string Id, DateTimeOffset Timestamp);
+/// <param name="SensorTempC">Temperatura del sensore in gradi Celsius; null se la camera non la riporta.</param>
+public sealed record FrameEvent(string Id, DateTimeOffset Timestamp, double? SensorTempC = null);
 
 /// <summary>
 /// Notte osservativa (da mezzogiorno a mezzogiorno locale), corrisponde a un elemento di <c>GET /api/nights</c>.
@@ -98,7 +106,7 @@ public sealed record FrameDto(string Id, DateTimeOffset Timestamp, string Phase)
 
 /// <summary>Esito di <c>POST /api/camera/connect</c>.</summary>
 /// <param name="Ok">Vero se la camera e' connessa e la cattura e' partita.</param>
-/// <param name="Error">Messaggio in italiano se <paramref name="Ok"/> e' falso; null altrimenti.</param>
+/// <param name="Error">Messaggio in italiano se <paramref name="Ok"/> e' falso. Con <paramref name="Ok"/> vero puo' contenere un avviso (per esempio i limiti di esposizione del driver sanificati); null altrimenti.</param>
 public sealed record ConnectResult(bool Ok, string? Error);
 
 /// <summary>Esito di <c>PUT /api/config</c>. Con errori la configurazione non e' stata cambiata.</summary>

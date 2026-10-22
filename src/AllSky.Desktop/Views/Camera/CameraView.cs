@@ -76,7 +76,7 @@ public class CameraView : UserControl
     private Button _connectButton = null!;
     private TextBlock _progressText = null!;
     private TextBlock _connectedText = null!;
-    private TextBlock _disconnectNote = null!;
+    private Button _disconnectButton = null!;
     private TextBlock _errorText = null!;
     private TextBlock _detailText = null!;
     private TextBlock _infoText = null!;
@@ -90,6 +90,7 @@ public class CameraView : UserControl
     private IReadOnlyList<CameraCandidate> _candidates = Array.Empty<CameraCandidate>();
     private bool _searchedOnce;
     private bool _busy;
+    private bool _connected;
     private bool _attached;
     private CancellationTokenSource _lifetime = new();
     private CameraErrorView? _lastError;
@@ -227,6 +228,34 @@ public class CameraView : UserControl
         }
     }
 
+    private async Task DisconnectAsync()
+    {
+        if (_busy)
+        {
+            return;
+        }
+
+        _infoText.Text = string.Empty;
+        _successText.Text = string.Empty;
+        SetBusy(true, _texts.CameraDiscBusy);
+        try
+        {
+            // Nessun token di annullamento, come per il collegamento: vedi OnUnloaded.
+            await Task.Run(() => _service.DisconnectCameraAsync(CancellationToken.None));
+            _lastError = null;
+            _successText.Text = _texts.CameraDiscDone;
+        }
+        catch (Exception ex)
+        {
+            _lastError = CameraErrorFormatter.Describe(ex.Message, _texts);
+        }
+        finally
+        {
+            SetBusy(false, null);
+            RenderStatus(_service.GetStatus());
+        }
+    }
+
     private async Task SaveAsync()
     {
         if (_busy)
@@ -333,6 +362,8 @@ public class CameraView : UserControl
     private void RenderStatus(AllSky.Engine.StatusDto status)
     {
         AllSky.Engine.CameraStatusDto camera = status.Camera;
+        _connected = camera.Connected;
+        UpdateConnectEnabled();
         _connectedText.Text = camera.Connected
             ? string.Format(
                 _texts.Culture,
@@ -393,6 +424,7 @@ public class CameraView : UserControl
     private void UpdateConnectEnabled()
     {
         _connectButton.IsEnabled = !_busy && _listBox.SelectedItem is ListBoxItem;
+        _disconnectButton.IsEnabled = !_busy && _connected;
     }
 
     private CameraSourceChoice CurrentChoice()
@@ -555,7 +587,10 @@ public class CameraView : UserControl
         _connectedText = BuildBodyText(_texts.CameraNoneConnected, "Brush.Text");
         _connectedText.Margin = new Thickness(0, 12, 0, 0);
 
-        _disconnectNote = BuildBodyText(_texts.CameraDisconnectUnavailable, "Brush.TextTertiary", "Size.Caption");
+        _disconnectButton = BuildButton(_texts.CameraDiscButton, primary: false);
+        _disconnectButton.Margin = new Thickness(0, 12, 0, 0);
+        _disconnectButton.IsEnabled = false;
+        _disconnectButton.Click += async (_, _) => await DisconnectAsync();
 
         _infoText = BuildBodyText(string.Empty, "Brush.TextSecondary");
         _successText = BuildBodyText(string.Empty, "Brush.Success");
@@ -563,7 +598,7 @@ public class CameraView : UserControl
         stack.Children.Add(_connectButton);
         stack.Children.Add(_progressText);
         stack.Children.Add(_connectedText);
-        stack.Children.Add(_disconnectNote);
+        stack.Children.Add(_disconnectButton);
         stack.Children.Add(_infoText);
         stack.Children.Add(_successText);
         return BuildPanel(stack, _texts.CameraConnectionTitle);

@@ -1,6 +1,7 @@
 using AllSky.Archive;
 using AllSky.Cameras.Sim;
 using AllSky.Core;
+using AllSky.Core.CameraView;
 using AllSky.Engine;
 using Xunit;
 
@@ -161,12 +162,96 @@ public sealed class AllSkyEngineTests
 
         StatusDto status = engine.GetStatus();
         Assert.NotEqual("error", status.State);
-        Assert.Null(status.Error);
+        // Il capture parte, ma l'avviso sui limiti sanificati arriva nello stato (vedi test di collegamento sotto).
+        Assert.NotNull(status.Error);
+        Assert.Contains("Limiti di esposizione del driver", status.Error);
         Assert.True(camera.Captures > 0);
         Assert.Contains(
             h.Logs,
             l => l == "Limiti di esposizione del driver non validi (min=0, max=0): uso min=0.001, max=30000");
         await engine.StopAsync();
+    }
+
+    [Fact]
+    public async Task LimitiDriverNonValidi_ConnectResultEStatoSonoLeggibiliDallaVistaCamera()
+    {
+        using var h = new Harness();
+        var clock = new FakeClock(new DateTimeOffset(2026, 10, 19, 22, 0, 0, TimeSpan.Zero));
+
+        // Nessuna camera in configurazione: la connessione avviene con ConnectCameraAsync.
+        h.SaveConfig(Config(h.ArchiveFolder, intervalSeconds: 60) with { Camera = new AppConfig.CameraConfig { Id = string.Empty } });
+        var sim = new SimCamera(SmallSim(), clock);
+        var camera = new TestCamera(sim, info: sim.Info with { MinExposureMs = 0.0, MaxExposureMs = double.NaN });
+        var delay = new ScriptDelay(clock, (_, ct) => Task.Delay(System.Threading.Timeout.Infinite, ct));
+
+        await using var engine = new AllSkyEngine(h.Dependencies(clock, new TestCameraProvider(_ => camera), delay));
+        await engine.StartAsync();
+
+        ConnectResult connect = await engine.ConnectCameraAsync("sim-test", CancellationToken.None);
+
+        // Il capture parte con valori sicuri: Ok resta vero, ma il messaggio riporta i valori del driver e quelli usati.
+        Assert.True(connect.Ok);
+        Assert.NotNull(connect.Error);
+        Assert.Equal(connect.Error, engine.GetStatus().Error);
+
+        Assert.Equal(CameraErrorKind.DriverExposureLimits, CameraErrorFormatter.Classify(connect.Error));
+        ExposureLimitsText? limits = CameraErrorFormatter.ParseExposureLimits(connect.Error);
+        Assert.NotNull(limits);
+        Assert.Equal("0", limits!.DriverMin);
+        Assert.Equal("NaN", limits.DriverMax);
+        Assert.Equal("0.001", limits.UsedMin);
+        Assert.Equal("30000", limits.UsedMax);
+
+        CameraErrorView view = CameraErrorFormatter.Describe(connect.Error, DesktopTexts.Italian);
+        Assert.Equal(CameraErrorKind.DriverExposureLimits, view.Kind);
+        Assert.Contains("0,001 ms", view.Message);
+        Assert.Contains("n/d", view.Message);
+        Assert.Null(view.Detail);
+
+        await engine.StopAsync();
+    }
+
+    [Fact]
+    public async Task DisconnectCameraAsync_FermaLaCatturaERilasciaLaCamera()
+    {
+        using var h = new Harness();
+        var clock = new FakeClock(new DateTimeOffset(2026, 10, 19, 15, 0, 0, TimeSpan.Zero));
+        h.SaveConfig(Config(h.ArchiveFolder, intervalSeconds: 60));
+
+        var camera = new TestCamera(new SimCamera(SmallSim(), clock));
+        var reached = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var delay = new ScriptDelay(clock, (index, ct) =>
+        {
+            if (index < 4)
+            {
+                return Task.CompletedTask;
+            }
+
+            reached.TrySetResult();
+            return Task.Delay(System.Threading.Timeout.Infinite, ct);
+        });
+
+        await using var engine = new AllSkyEngine(h.Dependencies(clock, new TestCameraProvider(_ => camera), delay));
+        await engine.StartAsync();
+        await reached.Task.WaitAsync(Timeout);
+        Assert.True(engine.GetStatus().Camera.Connected);
+
+        await engine.DisconnectCameraAsync(CancellationToken.None);
+
+        StatusDto status = engine.GetStatus();
+        Assert.False(status.Camera.Connected);
+        Assert.Equal("idle", status.State);
+        Assert.Null(status.Error);
+        Assert.Equal(1, camera.Disposals);
+
+        // La cattura e' ferma: nessun nuovo frame chiesto alla camera.
+        int captures = camera.Captures;
+        await Task.Delay(50);
+        Assert.Equal(captures, camera.Captures);
+
+        // Ripetere la disconnessione non fa nulla.
+        await engine.DisconnectCameraAsync(CancellationToken.None);
+        Assert.Equal(1, camera.Disposals);
     }
 
     [Fact]

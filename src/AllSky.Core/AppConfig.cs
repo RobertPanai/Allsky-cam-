@@ -150,5 +150,17 @@ public sealed record AppConfig
         public int Port { get; init; } = 5810;
 
         public bool AllowLan { get; init; } = false;
+
+        /// <summary>
+        /// Interfaccia web (server locale per il browser). Spenta di default: l'app desktop non la usa.
+        /// Con false l'Host non apre alcuna porta HTTP.
+        /// </summary>
+        public bool WebEnabled { get; init; } = false;
+
+        /// <summary>
+        /// Hash PBKDF2 della password per l'accesso dalla rete locale (vedi <c>LanPassword</c>). Null: nessuna password.
+        /// Mai la password in chiaro.
+        /// </summary>
+        public string? LanPasswordHash { get; init; } = null;
     }
 }

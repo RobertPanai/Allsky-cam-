@@ -5,6 +5,7 @@ using AllSky.Capture;
 using AllSky.Core;
 using AllSky.Products;
 using AllSky.Publish;
+using AllSky.Weather;
 
 namespace AllSky.Engine;
 
@@ -36,6 +37,17 @@ public sealed partial class AllSkyEngine
     private int _accWidth;                    // _productsGate
     private int _accHeight;                   // _productsGate
     private DateTimeOffset _lastPartialSave;  // _productsGate
+    private volatile IWeatherSnapshotProvider? _weatherProvider;
+
+    /// <summary>
+    /// Fornitore meteo per il sidecar di ogni frame. Null (predefinito) = nessun meteo nei sidecar.
+    /// Va impostato prima di avviare la cattura. Un guasto del fornitore non ferma la cattura.
+    /// </summary>
+    public IWeatherSnapshotProvider? WeatherProvider
+    {
+        get => _weatherProvider;
+        set => _weatherProvider = value;
+    }
 
     /// <summary>Copia dei prodotti di una notte: byte gia' calcolati, nessun riferimento agli accumulatori.</summary>
     private sealed record NightSnapshot(
@@ -92,7 +104,9 @@ public sealed partial class AllSkyEngine
 
         DateTimeOffset timestamp = raw.Timestamp.ToUniversalTime();
         string id = FrameIdOf(timestamp);
-        var last = new LastFrameDto(id, timestamp, raw.ExposureMs, raw.Gain, processed.MedianAdu);
+        // Un valore non finito non va in JSON: la temperatura non valida diventa null.
+        double? sensorTemp = raw.SensorTempC is { } temp && double.IsFinite(temp) ? temp : null;
+        var last = new LastFrameDto(id, timestamp, raw.ExposureMs, raw.Gain, processed.MedianAdu, sensorTemp);
         lock (_gate)
         {
             _lastFrame = last;
@@ -101,7 +115,7 @@ public sealed partial class AllSkyEngine
             _error = null;
         }
 
-        Notify(FrameProduced, new FrameEvent(id, timestamp));
+        Notify(FrameProduced, new FrameEvent(id, timestamp, sensorTemp));
         RaiseStatus();
         return Task.CompletedTask;
     }
@@ -115,6 +129,21 @@ public sealed partial class AllSkyEngine
         try
         {
             AppConfig config = ConfigSnapshot();
+            WeatherSnapshot? weather = null;
+            IWeatherSnapshotProvider? weatherProvider = WeatherProvider;
+            if (weatherProvider is not null)
+            {
+                try
+                {
+                    // Il provider ha un limite di tempo proprio: non puo' bloccare la cattura a lungo.
+                    weather = weatherProvider.GetAsync(CancellationToken.None).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    _log("Lettura meteo per i metadati non riuscita: il frame non ha dati meteo", ex);
+                }
+            }
+
             FrameSidecar sidecar = FrameSidecars.FromCapture(
                 raw.Timestamp,
                 processed.Phase,
@@ -126,7 +155,7 @@ public sealed partial class AllSkyEngine
                     LatitudeDeg = config.Site.Latitude,
                     LongitudeDeg = config.Site.Longitude,
                 },
-                TimeZoneOf());
+                TimeZoneOf()) with { Weather = weather };
             FrameSidecars.TryWrite(ArchiveOf(), sidecar, _log);
         }
         catch (Exception ex)
