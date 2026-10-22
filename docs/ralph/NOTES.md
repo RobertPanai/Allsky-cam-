@@ -159,3 +159,6 @@ Una voce per iterazione, la più recente in fondo. Formato:
 - Verifiche fatte: suite shim completa **2011/2011** al secondo giro (il primo giro aveva 1 FAIL, il test intermittente noto); CI `build-windows` successo sul commit 66cb7af.
 - Non verificato: avvio dell'exe su Windows con camera Sim; aggiornamento Velopack dalla 0.2.1 sull'altro PC; overlay meteo/satelliti a schermo; ComboBox in rosso notte (esito dei `::notice` non letto).
 - Docs: README e `docs/FUNZIONI.md` aggiornati (meteo `weather.*` collegato e configurabile; satelliti nel sidecar). Commit 54a703f.
+- **Smoke test headless (camera Sim), esito PASS parziale.** Avvio e arresto puliti; 18 frame JPEG con sidecar e miniature, keogram presente, log senza ERROR/Exception, nessun segreto nella cartella dati. Limiti: la prova è di giorno (0 frame notturni), dura 90 s con cadenza 5 s, interfaccia web, pubblicazione e YouTube non avviati. Non prova timelapse, startrails, maschera, rilevamento. Quindi **P8.2 resta aperto**: manca una notte simulata con timelapse e almeno un evento sintetico.
+- Da controllare: con `storage.folder` che termina con `nights` i frame finiscono in `nights/nights/<data>`. Probabilmente è una mia impostazione di prova sbagliata, non un difetto; da verificare col default.
+- Riferimenti della prova: `/home/claude/allsky-scratch/smoke/` (fuori dal repo).
