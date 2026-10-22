@@ -22,6 +22,7 @@
     <ProjectReference Include="..\AllSky.Detection\AllSky.Detection.csproj" />
     <ProjectReference Include="..\AllSky.Events\AllSky.Events.csproj" />
     <ProjectReference Include="..\AllSky.Weather\AllSky.Weather.csproj" />
+    <ProjectReference Include="..\AllSky.Nina\AllSky.Nina.csproj" />
   </ItemGroup>
 
 </Project>

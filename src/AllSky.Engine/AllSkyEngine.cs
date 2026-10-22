@@ -175,6 +175,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
 
         StartTimelapseWorker();
         StartPassForecasting();
+        RebuildNina();
         ClearStaleTimelapseMarkers();
 
         if (configError is null && !string.IsNullOrWhiteSpace(config.Camera.Id))
@@ -209,6 +210,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
             _started = false;
         }
 
+        await ReleaseNinaAsync();
         await StopPassForecastingAsync();
         await _control.WaitAsync();
         try
@@ -443,6 +445,12 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
             if (!Equals(previous.Weather, config.Weather))
             {
                 ApplyWeatherConfig(config);
+            }
+
+            // Stesso schema del meteo: il ciclo NINA si ricrea solo se la sua sezione cambia.
+            if (!Equals(previous.Nina, config.Nina))
+            {
+                RebuildNina();
             }
         }
 
