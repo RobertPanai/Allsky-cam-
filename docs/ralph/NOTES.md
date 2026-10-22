@@ -89,3 +89,16 @@ Una voce per iterazione, la più recente in fondo. Formato:
   - `DisconnectCameraAsync` in `IAllSkyService`;
   - far arrivare i valori dei limiti di esposizione 0.2.1 nel messaggio di errore restituito, non solo nel log.
 - `DesktopTexts` passato alla shell: la lingua scelta va cablata in P1.8.
+
+## 2026-10-22 06:00 — P1.6, P1.7, P1.8, P6.3 + Engine
+- Fatto: vista Notti; vista Pubblicazione con adattatore `HostPublishSettingsService` (logica condivisa con le rotte, token mai riletto); vista Impostazioni e Log (Kestrel opzionale e spento di default, password LAN PBKDF2, log con maschera segreti); meteo nel sidecar (`CachedWeatherSnapshotProvider`) e righe meteo per il widget; Engine: temperatura sensore, `DisconnectCameraAsync`, campo `Warning` (limiti esposizione 0.2.1) separato da `Error`.
+- Test: runner shim 1470 eseguiti, 1469 PASS, 1 FAIL (instabile noto). CI Windows run 39711132701 verde con tutte le viste registrate nella shell.
+- Decisioni / rischi da confermare con Robert:
+  - Il pannello web (Kestrel) non parte più di default: le installazioni esistenti perdono l'interfaccia browser finché non si attiva `ui.webEnabled`. L'auto-update non cambia la config: chi aggiorna dalla 0.2.x si trova il pannello spento (il desktop ha le sue viste).
+  - Password LAN su HTTP Basic non cifrato: la vista lo dichiara.
+  - Il log non ha livelli: gravità stimata da parole chiave.
+  - Avvio con Windows con `--data-folder` usa la cartella predefinita.
+  - Messaggi di validazione del server di pubblicazione solo in italiano.
+  - Salvataggio impostazioni pubblicazione ora serializzato da lock; nell'adattatore `null` = vuoto, nelle rotte `null` = invariato.
+- Non verificato: tutte le viste WPF mai viste a schermo; media player timelapse e codec; keogram↔frame su archivio reale (dopo riavvio il keogram può coprire meno frame; oltre 4096 frame colonne a blocchi); avvio con Windows nel registro; middleware password su rete reale.
+- Da fare: `Engine.WeatherProvider` non è ancora impostato da nessuno (serve una sezione meteo nelle impostazioni: sorgente ASCOM/Open-Meteo opt-in); attribuzione Open-Meteo nel widget; adattatore PassFinder→IPredictedTrackProvider (P4.4).
