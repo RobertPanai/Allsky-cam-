@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AllSky.Nina</RootNamespace>
+    <AssemblyName>AllSky.Nina</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Nessuna dipendenza NuGet: HTTP e JSON sono System.Net.Http e System.Text.Json del framework. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="AllSky.Nina.Tests" />
+  </ItemGroup>
+
+</Project>

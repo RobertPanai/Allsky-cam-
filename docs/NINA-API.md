@@ -23,6 +23,14 @@ Stato: documento di lavoro del 22/10/2026. Ogni riga ha lo stato **[V]** (verifi
 
 **Conseguenza di sicurezza [V]:** l'API non ha autenticazione e ascolta su tutte le interfacce. L'app deve connettersi solo a `127.0.0.1` (NINA sullo stesso PC, come confermato da Robert) e non deve mai esporla; non usare ninaAPI come punto di accesso da fuori.
 
+## 2b. Formato delle risposte (verificato dal sorgente)
+
+Ogni risposta REST è un contenitore JSON, da `ninaAPI/Utility/CoreUtility.cs`, classe `HttpResponse`:
+`{"Response": <dati>, "Error": "", "StatusCode": 200, "Success": true, "Type": "API"}`. I dati veri stanno dentro `Response`. [V]
+Gli endpoint `sequence/json` e `sequence/state` restituiscono un array (lista di oggetti) dentro `Response`. [V]
+Gli errori usano `StatusCode` (es. 409 per "Sequence is not initialized") e `Success: false`. [V]
+Il client deve scartare il contenitore prima di leggere i campi.
+
 ## 3. Endpoint letti dal sorgente (solo GET, nessun POST necessario)
 
 | Cosa serve a All Sky Brain | Endpoint | Stato |
