@@ -178,3 +178,9 @@ Una voce per iterazione, la più recente in fondo. Formato:
 - **Non verificato:** porta predefinita, autenticazione, endpoint e nomi dei campi di ninaAPI (la pagina della documentazione è generata da JavaScript e non si legge con un fetch); formato righe e rotazione dei log; limiti Telegram. Sono i primi task (P11.0, P15.1).
 - L'agente esperto UP Link conosce il protocollo del sito, non le API interne di NINA (le note `nina-api-notes.md` erano da scrivere al 19/10): lo si usa per rivedere le parti che toccano il contratto Uplink (P11.0, P11.9, P12.3 opzione A), non come fonte sui campi di NINA. Non è registrato come tipo di agente in questa sessione: va lanciato come agente generico con le sue istruzioni (Project, `claude/uplink-expert-agent.md`).
 - Il vincolo «nessun server esposto» entra in conflitto con l'accesso esterno: la scelta (relay in uscita verso il sito, tunnel di terzi, porta aperta) è una decisione di Robert (P12.0).
+
+## 2026-10-22 (15:30) — Decisioni di Robert sulla fase 3
+- Accesso remoto: solo monitoraggio sul sito, nessun login, nessuna interazione; scelta tecnica delegata -> strada A (invio in uscita con Uplink, nessuna porta aperta). P12 riscritto (P12.0–P12.5); i task con ruoli, sessioni e coda comandi sono stati tolti.
+- NINA sullo stesso PC della all-sky; plugin ninaAPI da verificare (la sessione non ha il computer collegato).
+- Telegram: un solo bot con chat autorizzate.
+- Idee aggiunte a P11: campo inquadrato (P11.9), capitoli YouTube (P11.10), allerta cielo che peggiora (P11.11), condensa sperimentale (P11.12). Scartato: indice di efficienza.

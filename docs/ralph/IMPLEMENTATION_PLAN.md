@@ -28,7 +28,7 @@ Legenda fatti: **[V]** verificato con fonte (21/10/2026) · **[NV]** da verifica
 8. **Immagini e stile futuristico** in tutta l'app, curati come farebbe un esperto di UI/UX con competenze di astronomia (vedi §5).
 9. **Rilascio automatico** a fine implementazione (P8.4 e P10.2), così l'altro PC riceve l'aggiornamento.
 10. **Funzioni avanzate** (richiesta del 21/10 alle 23:17), in P9: SafetyMonitor Alpaca, SQM stimato, allerte aurora, calibrazione fotometrica sulle stelle note, mappa di costellazioni e pianeti, report via Telegram o email, rete di camere, archivio ricercabile.
-11. **Fase 3** (richiesta del 22/10/2026, **da avviare solo col via di Robert**), in P11–P16: integrazione opzionale con NINA (soggetto puntato con mirino, grafico altezza, distanza dalla Luna, stato di park, log di NINA collegati ai frame), webapp con accesso esterno e ruoli, studio di montaggio per materiale vecchio, colore del video, invio a un bot Telegram; rilascio 0.5.0.
+11. **Fase 3** (richiesta del 22/10/2026, **da avviare solo col via di Robert**), in P11–P16: integrazione opzionale con NINA (soggetto puntato con mirino, grafico altezza, distanza dalla Luna, stato di park, log di NINA collegati ai frame), monitoraggio pubblico sul sito in sola lettura, studio di montaggio per materiale vecchio, colore del video, invio a un bot Telegram; rilascio 0.5.0.
 
 Vincoli che restano in vigore:
 - solo richieste HTTPS in uscita e nessun server esposto;
@@ -36,7 +36,7 @@ Vincoli che restano in vigore:
 - interfaccia in italiano e inglese;
 - nessuna dipendenza GPL;
 - la pubblicazione Uplink esistente non va rotta.
-- **Eccezione solo per la fase 3:** i vincoli «solo richieste HTTPS in uscita e nessun server esposto» valgono finché Robert non decide per iscritto, in P12.0, un accesso esterno; le letture da NINA sono richieste locali verso il PC di NINA (HTTP/WebSocket in LAN o su localhost), da elencare tra le eccezioni.
+- La fase 3 non cambia questi vincoli: il monitoraggio pubblico (P12) è solo invio in uscita; le letture da NINA (P11) sono richieste locali verso il PC di NINA (HTTP o WebSocket su localhost o in LAN), da elencare tra le connessioni previste.
 
 ## 1. Fatti verificati che guidano il piano
 
@@ -287,7 +287,7 @@ Fatti da verificare prima di ciascun task: tutti [NV] finché non hai letto la f
 
 ## FASE 3 — Integrazione NINA, accesso remoto, studio di montaggio, colore, Telegram (P11–P16)
 
-> **NON PARTIRE.** Questa fase è scritta il 22/10/2026 su richiesta di Robert ma **non è avviata**. Il loop la inizia solo quando Robert lo scrive esplicitamente ("via alla fase 3"). Prima del via vanno chiuse le decisioni elencate in «Decisioni da prendere con Robert» qui sotto, in particolare P12.0.
+> **NON PARTIRE.** Questa fase è scritta il 22/10/2026 su richiesta di Robert ma **non è avviata**. Il loop la inizia solo quando Robert lo scrive esplicitamente ("via alla fase 3"). Le decisioni di Robert sono registrate qui sotto.
 > Rilascio finale: **0.5.0** in P16.2, con lo stesso cancello di P8.4 (nessuna eccezione senza richiesta esplicita di Robert).
 
 ### Richieste di Robert (22/10/2026) che questa fase realizza
@@ -301,7 +301,7 @@ Fatti da verificare prima di ciascun task: tutti [NV] finché non hai letto la f
 6. La **distanza angolare del soggetto dalla Luna**.
 7. Se il telescopio è in **posizione di park**, letto da NINA.
 
-**Accesso remoto:** una **webapp** accessibile anche dall'esterno **senza VPN**; l'utente loggato può interagire, chi non è loggato come admin può **solo guardare**.
+**Monitoraggio remoto:** i dati dell'osservatorio (immagine, stato, soggetto, park, grafico, prodotti) visibili sul **sito** da chiunque, **senza VPN**, in **sola lettura**; decisione di Robert del 22/10/2026: nessun login e nessuna interazione.
 
 **Studio di montaggio:** selezionare **video vecchi o serie di immagini vecchie** della all-sky, **editarli**, montare timelapse e keogram, **caricarli su YouTube** o **salvarli in locale**.
 
@@ -322,21 +322,21 @@ Fatti da verificare prima di ciascun task: tutti [NV] finché non hai letto la f
 | Cloudflare | Sui piani Free/Pro/Business anche via Tunnel lo streaming video è vietato; MJPEG non citato | [V] dal piano v1 (policy Cloudflare); **rilettura [NV]** prima di usarlo |
 | Telegram Bot API | Metodi `sendMessage`, `sendPhoto`, `sendVideo`, `sendDocument`; limiti di dimensione dei file; `getUpdates` in long polling (solo richieste in uscita); server Bot API locale | **[NV]**: tutto da leggere sulla documentazione ufficiale in P15.1 |
 
-### Decisioni da prendere con Robert (prima del via)
+### Decisioni di Robert (22/10/2026)
 
-1. **NINA:** il plugin ninaAPI è già installato sul PC di NINA? Il PC di NINA e quello della all-sky sono lo stesso? (cambia indirizzo, orologi e firewall).
-2. **Accesso remoto (P12.0):** quale delle opzioni A, B, C sotto. Quali azioni può fare l'utente loggato (solo funzioni dell'app, oppure anche azioni sul telescopio o sulla cupola, che io sconsiglio in v1).
-3. **Vincoli del piano:** il vincolo «nessun server esposto» (§0) e la regola del PROMPT sui listener ammessi vanno **modificati per scritto** da Robert se si sceglie un accesso esterno. Il loop non li cambia da solo.
-4. **Telegram:** ok usare un solo bot e una lista di chat autorizzate; quali prodotti inviare in automatico.
+1. **Accesso remoto:** solo **monitoraggio** sul sito, tutti visitatori, **nessun login e nessuna interazione**. La scelta tecnica è stata delegata e adottata: strada A (invio in uscita al sito), vedi P12.
+2. **NINA:** gira sullo **stesso PC** della all-sky. Se il plugin ninaAPI sia installato **non è noto**: da verificare sul PC di Robert (in NINA, elenco dei plugin installati) o con la «Prova connessione» di P11.1. Questa sessione non ha un computer collegato, quindi non può controllarlo.
+3. **Telegram:** ok a un solo bot con una lista di chat autorizzate.
+4. **Idee:** campo inquadrato, capitoli YouTube, allerta di cielo che peggiora e condensa sono **nel piano** (P11.9–P11.12). L'«indice di efficienza della notte» è **scartato** da Robert.
 
 ### P11 — Integrazione con NINA (opzionale)
 
-Regole comuni a P11: tutto è **spento di default** (`nina.enabled=false`); la pagina «Integrazioni → NINA» spiega cosa viene letto; nessun dato di NINA lascia il PC se Robert non lo chiede (la pubblicazione sul sito è P11.9, a parte); un errore o un NINA spento **non** deve mai rallentare o fermare la cattura; riconnessione con backoff; sola lettura (nessun comando a NINA in v1).
+Regole comuni a P11: tutto è **spento di default** (`nina.enabled=false`); la pagina «Integrazioni → NINA» spiega cosa viene letto; nessun dato di NINA lascia il PC se Robert non lo chiede (la pubblicazione sul sito è P12, a parte); un errore o un NINA spento **non** deve mai rallentare o fermare la cattura; riconnessione con backoff; sola lettura (nessun comando a NINA in v1).
 
-- [ ] **P11.0 [S] Fatti su NINA e API.** Leggi la documentazione ufficiale di ninaAPI (README, wiki «Websocket-V2», specifica `v2/api`, anche dal sorgente del repository se la pagina web non si legge) e scrivi `docs/NINA-API.md`: porta predefinita, autenticazione, endpoint e **nomi esatti dei campi** per mount (parcheggiato, RA/Dec e la loro epoca J2000 o JNow, alt/az, tracking, slew), sequenza e soggetto in corso (nome, coordinate), eventi del WebSocket, eventuale endpoint dei log. Dai a ogni riga [V] con fonte o [NV]. Verifica anche il formato delle righe di `%localappdata%\NINA\logs` e la rotazione dei file (da un log reale se Robert ne mette uno a disposizione, anonimizzato). Fai **rivedere** da un agente con le istruzioni di `uplink-expert` (Project «codici astrofotografia», `claude/uplink-expert-agent.md`, da lanciare come agente generico in sola lettura sul sito `/home/claude/sito`) solo le parti che toccano il protocollo del sito, non i fatti di NINA. Conclusione: scegli la fonte (ninaAPI, lettura dei log, oppure entrambe) e annota perché.
+- [ ] **P11.0 [S] Fatti su NINA e API.** Leggi la documentazione ufficiale di ninaAPI (README, wiki «Websocket-V2», specifica `v2/api`, anche dal sorgente del repository se la pagina web non si legge) e scrivi `docs/NINA-API.md`: porta predefinita, autenticazione, endpoint e **nomi esatti dei campi** per mount (parcheggiato, RA/Dec e la loro epoca J2000 o JNow, alt/az, tracking, slew), sequenza e soggetto in corso (nome, coordinate), eventi del WebSocket, eventuale endpoint dei log. Dai a ogni riga [V] con fonte o [NV]. Verifica anche il formato delle righe di `%localappdata%\NINA\logs` e la rotazione dei file (da un log reale se Robert ne mette uno a disposizione, anonimizzato). Fai **rivedere** da un agente con le istruzioni di `uplink-expert` (Project «codici astrofotografia», `claude/uplink-expert-agent.md`, da lanciare come agente generico in sola lettura sul sito `/home/claude/sito`) solo le parti che toccano il protocollo del sito, non i fatti di NINA. Conclusione: scegli la fonte (ninaAPI, lettura dei log, oppure entrambe) e annota perché. Verifica anche se il plugin ninaAPI risulta installato sul PC di Robert (serve il computer collegato, oppure lo dice lui) e annota come si installa dal gestore dei plugin di NINA **[NV]**.
   - *Test:* nessun codice; la verifica è che ogni campo usato dai task successivi abbia fonte [V].
   - *Dip.:* nessuna.
-- [ ] **P11.1 [S] Configurazione e pagina «NINA».** Sezione `nina` in `AppConfig` (spenta; host, porta, chiave se prevista da P11.0, cartella dei log, modalità fonte) con validazione. Nuova vista **Integrazioni → NINA** nella UI (IT/EN, notte rossa): interruttore, campi, pulsante «Prova connessione» con esito comprensibile, stato in barra di stato. Segreti con DPAPI.
+- [ ] **P11.1 [S] Configurazione e pagina «NINA».** Sezione `nina` in `AppConfig` (spenta; host, porta, chiave se prevista da P11.0, cartella dei log, modalità fonte) con validazione. Nuova vista **Integrazioni → NINA** nella UI (IT/EN, notte rossa): interruttore, campi, pulsante «Prova connessione» con esito comprensibile (distingue «NINA non risponde», «plugin ninaAPI non trovato» con la guida all'installazione, «connesso»), stato in barra di stato. Segreti con DPAPI.
   - *Test:* validazione, round-trip, upgrade da config senza la sezione, vista renderizzata (come i test UI esistenti).
   - *Dip.:* P11.0.
 - [ ] **P11.2 [H] Client NINA e modello di stato.** `INinaSource` con implementazione per ninaAPI (REST + WebSocket) e, se P11.0 lo prevede, per la lettura dei log. Modello `NinaState` (connesso, mount: parcheggiato/in inseguimento/in slew, coordinate, soggetto in corso, sequenza attiva) con timestamp UTC di lettura. Server finto in-process per i test.
@@ -360,34 +360,42 @@ Regole comuni a P11: tutto è **spento di default** (`nina.enabled=false`); la p
 - [ ] **P11.8 [H] Vista «Diagnostica» (visiva).** Nel player della notte e nel dettaglio frame, pannello con gli eventi NINA attorno al frame mostrato; clic su un evento = salta al frame; clic su un frame = elenca gli eventi vicini; **marcatori sulla linea temporale** della notte per tipo (filtri). Opzione per mostrare nel timelapse esportato l'ultimo evento come widget della maschera (spenta). Ricerca di testo.
   - *Test:* navigazione evento↔frame, filtri, render in rosso notte, notti senza eventi NINA.
   - *Dip.:* P11.7, P1.6 (vista Notti).
-- [ ] **P11.9 [S] Proposta di contratto Uplink (solo documento).** Se Robert vuole mostrare sul sito soggetto, stato di park o capitoli, scrivi con le istruzioni di `uplink-expert` (procedura «preparare una richiesta di modifica del contratto») una richiesta in `docs/ralph/UPLINK-NINA-RICHIESTA.md`: motivazione, compatibile o no, fixture da cambiare, impatto per repository, ordine di rilascio. **Non** modificare né le fixture né il sito: lo fa Robert con il suo team.
-  - *Test:* nessun codice.
-  - *Dip.:* P11.0.
-- [ ] **P11.10 [S] Verifica P11.** Test con server NINA finto; controllo che con `nina.enabled=false` non parta nessuna connessione né thread; elenco «Da provare con NINA reale» (campi reali, epoca delle coordinate, formato dei log, scarto d'orologio) in NOTES.md.
-  - *Dip.:* P11.1–P11.8.
+- [ ] **P11.9 [S] Campo inquadrato del telescopio e controllo dell'allineamento.** Disegna sulla all-sky il **rettangolo del campo** del telescopio (focale, dimensioni del sensore o pixel, angolo del rotatore). I dati di NINA su camera, focale e rotatore sono **[NV]** (P11.0): se l'API non li dà, l'utente li inserisce a mano nella pagina NINA. Il rettangolo è un widget attivabile, anche nel timelapse. **Controllo dell'allineamento (sperimentale):** confronta il punto puntato dal mount con la posizione del telescopio visibile nell'immagine (Robert tiene la all-sky sotto il telescopio) e mostra lo scarto, utile a validare la calibrazione ottica; non correggere nulla in automatico. L'esito va dichiarato **[NV]** finché non c'è una prova su immagini reali, con soglie annotate dopo la misura.
+  - *Test:* campo atteso per focale e sensore noti, rotazione, oggetto fuori dal cerchio; render in modo normale e rosso notte.
+  - *Dip.:* P11.3.
+- [ ] **P11.10 [H] Capitoli automatici su YouTube.** Dagli eventi NINA (cambio soggetto, messa a fuoco, meridian flip, e le altre categorie confermate da P11.0) costruisci l'elenco dei capitoli nella descrizione del video, con i tempi calcolati dalla posizione del frame nel timelapse (indice del frame diviso gli fps). Nuovo segnaposto del modello di titolo e descrizione di P7.1 (per esempio `{capitoli}`). Le **regole di YouTube sui capitoli** (formato dei tempi, primo capitolo a 0:00, numero e durata minimi) vanno lette sulla guida ufficiale e annotate **[NV]**: non applicarle a memoria. Se mancano i requisiti, nessun capitolo.
+  - *Test:* eventi sintetici → elenco atteso; troppo pochi eventi; tempi oltre la durata; nessun dato privato (percorsi, indirizzi) nei capitoli.
+  - *Dip.:* P11.7, P7.1, P7.3.
+- [ ] **P11.11 [S] Allerta di cielo che peggiora, verso NINA.** Calcola la **tendenza** dell'indice di cielo sereno (P9.2 e P9.5) e dai un avviso configurabile quando il cielo sta peggiorando; con il SafetyMonitor Alpaca di P9.5 NINA può riceverlo come condizione «non sicuro». Scrivi una guida passo-passo per collegare il SafetyMonitor di All Sky Brain a NINA. Verifica sulla documentazione di NINA come si aggiunge un monitor di sicurezza e annotalo **[NV]**. Soglie e finestra di tendenza scelte dall'utente, con un valore predefinito **giustificato** da una misura sulla notte simulata o da una fonte. L'avviso passa anche da Telegram (P15) se attivo.
+  - *Test:* serie sintetiche di nuvolosità crescente, stabile e oscillante (niente falsi allarmi per una nuvola breve); unità del SafetyMonitor su loopback.
+  - *Dip.:* P9.2, P9.5, P11.2.
+- [ ] **P11.12 [S] Rugiada e condensa sulla cupola (sperimentale).** Misura la perdita di nitidezza in una zona fissa dell'immagine (per esempio il bordo della cupola o l'orizzonte dentro la maschera) e rilevane il calo rispetto alla base della notte. Se è disponibile un sensore ASCOM ObservingConditions (P6.1–P6.3), confronta temperatura e punto di rugiada come controllo incrociato. Lo stato di park di NINA è solo un dato di contesto da mostrare, non una condizione. Tutto è **[NV]**: la soglia si ricava da immagini reali con e senza condensa, quindi richiede dati di Robert; fino ad allora la funzione resta spenta e marcata come sperimentale.
+  - *Test:* immagini sintetiche sfocate con grado crescente; nessun falso allarme al passaggio giorno-notte.
+  - *Dip.:* P2.1, P6.1–P6.3 (meteo).
+- [ ] **P11.13 [S] Verifica P11.** Test con server NINA finto; controllo che con `nina.enabled=false` non parta nessuna connessione né thread; elenco «Da provare con NINA reale» (campi reali, epoca delle coordinate, formato dei log, scarto d'orologio, allineamento del campo, SafetyMonitor in NINA) in NOTES.md.
+  - *Dip.:* P11.1–P11.12.
 
-### P12 — Accesso remoto senza VPN (webapp con login)
+### P12 — Monitoraggio pubblico sul sito (sola lettura, nessun login, nessuna porta aperta)
 
-> **Questa è la parte più delicata della fase: è l'unica che apre l'osservatorio a Internet.** Parte solo dopo la decisione scritta di Robert in P12.0. Predefinito: **spento**; nessuna esposizione senza opt-in esplicito e password forte.
+> **Decisione di Robert (22/10/2026):** al momento interessa **solo il monitoraggio**. **Zero interazione**: tutti sono visitatori, **nessun login**, nessun comando. Sulla scelta tecnica Robert ha delegato: è adottata la **strada A** (sotto).
+> **Strada A:** l'app **invia in uscita** (HTTPS, protocollo Uplink) uno stato e l'immagine al sito di Robert, e il sito li mostra. Nessuna porta si apre sull'osservatorio e non esiste alcun canale per scrivere sul PC: i vincoli di §0 restano **invariati**.
+> **Strade scartate:** B, tunnel di terzi (aggiunge un fornitore esterno con termini d'uso per immagini e video **[NV]**; per Cloudflare lo streaming video è vietato nei piani gratuiti **[V]** dal piano v1) e C, porta aperta sul router con DDNS (superficie d'attacco diretta, nessun vantaggio per il solo monitoraggio).
+> Se in futuro servirà l'interazione, sarà una fase nuova con un modello di sicurezza a parte (login, ruoli, coda comandi): **non** è in questa fase.
 
-- [ ] **P12.0 [S] Decisione architetturale con Robert (bloccante).** Presenta, con pro e contro verificati, tre strade e **non scegliere da solo**:
-  - **A. Relay in uscita verso il sito di Robert** (coerente con Uplink): l'app invia stato e immagini al sito; il sito serve la webapp con login. Le azioni dell'utente loggato diventano **comandi in coda** sul sito che l'app preleva (pull), quindi **nessuna porta aperta** sull'osservatorio. Richiede lavoro nel repository del sito e un nuovo contratto (passa dall'agente `uplink-expert`, procedura di richiesta di modifica). Limiti Vercel Hobby già noti: [V] funzioni 300 s, body 4,5 MB, 2.000 operazioni Blob al mese nel piano v1.
-  - **B. Tunnel in uscita di terzi** (per esempio Cloudflare Tunnel o Tailscale Funnel): la webapp locale resta sul PC, il tunnel la rende raggiungibile. Termini d'uso per immagini e video [NV]; per Cloudflare lo streaming video è vietato nei piani gratuiti [V da piano v1].
-  - **C. Apertura di una porta sul router con DDNS e HTTPS**: **sconsigliata** (superficie d'attacco diretta sul PC dell'osservatorio).
-  Scrivi la scelta e le azioni consentite all'utente loggato in `docs/ACCESSO-REMOTO.md` e la modifica scritta ai vincoli di §0 e di `PROMPT.md`.
-  - *Dip.:* decisione di Robert.
-- [ ] **P12.1 [S] Modello di sicurezza.** `docs/SICUREZZA-REMOTA.md`: minacce, ruoli (**visitatore** sola lettura, **utente loggato** interazione, **admin**), cosa è pubblico (per ogni widget un interruttore «visibile ai visitatori»; **predefinito: niente**; posizione esatta dell'osservatorio e log mai pubblici), autenticazione (password con PBKDF2 come già fatto, blocco dopo tentativi falliti, sessioni a scadenza, protezione CSRF, valutare TOTP; scelta e fonte annotate), HTTPS obbligatorio, registro delle azioni (audit), limiti di frequenza, elenco **chiuso** delle azioni che l'utente può compiere. Azioni su telescopio, cupola o alimentazione: **escluse in v1**.
-  - *Dip.:* P12.0.
-- [ ] **P12.2 [H] Ruoli e autorizzazioni nel server web esistente.** Estendi il server opzionale già presente (`ui.webEnabled`, Kestrel, password PBKDF2 + Basic) con ruoli, sessioni, blocco tentativi, audit e **autorizzazione per endpoint**: le scritture richiedono il ruolo, la sola lettura è l'unica cosa ammessa senza login. Nessuna nuova dipendenza NuGet senza licenza verificata.
-  - *Test:* matrice completa endpoint × ruolo (nessuna scrittura senza login), sessione scaduta, tentativi ripetuti, CSRF, nessun segreto nei log.
+- [ ] **P12.0 [S] Registra la decisione.** Scrivi `docs/ACCESSO-REMOTO.md` con la decisione di Robert, la strada A, le due alternative scartate e il perché, e l'elenco di ciò che **non** esiste (login, comandi, porte). Nessuna modifica ai vincoli di §0.
+  - *Dip.:* nessuna.
+- [ ] **P12.1 [S] Dati pubblici e privacy.** Elenco **chiuso** di ciò che può uscire: immagine all-sky (con mirino e maschera se attivi), fase della notte, altezza di Sole e Luna, soggetto e stato di park di NINA, grafico altezza e distanza dalla Luna, ultimo timelapse, keogram e startrails, ora dell'ultimo aggiornamento. **Mai pubblicati:** posizione esatta dell'osservatorio, percorsi, indirizzi IP, log di NINA, token. Interruttore generale «Pubblica il monitoraggio» **spento di default**, un interruttore per ogni voce, e un'anteprima nell'app di «cosa vede il visitatore». Ricorda che la lettura è pubblica per tutti: le cose sensibili non vanno nell'elenco.
+  - *Test:* il payload non contiene mai campi fuori dall'elenco (test sul tipo e su un JSON di prova); posizione assente o arrotondata come deciso.
+  - *Dip.:* P12.0, P11.x per le voci NINA.
+- [ ] **P12.2 [S] Richiesta di contratto Uplink (solo documento).** Con le istruzioni di `uplink-expert` (procedura «preparare una richiesta di modifica del contratto»), scrivi `docs/ralph/UPLINK-MONITOR-RICHIESTA.md`: nuovi dati di stato e miniature di prodotti, compatibile o no (preferibile campo facoltativo o nuova rotta), fixture proposte, limiti di dimensione e di frequenza, impatto per ogni repository, ordine di rilascio (fixture e sito prima, app dopo). Stima i **volumi** (richieste e scritture al mese) contro i limiti di Vercel Hobby, Blob e Neon letti sulla documentazione corrente **[NV]**; l'immagine all-sky usa già il limite di una nuova immagine ogni 10 secondi **[V]** (UPLINK-SPEC §4.7). **Non** modificare né le fixture né il sito: lo fa Robert con il suo team.
   - *Dip.:* P12.1.
-- [ ] **P12.3 [S] Esposizione verso l'esterno.** Implementa l'opzione scelta in P12.0 dietro `IRemoteAccessProvider`. Con A: contratto, coda comandi, scadenza dei comandi e conferma locale per quelli sensibili. Con B: configurazione guidata e controllo che il tunnel non esponga le porte di NINA né dell'app oltre quelle previste.
-  - *Test:* provider finto, perdita di rete, riconnessione, comando duplicato, comando scaduto.
+- [ ] **P12.3 [H] Pubblicazione dello stato dall'app.** Compositore dello snapshot (secondo l'elenco di P12.1 e le fixture concordate), invio nella coda Uplink già presente con backoff e idempotenza, frequenza configurabile (valore predefinito scelto dopo la stima dei volumi di P12.2), immagine pubblicata con **overlay** quando `overlay.applyToPublish` è attivo (oggi il flag esiste ma non viene letto: va collegato qui, con mirino e widget scelti dall'utente). Un errore di rete non deve fermare né rallentare la cattura.
+  - *Test:* server HTTP finto, rete assente, risposta 429 con `Retry-After`, doppio invio, nessun segreto nei log.
+  - *Dip.:* P12.2 e fixture concordate, P2.4.
+- [ ] **P12.4 [S] Lato sito (repository `sito`, solo se Robert lo autorizza).** Pagina pubblica di monitoraggio in sola lettura e route di ricezione conformi alle fixture. Si lavora su un **branch dedicato**, mai sul ramo di produzione senza un via esplicito, e seguendo le regole del sito (`AGENTS.md` non si tocca; leggere `node_modules/next/dist/docs/` prima di modificare routing o cache; `graphify update .` dopo le modifiche; testi editoriali con le skill robertizzazione e humanizer). Il codice lo scrivono agenti Haiku con i criteri qui, rivisti dal loop. Verifica con il kit `scripts/uplink-conformance.mjs --all-fixtures`.
+  - *Test:* conformità sulle fixture, pagina a 390 px senza scorrimento orizzontale, visitatore senza strumenti di scrittura, richiesta di scrittura senza Bearer rifiutata con 401.
   - *Dip.:* P12.2.
-- [ ] **P12.4 [H] Webapp per telefono e desktop.** Viste in sola lettura per tutti: immagine live, stato, grafico altezza e distanza Luna, stato di park, ultimo timelapse, keogram. Viste interattive per l'utente loggato: esattamente le azioni dell'elenco chiuso di P12.1. IT/EN, notte rossa, layout a 390 px senza scorrimento orizzontale (checklist della skill `web-ui-review`).
-  - *Test:* Playwright su build statica con server finto: visitatore non vede i pulsanti di scrittura e le chiamate di scrittura falliscono con 401/403.
-  - *Dip.:* P12.2, P11.4 (se NINA attivo).
-- [ ] **P12.5 [S] Verifica di sicurezza indipendente.** Un agente che non ha scritto il codice esegue la checklist di `SICUREZZA-REMOTA.md`: porte in ascolto con la funzione spenta (nessuna), matrice dei ruoli, scansione dei segreti in log e cartella dati, tentativo di accedere senza login a ogni endpoint di scrittura. Esito in NOTES.md con [V]/[NV].
+- [ ] **P12.5 [S] Verifica indipendente.** Un agente che non ha scritto il codice controlla: con la pubblicazione spenta nessuna richiesta in uscita verso il sito; con la pubblicazione accesa nessuna **porta in ascolto** del processo; nessun dato fuori dall'elenco di P12.1; nessun segreto nei log né nei payload; kit di conformità in sola lettura (senza `--write`, che lascerebbe un evento di prova pubblico per 12 ore **[V]**). Esito in NOTES.md con [V]/[NV].
   - *Dip.:* P12.3, P12.4.
 
 ### P13 — Studio di montaggio (materiale vecchio, editing, esportazione)
@@ -443,15 +451,12 @@ Estende P9.7 (report e allerte): qui si inviano **i prodotti** (timelapse, keogr
   - *Dip.:* P15.2.
 
 ### P16 — Verifica finale e rilascio 0.5.0
-- [ ] **P16.1 [S] Verifica finale fase 3.** Come P8.2, più: con NINA, Telegram e accesso remoto **spenti** nessuna porta in ascolto e nessuna connessione in uscita oltre a quelle già previste; test di sicurezza di P12.5 verde; test del montaggio con serie sintetica; riepilogo per Robert in NOTES.md con la sezione **«Da provare con NINA reale e sul PC con la ZWO»**.
-- [ ] **P16.2 [S] Rilascio automatico 0.5.0.** Stesso cancello e stessi passi di P8.4, con la versione 0.5.0. Il cancello include P16.1 `[x]` e, se P12 è stato fatto, P12.5 `[x]`. Niente rilascio con P12 a metà.
+- [ ] **P16.1 [S] Verifica finale fase 3.** Come P8.2, più: con NINA, Telegram e pubblicazione del monitoraggio **spenti** nessuna porta in ascolto e nessuna connessione in uscita oltre a quelle già previste; con il monitoraggio acceso, ancora nessuna porta in ascolto; verifica P12.5 verde; test del montaggio con serie sintetica; riepilogo per Robert in NOTES.md con la sezione **«Da provare con NINA reale e sul PC con la ZWO»**.
+- [ ] **P16.2 [S] Rilascio automatico 0.5.0.** Stesso cancello e stessi passi di P8.4, con la versione 0.5.0. Il cancello include P16.1 `[x]`. Il lato sito (P12.4) è un rilascio separato di Robert: non fa parte della release dell'app.
 
-### Altre idee proposte (non pianificate: servono la scelta di Robert)
-1. **Campo inquadrato del telescopio sulla all-sky:** disegnare il rettangolo del campo (focale, sensore, angolo del rotatore) oltre al mirino. Verifica anche l'allineamento tra puntamento NINA e telescopio visibile nell'immagine, utile a controllare la calibrazione ottica.
-2. **Capitoli automatici su YouTube** dalla cronologia NINA (messa a fuoco, meridian flip, cambio soggetto) nella descrizione del video.
-3. **Perché ho perso tempo:** correlare i frame scartati o il peggioramento di HFR e guida in NINA con le nuvole viste dalla all-sky, e dare un «indice di efficienza della notte» (ore di cielo utile contro ore di integrazione).
-4. **Allerta cielo che peggiora** verso NINA tramite il SafetyMonitor di P9.5, così la sequenza si può fermare prima che arrivino le nuvole.
-5. **Rugiada e condensa sulla cupola** dalla perdita di nitidezza (già nel piano v1 come sperimentale), da collegare allo stato di park.
+### Idee valutate
+- Implementate nel piano: campo inquadrato (P11.9), capitoli YouTube (P11.10), allerta di cielo che peggiora con SafetyMonitor per NINA (P11.11), condensa sulla cupola, sperimentale (P11.12).
+- **Scartata da Robert:** indice di efficienza della notte (ore di cielo utile contro ore di integrazione).
 
 ---
 
