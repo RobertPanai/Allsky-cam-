@@ -52,7 +52,7 @@ public sealed record MoonPhaseGlyph(
     /// <param name="latDeg">Latitudine dell'osservatore in gradi (nord positivo).</param>
     public static MoonPhaseGlyph At(DateTimeOffset utc, double latDeg)
     {
-        AstroTime.CheckLatLon(latDeg, 0.0);
+        TonightGuard.CheckLatLon(latDeg, 0.0);
 
         double now = MoonPosition.IlluminatedFraction(utc);
         double later = MoonPosition.IlluminatedFraction(utc + TrendInterval);

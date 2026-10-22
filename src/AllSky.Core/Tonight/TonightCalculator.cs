@@ -53,7 +53,7 @@ public static class TonightCalculator
         DateTimeOffset now, double latDeg, double lonDeg, TimeZoneInfo tz, TimeSpan? sampleStep = null)
     {
         ArgumentNullException.ThrowIfNull(tz);
-        AstroTime.CheckLatLon(latDeg, lonDeg);
+        TonightGuard.CheckLatLon(latDeg, lonDeg);
 
         TimeSpan step = sampleStep ?? DefaultSampleStep;
         if (step <= TimeSpan.Zero)
