@@ -196,9 +196,46 @@ internal sealed class RecordingTimelapse : ITimelapseBuilder
     private readonly object _gate = new();
     private readonly TaskCompletionSource _done = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private int _lastFrameCount = -1;
+    private TimelapseOptions? _lastOptions;
+    private int _jobs;
 
     /// <summary>Completato al primo montaggio riuscito.</summary>
     public Task Done => _done.Task;
+
+    /// <summary>Attende che siano arrivati almeno <paramref name="count"/> montaggi (anche dopo il primo).</summary>
+    public async Task WaitForJobsAsync(int count, TimeSpan timeout)
+    {
+        var limit = DateTime.UtcNow + timeout;
+        while (true)
+        {
+            lock (_gate)
+            {
+                if (_jobs >= count)
+                {
+                    return;
+                }
+            }
+
+            if (DateTime.UtcNow > limit)
+            {
+                throw new TimeoutException($"montaggi attesi: {count}");
+            }
+
+            await Task.Delay(10);
+        }
+    }
+
+    /// <summary>Opzioni dell'ultimo montaggio ricevuto, null se nessuno.</summary>
+    public TimelapseOptions? LastOptions
+    {
+        get
+        {
+            lock (_gate)
+            {
+                return _lastOptions;
+            }
+        }
+    }
 
     /// <summary>Numero di JPEG ricevuti dall'ultimo montaggio, -1 se nessuno.</summary>
     public int LastFrameCount
@@ -233,6 +270,8 @@ internal sealed class RecordingTimelapse : ITimelapseBuilder
         lock (_gate)
         {
             _lastFrameCount = jpegPaths.Count;
+            _lastOptions = options;
+            _jobs++;
         }
 
         _done.TrySetResult();
@@ -273,7 +312,11 @@ internal sealed class Harness : IDisposable
         new ConfigStore().Save(ConfigPath, config);
     }
 
-    public EngineDependencies Dependencies(IClock clock, ICameraProvider cameras, ICaptureDelay delay)
+    public EngineDependencies Dependencies(
+        IClock clock,
+        ICameraProvider cameras,
+        ICaptureDelay delay,
+        Func<AppConfig, IFrameOverlay?>? frameOverlayFactory = null)
     {
         return new EngineDependencies(
             clock,
@@ -284,7 +327,8 @@ internal sealed class Harness : IDisposable
             Encoder,
             ConfigPath,
             Log,
-            () => "/opt/test/ffmpeg");
+            () => "/opt/test/ffmpeg",
+            FrameOverlayFactory: frameOverlayFactory);
     }
 
     public void Log(string message, Exception? ex)

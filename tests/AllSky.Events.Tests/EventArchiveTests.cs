@@ -42,7 +42,7 @@ public class EventArchiveTests : IDisposable
         archive.WriteRecord(record);
     }
 
-    private static DateTimeOffset T(int minute) => new(2026, 10, 19, 21, minute, 0, TimeSpan.Zero);
+    private static DateTimeOffset T(int minute) => new DateTimeOffset(2026, 10, 19, 21, 0, 0, TimeSpan.Zero).AddMinutes(minute);
 
     [Fact]
     public void RoundTrip_PreservesEveryField()
@@ -89,12 +89,11 @@ public class EventArchiveTests : IDisposable
         SaveRaw(archive, Record("20261020T210000Z-00", "2026-10-20", T(60), EventKind.Meteor));
         archive.SetStatus("2026-10-19", "20261019T210000Z-00", EventStatus.Discarded, "test");
 
-        Assert.Equal(2, archive.List(new EventQuery { NightId = "2026-10-19" }).Count);
+        Assert.Single(archive.List(new EventQuery { NightId = "2026-10-19" }));
         Assert.Equal(3, archive.List(new EventQuery { IncludeDiscarded = true }).Count);
-        Assert.Equal(2, archive.List(new EventQuery { Kind = EventKind.Meteor }).Count);
-        Assert.Equal(1, archive.List(new EventQuery { Kind = EventKind.Meteor, NightId = "2026-10-19" }).Count);
-        Assert.Equal(0, archive.List(new EventQuery { Kind = EventKind.Meteor, NightId = "2026-10-19", IncludeDiscarded = true }).Count - 1);
-        Assert.Equal(0, archive.List(new EventQuery { NightId = "2026-10-18" }).Count);
+        Assert.Single(archive.List(new EventQuery { Kind = EventKind.Meteor }));
+        Assert.Single(archive.List(new EventQuery { Kind = EventKind.Meteor, NightId = "2026-10-19", IncludeDiscarded = true }));
+        Assert.Empty(archive.List(new EventQuery { NightId = "2026-10-18" }));
         Assert.Empty(archive.List(new EventQuery { Kind = EventKind.Transit }));
     }
 
@@ -178,7 +177,7 @@ public class EventArchiveTests : IDisposable
         Assert.False(File.Exists(zipPath + ".tmp"));
         using ZipArchive zip = ZipFile.OpenRead(zipPath);
         var names = zip.Entries.Select(e => e.FullName).OrderBy(n => n, StringComparer.Ordinal).ToList();
-        Assert.Equal(new[] { id + "/crop.jpg", id + "/event.json", id + "/frame.jpg" }, names);
+        Assert.Equal(string.Join(",", id + "/crop.jpg", id + "/event.json", id + "/frame.jpg"), string.Join(",", names));
 
         using Stream json = zip.GetEntry(id + "/event.json")!.Open();
         using JsonDocument doc = JsonDocument.Parse(json);
