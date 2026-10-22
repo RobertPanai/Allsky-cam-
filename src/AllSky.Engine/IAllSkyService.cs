@@ -1,5 +1,6 @@
 using AllSky.Archive;
 using AllSky.Core;
+using AllSky.Nina;
 
 namespace AllSky.Engine;
 
@@ -11,6 +12,11 @@ public interface IAllSkyService
 {
     /// <summary>Stato corrente (<c>GET /api/status</c>).</summary>
     StatusDto GetStatus();
+
+    /// <summary>
+    /// Ultimo stato letto da NINA, a sola lettura. Null se la sezione <c>nina</c> e' spenta o il servizio non e' avviato.
+    /// </summary>
+    NinaState? LatestNinaState { get; }
 
     /// <summary>Emesso a ogni cambio di stato, errore, frame, lavoro o configurazione applicata.</summary>
     event Action<StatusDto>? StatusChanged;

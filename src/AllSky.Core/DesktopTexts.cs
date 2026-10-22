@@ -262,6 +262,45 @@ public sealed record DesktopTexts
     /// <summary>Messaggio quando l'immagine non si può mostrare; {0} è il dettaglio.</summary>
     public required string LiveLoadError { get; init; }
 
+    /// <summary>Titolo del pannello NINA nella vista Live.</summary>
+    public required string NinaPanelTitle { get; init; }
+
+    /// <summary>Pannello NINA: NINA non configurato o non avviato, nessun dato.</summary>
+    public required string NinaOff { get; init; }
+
+    /// <summary>Pannello NINA: etichetta del soggetto della sequenza.</summary>
+    public required string NinaSubjectLabel { get; init; }
+
+    /// <summary>Pannello NINA: etichetta dello stato di park.</summary>
+    public required string NinaParkLabel { get; init; }
+
+    /// <summary>Pannello NINA: etichetta della connessione.</summary>
+    public required string NinaConnectionLabel { get; init; }
+
+    /// <summary>Pannello NINA: valore di connessione riuscita.</summary>
+    public required string NinaConnected { get; init; }
+
+    /// <summary>Pannello NINA: valore di connessione non riuscita.</summary>
+    public required string NinaNotConnected { get; init; }
+
+    /// <summary>Pannello NINA: park, mount parcheggiato.</summary>
+    public required string NinaParkParked { get; init; }
+
+    /// <summary>Pannello NINA: park, mount in inseguimento.</summary>
+    public required string NinaParkTracking { get; init; }
+
+    /// <summary>Pannello NINA: park, mount in movimento.</summary>
+    public required string NinaParkSlewing { get; init; }
+
+    /// <summary>Pannello NINA: park, mount fermo e non parcheggiato.</summary>
+    public required string NinaParkStopped { get; init; }
+
+    /// <summary>Pannello NINA: park, stato non determinabile.</summary>
+    public required string NinaParkUnknown { get; init; }
+
+    /// <summary>Pannello NINA: park, NINA non raggiungibile quindi nessuno stato di park.</summary>
+    public required string NinaParkDisconnected { get; init; }
+
     /// <summary>Etichetta del filtro per sorgente nella vista "Camera".</summary>
     public required string CameraSourceLabel { get; init; }
 
@@ -943,6 +982,19 @@ public sealed record DesktopTexts
         LiveOverlaySatellites = "Tracce satelliti",
         LiveOverlayPending = "Disponibile dopo la calibrazione.",
         LiveLoadError = "Impossibile mostrare l'immagine: {0}",
+        NinaPanelTitle = "NINA",
+        NinaOff = "NINA non attivo",
+        NinaSubjectLabel = "Soggetto",
+        NinaParkLabel = "Park",
+        NinaConnectionLabel = "Connessione",
+        NinaConnected = "collegata",
+        NinaNotConnected = "non collegata",
+        NinaParkParked = "parcheggiato",
+        NinaParkTracking = "in inseguimento",
+        NinaParkSlewing = "in movimento",
+        NinaParkStopped = "fermo, non parcheggiato",
+        NinaParkUnknown = "non determinabile",
+        NinaParkDisconnected = "non disponibile",
         CameraSourceLabel = "Sorgente",
         CameraSourceAll = "Tutte le sorgenti",
         CameraSourceSimulator = "Simulatore",
@@ -1648,6 +1700,19 @@ public sealed record DesktopTexts
         LiveOverlaySatellites = "Satellite tracks",
         LiveOverlayPending = "Available after calibration.",
         LiveLoadError = "Cannot show the image: {0}",
+        NinaPanelTitle = "NINA",
+        NinaOff = "NINA not active",
+        NinaSubjectLabel = "Target",
+        NinaParkLabel = "Park",
+        NinaConnectionLabel = "Connection",
+        NinaConnected = "connected",
+        NinaNotConnected = "not connected",
+        NinaParkParked = "parked",
+        NinaParkTracking = "tracking",
+        NinaParkSlewing = "slewing",
+        NinaParkStopped = "stopped, not parked",
+        NinaParkUnknown = "unknown",
+        NinaParkDisconnected = "not available",
         CameraSourceLabel = "Source",
         CameraSourceAll = "All sources",
         CameraSourceSimulator = "Simulator",

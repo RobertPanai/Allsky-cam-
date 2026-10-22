@@ -187,6 +187,9 @@ public sealed class LiveView : UserControl
         var overlayPanel = new Border { Style = PanelStyle(), Margin = new Thickness(0, 16, 0, 0), Child = overlayStack };
         stack.Children.Add(overlayPanel);
 
+        // Stato NINA in sola lettura: in fondo alla colonna, sotto i blocchi esistenti.
+        stack.Children.Add(new NinaStatusPanel(_service, _texts) { Margin = new Thickness(0, 16, 0, 0) });
+
         return stack;
     }
 
