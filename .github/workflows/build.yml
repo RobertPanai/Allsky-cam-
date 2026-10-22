@@ -21,6 +21,27 @@ jobs:
         id: test
         continue-on-error: true
         run: dotnet test AllSky.sln -c Release --nologo --logger "trx;LogFileName=test-results.trx"
+      - name: Report failed tests as annotations
+        if: always()
+        shell: pwsh
+        run: |
+          # Il passo Test ha continue-on-error: qui i test falliti diventano annotazioni leggibili via API.
+          $files = Get-ChildItem -Recurse -Filter *.trx -ErrorAction SilentlyContinue
+          $failed = 0; $total = 0
+          foreach ($f in $files) {
+            [xml]$doc = Get-Content $f.FullName -Raw
+            foreach ($r in $doc.TestRun.Results.UnitTestResult) {
+              $total++
+              if ($r.outcome -eq 'Failed') {
+                $failed++
+                $msg = [string]$r.Output.ErrorInfo.Message
+                $msg = ($msg -replace '\s+', ' ')
+                if ($msg.Length -gt 500) { $msg = $msg.Substring(0, 500) }
+                Write-Output "::error title=Test fallito: $($r.testName)::$msg"
+              }
+            }
+          }
+          Write-Output "Test totali: $total, falliti: $failed"
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
