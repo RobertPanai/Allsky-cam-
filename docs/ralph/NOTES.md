@@ -119,3 +119,17 @@ Una voce per iterazione, la più recente in fondo. Formato:
   - Nomi d'errore `invalid_grant`/`access_denied` e forma della revoca presi dallo standard OAuth, non dalle pagine Google lette.
   - Glifo lunare confrontato con una sola data approssimata.
 - Da decidere con Robert: manca un file LICENSE nel repository (la licenza del marchio e di tutto il codice).
+
+## 2026-10-22 11:00 — P2.4, P4.4, P5.3, P7.3
+- Fatto: overlay applicabile al timelapse (`applyToTimelapse`; `applyToLive`/`applyToPublish` solo flag, spenti); conferma transiti (`AllSky.Transits`: proiettore tracce, adattatore `IPredictedTrackProvider`, `TransitConfirmer`); archivio eventi (`AllSky.Events`: EventArchive, EventSaver, zip, etichette); upload YouTube resumable + pianificatore giornaliero con idempotenza (`AllSky.YouTube/Upload`).
+- Test: runner shim 1748 eseguiti, 1747 PASS, 1 FAIL (instabile noto). CI Windows run 39737238522 verde.
+- Fatti verificati (22/10/2026):
+  - Protocollo upload resumable YouTube: POST uploadType=resumable, Location, PUT con Content-Range, ripresa con `bytes */total`, 308/200/201, chunk multipli di 256 KB — https://developers.google.com/youtube/v3/guides/using_resumable_upload_protocol.
+  - videos.insert: 1 unità, 100/giorno, max 256 GB — https://developers.google.com/youtube/v3/docs/videos/insert.
+- Non verificato:
+  - ID categoria YouTube [NV]: default "28" configurabile, nessuna fonte ufficiale trovata.
+  - Effetto reale della privacy per progetti API non verificati ("not restricted to private viewing mode" nella doc); `selfDeclaredMadeForKids` inviato sempre false; reason esatti dei 403 di quota; durata della sessione resumable.
+  - Soglie del confermatore transiti solo su dati sintetici (rischio: bordo di nuvola allineato alla traccia → falso positivo). Il modello fisheye deve essere nelle coordinate del frame ridotto.
+  - Eventi: clip con ffmpeg reale e JPEG reale non provati; posizione alt/az solo come interfaccia `IPixelToSky`.
+  - `WpfFrameOverlay` non compilato a runtime/budget 30 ms non misurato.
+- Da fare (cablaggio, non ancora assegnato): timer del pianificatore YouTube nell'Host (TickAsync all'avvio e ogni ~10 min); adattatore `ILatestTimelapseProvider` verso NightArchive (con variante con maschera); detection per frame nell'Engine che usa `StreakClassifier`/`EventSaver` (agganciare con finestra N−2..N+2, serve RGB a piena risoluzione); `Engine.WeatherProvider` da impostazioni; `IPixelToSky` dalla calibrazione.
