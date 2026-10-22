@@ -454,6 +454,22 @@ Estende P9.7 (report e allerte): qui si inviano **i prodotti** (timelapse, keogr
 - [ ] **P16.1 [S] Verifica finale fase 3.** Come P8.2, più: con NINA, Telegram e pubblicazione del monitoraggio **spenti** nessuna porta in ascolto e nessuna connessione in uscita oltre a quelle già previste; con il monitoraggio acceso, ancora nessuna porta in ascolto; verifica P12.5 verde; test del montaggio con serie sintetica; riepilogo per Robert in NOTES.md con la sezione **«Da provare con NINA reale e sul PC con la ZWO»**.
 - [ ] **P16.2 [S] Rilascio automatico 0.5.0.** Stesso cancello e stessi passi di P8.4, con la versione 0.5.0. Il cancello include P16.1 `[x]`. Il lato sito (P12.4) è un rilascio separato di Robert: non fa parte della release dell'app.
 
+### P17 — Verifica visiva e strumenti per gli agenti (senza il PC di Robert)
+
+> Obiettivo: poter concludere il software senza che Robert debba fare verifiche a mano. Dove possibile la verifica gira in CI Windows e gli agenti leggono i risultati dagli artifact; il server MCP locale serve solo quando il PC è collegato e resta opt-in.
+
+- [~] **P17.1 [S] Immagini dei test UI come artifact.** Il workflow `build-windows` carica i PNG di `TestResults/shots` (artifact `ui-render-shots`). (fatto 22/10: passo aggiunto a `.github/workflows/build.yml`; verificato alla prima esecuzione CI [NV])
+- [ ] **P17.2 [S] Revisione visiva dagli artifact.** Un agente scarica `ui-render-shots` con `gh`, guarda i PNG e riporta per ogni vista: elementi fuori schermo, testo tagliato, contrasto in rosso notte, mirino nel punto atteso. Esito in NOTES.md con [V]/[NV].
+  - *Dip.:* P17.1, primo run CI con gli screenshot.
+- [ ] **P17.3 [H] Render delle viste NINA nei test.** Mirino, grafico, distanza Luna, stato di park e vista Diagnostica (P11.8) rendono un PNG per tema (normale e rosso notte) con dati sintetici fissi, così P17.2 li può guardare.
+  - *Test:* ogni vista produce il PNG; nessun crash con `LatestNinaState` nullo.
+  - *Dip.:* P11.3–P11.6, P11.8.
+- [ ] **P17.4 [H] Server MCP locale di sola lettura (opt-in).** Nel processo dell'app, solo su `127.0.0.1`, disattivato di default, con tool: stato del motore, `LatestNinaState`, posizione attesa del mirino in pixel, PNG di una vista su richiesta. Nessuna scrittura, nessun comando. Il server non entra nel cammino di cattura né apre porte sulla LAN.
+  - *Test:* tool elencati; con l'opzione spenta nessun listener; nessuna scrittura accettata.
+  - *Dip.:* P11.2 (fatto), P17.3.
+- [ ] **P17.5 [S] Collegamento al PC (solo quando serve).** Il server MCP è raggiungibile dalla sessione solo se la chat è collegata al PC tramite l'app desktop. Documentare il passo per Robert in `docs/AGENTI.md`. Senza collegamento, P17.1–P17.3 bastano per la verifica visiva.
+  - *Dip.:* P17.4.
+
 ### Idee valutate
 - Implementate nel piano: campo inquadrato (P11.9), capitoli YouTube (P11.10), allerta di cielo che peggiora con SafetyMonitor per NINA (P11.11), condensa sulla cupola, sperimentale (P11.12).
 - **Scartata da Robert:** indice di efficienza della notte (ore di cielo utile contro ore di integrazione).

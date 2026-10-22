@@ -28,6 +28,13 @@ jobs:
           name: test-results
           path: '**/TestResults/*.trx'
           if-no-files-found: warn
+      - name: Upload UI render shots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-render-shots
+          path: '**/TestResults/shots/*.png'
+          if-no-files-found: warn
       - name: Publish (self-contained, win-x64, cartella)
         run: >
           dotnet publish src/AllSky.Desktop/AllSky.Desktop.csproj -c Release -r win-x64
