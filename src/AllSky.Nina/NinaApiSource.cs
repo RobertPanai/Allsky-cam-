@@ -97,9 +97,9 @@ public sealed class NinaApiSource : INinaSource, IDisposable
 
     private static NinaState Costruisci(DateTimeOffset istante, Esito mount, Esito sequenza, Esito stato)
     {
-        NinaMountState? mountStato = mount.Documento is { } dm ? NinaParser.Mount(dm.RootElement) : null;
-        NinaTargetState? target = sequenza.Documento is { } ds ? NinaParser.FindTarget(ds.RootElement) : null;
-        string? sequenzaStato = stato.Documento is { } dt ? NinaParser.SequenceState(dt.RootElement) : null;
+        NinaMountState? mountStato = mount.Documento is { } dm ? NinaParser.Mount(NinaParser.Dati(dm.RootElement)) : null;
+        NinaTargetState? target = sequenza.Documento is { } ds ? NinaParser.FindTarget(NinaParser.Dati(ds.RootElement)) : null;
+        string? sequenzaStato = stato.Documento is { } dt ? NinaParser.SequenceState(NinaParser.Dati(dt.RootElement)) : null;
 
         bool connesso = mount.Risposto || sequenza.Risposto || stato.Risposto;
         string? errore = Riassumi(
@@ -171,7 +171,7 @@ public sealed class NinaApiSource : INinaSource, IDisposable
                 return Esito.DaRisposta("risposta troppo grande");
             }
 
-            return Analizza(corpo);
+            return Analizza(percorso, corpo);
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
@@ -192,21 +192,35 @@ public sealed class NinaApiSource : INinaSource, IDisposable
         }
     }
 
-    private static Esito Analizza(byte[] corpo)
+    private static Esito Analizza(string percorso, byte[] corpo)
     {
         if (corpo.Length == 0)
         {
             return Esito.DaRisposta("risposta vuota");
         }
 
+        JsonDocument documento;
         try
         {
-            return Esito.Ok(JsonDocument.Parse(corpo));
+            documento = JsonDocument.Parse(corpo);
         }
         catch (JsonException)
         {
             return Esito.DaRisposta("risposta non JSON");
         }
+
+        // Contenitore ninaAPI con "Success" false o "StatusCode" >= 400: errore dichiarato da NINA.
+        string? errore = NinaParser.ErroreContenitore(documento.RootElement);
+        if (errore is null)
+        {
+            return Esito.Ok(documento);
+        }
+
+        bool sequenzaNonInizializzata = percorso == SequenceStatePath
+            && NinaParser.CodiceStato(documento.RootElement) == (int)HttpStatusCode.Conflict;
+        documento.Dispose();
+
+        return sequenzaNonInizializzata ? Esito.SenzaDati() : Esito.DaRisposta(errore);
     }
 
     private static string ClassificaRete(HttpRequestException ex) =>

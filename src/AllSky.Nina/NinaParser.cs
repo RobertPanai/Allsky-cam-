@@ -32,14 +32,16 @@ internal static class NinaParser
             return null;
         }
 
-        if (TryProprieta(radice, NinaFieldNames.EnvelopeSuccess, out JsonElement successo)
-            && successo.ValueKind == JsonValueKind.False)
+        int? codice = CodiceStato(radice);
+        bool fallito = TryProprieta(radice, NinaFieldNames.EnvelopeSuccess, out JsonElement successo)
+            && successo.ValueKind == JsonValueKind.False;
+
+        if (!fallito && codice is not >= 400)
         {
-            return CodiceErrore(radice) is int c ? $"errore NINA (StatusCode {c})" : "errore NINA";
+            return null;
         }
 
-        int? codice = CodiceErrore(radice);
-        return codice is >= 400 ? $"errore NINA (StatusCode {codice.Value})" : null;
+        return codice is int c ? $"errore NINA (StatusCode {c})" : "errore NINA";
     }
 
     /// <summary>Codice di stato del contenitore, se presente e intero.</summary>
@@ -52,8 +54,6 @@ internal static class NinaParser
 
         return v.ValueKind == JsonValueKind.Number && v.TryGetInt32(out int c) ? c : null;
     }
-
-    private static int? CodiceErrore(JsonElement radice) => CodiceStato(radice);
 
     /// <summary>Legge lo stato del mount da <c>equipment/mount/info</c>. Accetta oggetto o array (primo elemento).</summary>
     public static NinaMountState Mount(JsonElement radiceGrezza)

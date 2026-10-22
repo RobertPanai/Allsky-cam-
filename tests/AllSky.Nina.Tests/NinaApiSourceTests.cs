@@ -273,6 +273,92 @@ public sealed class NinaApiSourceTests
         });
     }
 
+    private static string Avvolto(string dati, bool successo = true, int codice = 200) =>
+        "{\"Response\":" + dati + ",\"Error\":\"\",\"StatusCode\":" + codice + ",\"Success\":" +
+        (successo ? "true" : "false") + ",\"Type\":\"API\"}";
+
+    [Fact]
+    public async Task RispostaAvvolta_LeggeIDatiDentroResponse()
+    {
+        var handler = new NinaScriptedHandler()
+            .Risponde(NinaApiSource.MountInfoPath, Avvolto(MontaturaValida))
+            .Risponde(NinaApiSource.SequenceJsonPath, Avvolto("[" + SequenzaValida + "]"))
+            .Risponde(NinaApiSource.SequenceStatePath, Avvolto("\"Running\""));
+        using var src = Sorgente(handler);
+
+        NinaState stato = await src.ReadAsync(CancellationToken.None);
+
+        Assert.True(stato.Connected);
+        Assert.Null(stato.Error);
+        Assert.NotNull(stato.Mount);
+        Assert.Equal(true, stato.Mount!.AtPark);
+        Assert.Equal(97.5, stato.Mount.RaDeg!.Value, 1e-6);
+        Assert.NotNull(stato.Target);
+        Assert.Equal("M42", stato.Target!.Name);
+        Assert.Equal("Running", stato.SequenceState);
+        Assert.Empty(handler.Violazioni);
+    }
+
+    [Fact]
+    public async Task RispostaAvvoltaConSuccessFalse_NullEErroreBreveSenzaDettagli()
+    {
+        var handler = Tutto(new NinaScriptedHandler())
+            .Risponde(NinaApiSource.MountInfoPath, Avvolto("\"segreto-interno\"", successo: false, codice: 500));
+        using var src = Sorgente(handler);
+
+        NinaState stato = await src.ReadAsync(CancellationToken.None);
+
+        Assert.True(stato.Connected);
+        Assert.Null(stato.Mount);
+        Assert.NotNull(stato.Error);
+        Assert.Contains("errore NINA", stato.Error!);
+        Assert.DoesNotContain("segreto-interno", stato.Error!);
+        Assert.NotNull(stato.Target);
+    }
+
+    [Fact]
+    public async Task RispostaAvvoltaConStatusCode500_EErrore()
+    {
+        var handler = Tutto(new NinaScriptedHandler())
+            .Risponde(NinaApiSource.SequenceJsonPath, Avvolto("null", successo: true, codice: 500));
+        using var src = Sorgente(handler);
+
+        NinaState stato = await src.ReadAsync(CancellationToken.None);
+
+        Assert.Null(stato.Target);
+        Assert.NotNull(stato.Error);
+        Assert.Contains("errore NINA", stato.Error!);
+    }
+
+    [Fact]
+    public async Task SequenzaNonInizializzataAvvolta409_NonEUnErrore()
+    {
+        var handler = Tutto(new NinaScriptedHandler())
+            .Risponde(NinaApiSource.SequenceStatePath, Avvolto("null", successo: false, codice: 409));
+        using var src = Sorgente(handler);
+
+        NinaState stato = await src.ReadAsync(CancellationToken.None);
+
+        Assert.True(stato.Connected);
+        Assert.Null(stato.SequenceState);
+        Assert.Null(stato.Error);
+    }
+
+    [Fact]
+    public async Task RispostaNonAvvolta_ContinuaAEssereLetta()
+    {
+        var handler = Tutto(new NinaScriptedHandler());
+        using var src = Sorgente(handler);
+
+        NinaState stato = await src.ReadAsync(CancellationToken.None);
+
+        Assert.NotNull(stato.Mount);
+        Assert.Equal(true, stato.Mount!.AtPark);
+        Assert.NotNull(stato.Target);
+        Assert.Equal("Running", stato.SequenceState);
+        Assert.Null(stato.Error);
+    }
+
     [Fact]
     public async Task Annullamento_PrimaDellaLettura_LanciaOperationCanceled()
     {
