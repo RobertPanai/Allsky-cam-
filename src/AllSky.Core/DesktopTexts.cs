@@ -406,6 +406,261 @@ public sealed record DesktopTexts
     /// <summary>Pulsante per scollegare la camera collegata.</summary>
     public required string CameraDiscButton { get; init; }
 
+    /// <summary>Titolo della vista Impostazioni.</summary>
+    public required string SettingsTitle { get; init; }
+
+    /// <summary>Sezione posizione dell'osservatorio.</summary>
+    public required string SettingsObservatoryTitle { get; init; }
+
+    /// <summary>Campo latitudine.</summary>
+    public required string SettingsLatitude { get; init; }
+
+    /// <summary>Campo longitudine.</summary>
+    public required string SettingsLongitude { get; init; }
+
+    /// <summary>Campo quota.</summary>
+    public required string SettingsElevation { get; init; }
+
+    /// <summary>Intervalli ammessi per latitudine, longitudine e quota.</summary>
+    public required string SettingsSiteHint { get; init; }
+
+    /// <summary>Campo di posizione vuoto.</summary>
+    public required string SettingsProblemEmpty { get; init; }
+
+    /// <summary>Campo di posizione non numerico.</summary>
+    public required string SettingsProblemNotNumber { get; init; }
+
+    /// <summary>Latitudine fuori intervallo.</summary>
+    public required string SettingsProblemLatitude { get; init; }
+
+    /// <summary>Longitudine fuori intervallo.</summary>
+    public required string SettingsProblemLongitude { get; init; }
+
+    /// <summary>Quota fuori intervallo.</summary>
+    public required string SettingsProblemElevation { get; init; }
+
+    /// <summary>Pulsante di salvataggio della posizione.</summary>
+    public required string SettingsSiteSave { get; init; }
+
+    /// <summary>Conferma di posizione salvata.</summary>
+    public required string SettingsSiteSaved { get; init; }
+
+    /// <summary>Salvataggio richiesto senza modifiche.</summary>
+    public required string SettingsNoChanges { get; init; }
+
+    /// <summary>Salvataggio della configurazione non riuscito.</summary>
+    public required string SettingsSaveError { get; init; }
+
+    /// <summary>Alcuni campi della configurazione non sono validi.</summary>
+    public required string SettingsInvalidValues { get; init; }
+
+    /// <summary>Sezione generali (lingua e tema).</summary>
+    public required string SettingsGeneralTitle { get; init; }
+
+    /// <summary>Etichetta della lingua.</summary>
+    public required string SettingsLanguageLabel { get; init; }
+
+    /// <summary>Avviso: il cambio di lingua richiede un riavvio.</summary>
+    public required string SettingsLanguageRestart { get; init; }
+
+    /// <summary>Conferma di lingua salvata.</summary>
+    public required string SettingsLanguageSaved { get; init; }
+
+    /// <summary>Etichetta del tema.</summary>
+    public required string SettingsThemeLabel { get; init; }
+
+    /// <summary>Tema normale.</summary>
+    public required string SettingsThemeNormal { get; init; }
+
+    /// <summary>Tema notte rossa.</summary>
+    public required string SettingsThemeNightRed { get; init; }
+
+    /// <summary>Spiegazione della notte rossa.</summary>
+    public required string SettingsThemeHint { get; init; }
+
+    /// <summary>Sezione cartella dati.</summary>
+    public required string SettingsDataFolderTitle { get; init; }
+
+    /// <summary>Percorso della cartella dati; {0} è il percorso.</summary>
+    public required string SettingsDataFolderPath { get; init; }
+
+    /// <summary>Cartella dati in sola lettura.</summary>
+    public required string SettingsDataFolderReadOnly { get; init; }
+
+    /// <summary>Pulsante "Apri cartella".</summary>
+    public required string SettingsOpenFolder { get; init; }
+
+    /// <summary>Apertura della cartella non riuscita; {0} è il percorso.</summary>
+    public required string SettingsOpenFolderError { get; init; }
+
+    /// <summary>Sezione avvio.</summary>
+    public required string SettingsStartupTitle { get; init; }
+
+    /// <summary>Casella "Avvia con Windows".</summary>
+    public required string SettingsStartWithWindows { get; init; }
+
+    /// <summary>Spiegazione dell'avvio con Windows.</summary>
+    public required string SettingsStartWithWindowsHint { get; init; }
+
+    /// <summary>Modifica dell'avvio con Windows non riuscita; {0} è il motivo.</summary>
+    public required string SettingsAutostartError { get; init; }
+
+    /// <summary>Sezione aggiornamenti.</summary>
+    public required string SettingsUpdatesTitle { get; init; }
+
+    /// <summary>Versione installata; {0} è la versione.</summary>
+    public required string SettingsCurrentVersion { get; init; }
+
+    /// <summary>Casella del controllo automatico degli aggiornamenti.</summary>
+    public required string SettingsAutoCheck { get; init; }
+
+    /// <summary>Spiegazione del controllo automatico.</summary>
+    public required string SettingsAutoCheckHint { get; init; }
+
+    /// <summary>Pulsante "Controlla ora".</summary>
+    public required string SettingsCheckNow { get; init; }
+
+    /// <summary>Controllo degli aggiornamenti in corso.</summary>
+    public required string SettingsChecking { get; init; }
+
+    /// <summary>Nessun aggiornamento disponibile.</summary>
+    public required string SettingsUpToDate { get; init; }
+
+    /// <summary>Versione disponibile; {0} è la versione.</summary>
+    public required string SettingsUpdateAvailable { get; init; }
+
+    /// <summary>Aggiornamenti non disponibili per questa copia.</summary>
+    public required string SettingsUpdateDisabled { get; init; }
+
+    /// <summary>Errore di rete durante il controllo.</summary>
+    public required string SettingsUpdateNetworkError { get; init; }
+
+    /// <summary>Errore generico durante il controllo.</summary>
+    public required string SettingsUpdateGenericError { get; init; }
+
+    /// <summary>Data dell'ultimo controllo; {0} è la data locale.</summary>
+    public required string SettingsLastCheck { get; init; }
+
+    /// <summary>Nessun controllo ancora eseguito.</summary>
+    public required string SettingsNeverChecked { get; init; }
+
+    /// <summary>Sezione accesso dal browser.</summary>
+    public required string SettingsAccessTitle { get; init; }
+
+    /// <summary>Casella per abilitare l'interfaccia web.</summary>
+    public required string SettingsWebEnabled { get; init; }
+
+    /// <summary>Spiegazione dell'interfaccia web.</summary>
+    public required string SettingsWebHint { get; init; }
+
+    /// <summary>Modifica dell'interfaccia web valida al riavvio.</summary>
+    public required string SettingsWebRestart { get; init; }
+
+    /// <summary>Interfaccia web attiva; {0} è l'indirizzo.</summary>
+    public required string SettingsWebRunning { get; init; }
+
+    /// <summary>Interfaccia web non attiva in questa sessione.</summary>
+    public required string SettingsWebNotRunning { get; init; }
+
+    /// <summary>Casella per l'accesso dalla rete locale.</summary>
+    public required string SettingsLanEnabled { get; init; }
+
+    /// <summary>Spiegazione dell'accesso dalla rete locale.</summary>
+    public required string SettingsLanHint { get; init; }
+
+    /// <summary>Campo della password per la rete locale.</summary>
+    public required string SettingsLanPasswordLabel { get; init; }
+
+    /// <summary>Spiegazione della password per la rete locale.</summary>
+    public required string SettingsLanPasswordHint { get; init; }
+
+    /// <summary>Password per la rete locale impostata.</summary>
+    public required string SettingsLanPasswordSet { get; init; }
+
+    /// <summary>Nessuna password per la rete locale.</summary>
+    public required string SettingsLanPasswordNotSet { get; init; }
+
+    /// <summary>Password troppo corta.</summary>
+    public required string SettingsPasswordTooShort { get; init; }
+
+    /// <summary>Accesso dalla rete locale senza password.</summary>
+    public required string SettingsPasswordRequired { get; init; }
+
+    /// <summary>Pulsante "Salva accesso".</summary>
+    public required string SettingsAccessSave { get; init; }
+
+    /// <summary>Accesso salvato: serve il riavvio.</summary>
+    public required string SettingsAccessSaved { get; init; }
+
+    /// <summary>Salvataggio in corso.</summary>
+    public required string SettingsSaving { get; init; }
+
+    /// <summary>Impostazioni salvate.</summary>
+    public required string SettingsSaved { get; init; }
+
+    /// <summary>Titolo della vista Log.</summary>
+    public required string LogViewTitle { get; init; }
+
+    /// <summary>Etichetta del filtro per gravità.</summary>
+    public required string LogViewLevelLabel { get; init; }
+
+    /// <summary>Filtro: tutte le voci.</summary>
+    public required string LogViewLevelAll { get; init; }
+
+    /// <summary>Filtro: avvisi ed errori.</summary>
+    public required string LogViewLevelWarnings { get; init; }
+
+    /// <summary>Filtro: solo errori.</summary>
+    public required string LogViewLevelErrors { get; init; }
+
+    /// <summary>Etichetta della ricerca nel testo.</summary>
+    public required string LogViewSearchLabel { get; init; }
+
+    /// <summary>Casella "Scorri in fondo".</summary>
+    public required string LogViewAutoScroll { get; init; }
+
+    /// <summary>Pulsante "Aggiorna".</summary>
+    public required string LogViewRefresh { get; init; }
+
+    /// <summary>Pulsante "Copia".</summary>
+    public required string LogViewCopy { get; init; }
+
+    /// <summary>Pulsante "Apri file".</summary>
+    public required string LogViewOpenFile { get; init; }
+
+    /// <summary>Nessuna voce con il filtro scelto.</summary>
+    public required string LogViewEmpty { get; init; }
+
+    /// <summary>Nessun file di log ancora presente.</summary>
+    public required string LogViewNoFile { get; init; }
+
+    /// <summary>Testo copiato negli appunti.</summary>
+    public required string LogViewCopied { get; init; }
+
+    /// <summary>Apertura del file di log non riuscita; {0} è il percorso.</summary>
+    public required string LogViewOpenError { get; init; }
+
+    /// <summary>Lettura del log non riuscita.</summary>
+    public required string LogViewReadError { get; init; }
+
+    /// <summary>Nota sulla mascheratura dei segreti.</summary>
+    public required string LogViewSecretsNote { get; init; }
+
+    /// <summary>Numero di voci mostrate; {0} è il numero.</summary>
+    public required string LogViewCount { get; init; }
+
+    /// <summary>Nome del file di log; {0} è il nome.</summary>
+    public required string LogViewFile { get; init; }
+
+    /// <summary>Etichetta di gravità: informazione.</summary>
+    public required string LogViewTagInfo { get; init; }
+
+    /// <summary>Etichetta di gravità: avviso.</summary>
+    public required string LogViewTagWarning { get; init; }
+
+    /// <summary>Etichetta di gravità: errore.</summary>
+    public required string LogViewTagError { get; init; }
+
     /// <summary>Stato mentre la camera si scollega.</summary>
     public required string CameraDiscBusy { get; init; }
 
@@ -775,6 +1030,91 @@ public sealed record DesktopTexts
         NightsFrameName = "Frame selezionato della notte",
         NightsFrameMissing = "Il file di questo frame non è più disponibile.",
         CameraDiscButton = "Scollega",
+        SettingsTitle = "Impostazioni",
+        SettingsObservatoryTitle = "Osservatorio",
+        SettingsLatitude = "Latitudine (°)",
+        SettingsLongitude = "Longitudine (°)",
+        SettingsElevation = "Quota (m)",
+        SettingsSiteHint = "Latitudine da -90 a 90, longitudine da -180 a 180 (positiva verso est), quota da -500 a 9000 metri.",
+        SettingsProblemEmpty = "Inserire un valore.",
+        SettingsProblemNotNumber = "Inserire un numero.",
+        SettingsProblemLatitude = "La latitudine deve essere tra -90 e 90.",
+        SettingsProblemLongitude = "La longitudine deve essere tra -180 e 180.",
+        SettingsProblemElevation = "La quota deve essere tra -500 e 9000 metri.",
+        SettingsSiteSave = "Salva posizione",
+        SettingsSiteSaved = "Posizione salvata. Il cielo e le fasi usano i nuovi valori.",
+        SettingsNoChanges = "Nessuna modifica da salvare.",
+        SettingsSaveError = "Impossibile salvare le impostazioni. Controllare i permessi della cartella dati e riprovare.",
+        SettingsInvalidValues = "Alcuni valori non sono validi: correggerli e salvare di nuovo.",
+        SettingsGeneralTitle = "Generali",
+        SettingsLanguageLabel = "Lingua",
+        SettingsLanguageRestart = "Il cambio di lingua si applica al prossimo avvio di All Sky Brain.",
+        SettingsLanguageSaved = "Lingua salvata. Riavviare l'app per applicarla.",
+        SettingsThemeLabel = "Tema",
+        SettingsThemeNormal = "Normale",
+        SettingsThemeNightRed = "Notte rossa",
+        SettingsThemeHint = "La notte rossa non usa blu né verde, per non disturbare l'adattamento al buio. Si attiva anche con Ctrl+R.",
+        SettingsDataFolderTitle = "Cartella dati",
+        SettingsDataFolderPath = "Percorso: {0}",
+        SettingsDataFolderReadOnly = "Sola lettura. La cartella si sceglie all'avvio con --data-folder.",
+        SettingsOpenFolder = "Apri cartella",
+        SettingsOpenFolderError = "Impossibile aprire la cartella. Percorso: {0}",
+        SettingsStartupTitle = "Avvio",
+        SettingsStartWithWindows = "Avvia All Sky Brain con Windows",
+        SettingsStartWithWindowsHint = "Registra l'app nell'avvio dell'utente corrente. Con --data-folder l'avvio automatico usa la cartella predefinita.",
+        SettingsAutostartError = "Impossibile cambiare l'avvio con Windows: {0}",
+        SettingsUpdatesTitle = "Aggiornamenti",
+        SettingsCurrentVersion = "Versione installata: {0}",
+        SettingsAutoCheck = "Controlla e scarica gli aggiornamenti automaticamente",
+        SettingsAutoCheckHint = "Il primo controllo parte un minuto dopo l'avvio, poi ogni 24 ore. L'installazione richiede sempre una tua conferma.",
+        SettingsCheckNow = "Controlla ora",
+        SettingsChecking = "Controllo in corso…",
+        SettingsUpToDate = "Hai già l'ultima versione.",
+        SettingsUpdateAvailable = "È disponibile la versione {0}. Usa «Controlla aggiornamenti» dall'icona nell'area di notifica per scaricarla.",
+        SettingsUpdateDisabled = "Gli aggiornamenti sono disponibili solo per l'installazione, non per la copia portatile o di sviluppo.",
+        SettingsUpdateNetworkError = "Server degli aggiornamenti non raggiungibile. Controllare la connessione e riprovare.",
+        SettingsUpdateGenericError = "Controllo non riuscito. Riprovare più tardi.",
+        SettingsLastCheck = "Ultimo controllo: {0}",
+        SettingsNeverChecked = "Mai controllato.",
+        SettingsAccessTitle = "Accesso dal browser",
+        SettingsWebEnabled = "Abilita l'interfaccia web",
+        SettingsWebHint = "Avvia un piccolo server locale per il pannello nel browser. È spento per impostazione predefinita: l'app desktop non ne ha bisogno.",
+        SettingsWebRestart = "La modifica si applica al prossimo avvio di All Sky Brain.",
+        SettingsWebRunning = "In esecuzione su {0}.",
+        SettingsWebNotRunning = "Non attiva in questa sessione.",
+        SettingsLanEnabled = "Consenti l'accesso dalla rete locale",
+        SettingsLanHint = "Ascolta su tutte le interfacce e chiede una password. Il traffico non è cifrato: usarlo solo su reti di fiducia.",
+        SettingsLanPasswordLabel = "Password per la rete locale",
+        SettingsLanPasswordHint = "Almeno 8 caratteri. Non viene mai mostrata: si può solo impostarne una nuova.",
+        SettingsLanPasswordSet = "Password impostata.",
+        SettingsLanPasswordNotSet = "Nessuna password impostata.",
+        SettingsPasswordTooShort = "Almeno 8 caratteri.",
+        SettingsPasswordRequired = "Per la rete locale serve una password.",
+        SettingsAccessSave = "Salva accesso",
+        SettingsAccessSaved = "Impostazioni di accesso salvate. Riavviare l'app per applicarle.",
+        SettingsSaving = "Salvataggio…",
+        SettingsSaved = "Impostazioni salvate.",
+        LogViewTitle = "Log",
+        LogViewLevelLabel = "Livello",
+        LogViewLevelAll = "Tutti",
+        LogViewLevelWarnings = "Avvisi ed errori",
+        LogViewLevelErrors = "Solo errori",
+        LogViewSearchLabel = "Cerca nel testo",
+        LogViewAutoScroll = "Scorri in fondo",
+        LogViewRefresh = "Aggiorna",
+        LogViewCopy = "Copia",
+        LogViewOpenFile = "Apri file",
+        LogViewEmpty = "Nessuna voce corrisponde al filtro.",
+        LogViewNoFile = "Nessun file di log. Compare al primo avvio di All Sky Brain.",
+        LogViewCopied = "Testo copiato negli appunti.",
+        LogViewOpenError = "Impossibile aprire il file di log. File: {0}",
+        LogViewReadError = "Impossibile leggere il log. Riprovare tra poco.",
+        LogViewSecretsNote = "Token, password e client secret sono mascherati.",
+        LogViewCount = "{0} voci",
+        LogViewFile = "File: {0}",
+        LogViewTagInfo = "Info",
+        LogViewTagWarning = "Avviso",
+        LogViewTagError = "Errore",
         CameraDiscBusy = "Scollegamento in corso…",
         CameraDiscDone = "Camera scollegata.",
         PublicationSettingsTitle = "Impostazioni Uplink",
@@ -1014,6 +1354,91 @@ public sealed record DesktopTexts
         NightsFrameName = "Selected night frame",
         NightsFrameMissing = "This frame file is no longer available.",
         CameraDiscButton = "Disconnect",
+        SettingsTitle = "Settings",
+        SettingsObservatoryTitle = "Observatory",
+        SettingsLatitude = "Latitude (°)",
+        SettingsLongitude = "Longitude (°)",
+        SettingsElevation = "Elevation (m)",
+        SettingsSiteHint = "Latitude from -90 to 90, longitude from -180 to 180 (positive east), elevation from -500 to 9000 metres.",
+        SettingsProblemEmpty = "Enter a value.",
+        SettingsProblemNotNumber = "Enter a number.",
+        SettingsProblemLatitude = "Latitude must be between -90 and 90.",
+        SettingsProblemLongitude = "Longitude must be between -180 and 180.",
+        SettingsProblemElevation = "Elevation must be between -500 and 9000 metres.",
+        SettingsSiteSave = "Save location",
+        SettingsSiteSaved = "Location saved. Sky and phase calculations use the new values.",
+        SettingsNoChanges = "No changes to save.",
+        SettingsSaveError = "Could not save the settings. Check the permissions of the data folder and try again.",
+        SettingsInvalidValues = "Some values are not valid: fix them and save again.",
+        SettingsGeneralTitle = "General",
+        SettingsLanguageLabel = "Language",
+        SettingsLanguageRestart = "The language change applies the next time All Sky Brain starts.",
+        SettingsLanguageSaved = "Language saved. Restart the app to apply it.",
+        SettingsThemeLabel = "Theme",
+        SettingsThemeNormal = "Standard",
+        SettingsThemeNightRed = "Red night",
+        SettingsThemeHint = "Red night uses no blue or green, so it does not disturb dark adaptation. Also toggled with Ctrl+R.",
+        SettingsDataFolderTitle = "Data folder",
+        SettingsDataFolderPath = "Path: {0}",
+        SettingsDataFolderReadOnly = "Read only. Choose the folder at startup with --data-folder.",
+        SettingsOpenFolder = "Open folder",
+        SettingsOpenFolderError = "Could not open the folder. Path: {0}",
+        SettingsStartupTitle = "Startup",
+        SettingsStartWithWindows = "Start All Sky Brain with Windows",
+        SettingsStartWithWindowsHint = "Registers the app for the current user's startup. With --data-folder, automatic start uses the default folder.",
+        SettingsAutostartError = "Could not change startup with Windows: {0}",
+        SettingsUpdatesTitle = "Updates",
+        SettingsCurrentVersion = "Installed version: {0}",
+        SettingsAutoCheck = "Check for updates and download them automatically",
+        SettingsAutoCheckHint = "The first check runs one minute after startup, then every 24 hours. Installing always needs your confirmation.",
+        SettingsCheckNow = "Check now",
+        SettingsChecking = "Checking…",
+        SettingsUpToDate = "You already have the latest version.",
+        SettingsUpdateAvailable = "Version {0} is available. Use \"Check for updates\" from the notification area icon to download it.",
+        SettingsUpdateDisabled = "Updates are only available for the installed version, not for the portable or development copy.",
+        SettingsUpdateNetworkError = "The update server is not reachable. Check the connection and try again.",
+        SettingsUpdateGenericError = "Check failed. Try again later.",
+        SettingsLastCheck = "Last check: {0}",
+        SettingsNeverChecked = "Never checked.",
+        SettingsAccessTitle = "Browser access",
+        SettingsWebEnabled = "Enable the web interface",
+        SettingsWebHint = "Starts a small local server for the browser panel. It is off by default: the desktop app does not need it.",
+        SettingsWebRestart = "The change applies the next time All Sky Brain starts.",
+        SettingsWebRunning = "Running at {0}.",
+        SettingsWebNotRunning = "Not running in this session.",
+        SettingsLanEnabled = "Allow access from the local network",
+        SettingsLanHint = "Listens on all interfaces and asks for a password. Traffic is not encrypted: use it only on trusted networks.",
+        SettingsLanPasswordLabel = "Local network password",
+        SettingsLanPasswordHint = "At least 8 characters. It is never shown: you can only set a new one.",
+        SettingsLanPasswordSet = "Password set.",
+        SettingsLanPasswordNotSet = "No password set.",
+        SettingsPasswordTooShort = "At least 8 characters.",
+        SettingsPasswordRequired = "A password is required for the local network.",
+        SettingsAccessSave = "Save access",
+        SettingsAccessSaved = "Access settings saved. Restart the app to apply them.",
+        SettingsSaving = "Saving…",
+        SettingsSaved = "Settings saved.",
+        LogViewTitle = "Log",
+        LogViewLevelLabel = "Level",
+        LogViewLevelAll = "All",
+        LogViewLevelWarnings = "Warnings and errors",
+        LogViewLevelErrors = "Errors only",
+        LogViewSearchLabel = "Search text",
+        LogViewAutoScroll = "Scroll to bottom",
+        LogViewRefresh = "Refresh",
+        LogViewCopy = "Copy",
+        LogViewOpenFile = "Open file",
+        LogViewEmpty = "No entries match the filter.",
+        LogViewNoFile = "No log file yet. It appears the first time All Sky Brain starts.",
+        LogViewCopied = "Text copied to the clipboard.",
+        LogViewOpenError = "Could not open the log file. File: {0}",
+        LogViewReadError = "Could not read the log. Try again shortly.",
+        LogViewSecretsNote = "Tokens, passwords and client secrets are masked.",
+        LogViewCount = "{0} entries",
+        LogViewFile = "File: {0}",
+        LogViewTagInfo = "Info",
+        LogViewTagWarning = "Warning",
+        LogViewTagError = "Error",
         CameraDiscBusy = "Disconnecting…",
         CameraDiscDone = "Camera disconnected.",
         PublicationSettingsTitle = "Uplink settings",

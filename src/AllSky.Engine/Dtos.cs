@@ -17,6 +17,7 @@ namespace AllSky.Engine;
 /// <param name="UptimeS">Secondi dall'avvio del servizio.</param>
 /// <param name="Error">Messaggio in italiano che dice cosa fare; null se non ci sono errori.</param>
 /// <param name="Jobs">Lavori in coda o in corso (timelapse).</param>
+/// <param name="Warning">Avviso non bloccante (per esempio limiti di esposizione del driver sanificati); la cattura continua. Null se non c'e'.</param>
 public sealed record StatusDto(
     string Version,
     string State,
@@ -28,7 +29,8 @@ public sealed record StatusDto(
     DiskDto? Disk,
     long UptimeS,
     string? Error,
-    IReadOnlyList<JobDto> Jobs);
+    IReadOnlyList<JobDto> Jobs,
+    string? Warning = null);
 
 /// <summary>Camera di sistema: identificativo, nome, tipo e stato di connessione.</summary>
 /// <param name="Id">Identificativo della camera (config.camera.id).</param>
@@ -106,8 +108,9 @@ public sealed record FrameDto(string Id, DateTimeOffset Timestamp, string Phase)
 
 /// <summary>Esito di <c>POST /api/camera/connect</c>.</summary>
 /// <param name="Ok">Vero se la camera e' connessa e la cattura e' partita.</param>
-/// <param name="Error">Messaggio in italiano se <paramref name="Ok"/> e' falso. Con <paramref name="Ok"/> vero puo' contenere un avviso (per esempio i limiti di esposizione del driver sanificati); null altrimenti.</param>
-public sealed record ConnectResult(bool Ok, string? Error);
+/// <param name="Error">Messaggio in italiano se <paramref name="Ok"/> e' falso; null altrimenti.</param>
+/// <param name="Warning">Avviso non bloccante con <paramref name="Ok"/> vero (per esempio limiti di esposizione del driver sanificati); null se non c'e'.</param>
+public sealed record ConnectResult(bool Ok, string? Error, string? Warning = null);
 
 /// <summary>Esito di <c>PUT /api/config</c>. Con errori la configurazione non e' stata cambiata.</summary>
 /// <param name="Ok">Vero se la configurazione e' valida, salvata e in applicazione.</param>

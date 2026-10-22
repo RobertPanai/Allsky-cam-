@@ -162,9 +162,10 @@ public sealed class AllSkyEngineTests
 
         StatusDto status = engine.GetStatus();
         Assert.NotEqual("error", status.State);
-        // Il capture parte, ma l'avviso sui limiti sanificati arriva nello stato (vedi test di collegamento sotto).
-        Assert.NotNull(status.Error);
-        Assert.Contains("Limiti di esposizione del driver", status.Error);
+        // Il capture parte: nessun errore, ma l'avviso sui limiti sanificati arriva in Warning.
+        Assert.Null(status.Error);
+        Assert.NotNull(status.Warning);
+        Assert.Contains("Limiti di esposizione del driver", status.Warning);
         Assert.True(camera.Captures > 0);
         Assert.Contains(
             h.Logs,
@@ -189,20 +190,22 @@ public sealed class AllSkyEngineTests
 
         ConnectResult connect = await engine.ConnectCameraAsync("sim-test", CancellationToken.None);
 
-        // Il capture parte con valori sicuri: Ok resta vero, ma il messaggio riporta i valori del driver e quelli usati.
+        // Il capture parte con valori sicuri: Ok e' vero e Error resta null; l'avviso riporta i valori del driver e quelli usati.
         Assert.True(connect.Ok);
-        Assert.NotNull(connect.Error);
-        Assert.Equal(connect.Error, engine.GetStatus().Error);
+        Assert.Null(connect.Error);
+        Assert.NotNull(connect.Warning);
+        Assert.Equal(connect.Warning, engine.GetStatus().Warning);
+        Assert.Null(engine.GetStatus().Error);
 
-        Assert.Equal(CameraErrorKind.DriverExposureLimits, CameraErrorFormatter.Classify(connect.Error));
-        ExposureLimitsText? limits = CameraErrorFormatter.ParseExposureLimits(connect.Error);
+        Assert.Equal(CameraErrorKind.DriverExposureLimits, CameraErrorFormatter.Classify(connect.Warning));
+        ExposureLimitsText? limits = CameraErrorFormatter.ParseExposureLimits(connect.Warning);
         Assert.NotNull(limits);
         Assert.Equal("0", limits!.DriverMin);
         Assert.Equal("NaN", limits.DriverMax);
         Assert.Equal("0.001", limits.UsedMin);
         Assert.Equal("30000", limits.UsedMax);
 
-        CameraErrorView view = CameraErrorFormatter.Describe(connect.Error, DesktopTexts.Italian);
+        CameraErrorView view = CameraErrorFormatter.Describe(connect.Warning, DesktopTexts.Italian);
         Assert.Equal(CameraErrorKind.DriverExposureLimits, view.Kind);
         Assert.Contains("0,001 ms", view.Message);
         Assert.Contains("n/d", view.Message);

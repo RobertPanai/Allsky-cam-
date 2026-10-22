@@ -77,6 +77,7 @@ public class CameraView : UserControl
     private TextBlock _progressText = null!;
     private TextBlock _connectedText = null!;
     private Button _disconnectButton = null!;
+    private TextBlock _warningText = null!;
     private TextBlock _errorText = null!;
     private TextBlock _detailText = null!;
     private TextBlock _infoText = null!;
@@ -364,6 +365,10 @@ public class CameraView : UserControl
         AllSky.Engine.CameraStatusDto camera = status.Camera;
         _connected = camera.Connected;
         UpdateConnectEnabled();
+
+        string? warning = status.Warning;
+        _warningText.Text = warning is null ? string.Empty : CameraErrorFormatter.Describe(warning, _texts).Message;
+        _warningText.Visibility = warning is null ? Visibility.Collapsed : Visibility.Visible;
         _connectedText.Text = camera.Connected
             ? string.Format(
                 _texts.Culture,
@@ -592,6 +597,11 @@ public class CameraView : UserControl
         _disconnectButton.IsEnabled = false;
         _disconnectButton.Click += async (_, _) => await DisconnectAsync();
 
+        // Avviso non bloccante (es. limiti di esposizione sanificati): nota gialla, la cattura continua.
+        _warningText = BuildBodyText(string.Empty, "Brush.Warning");
+        _warningText.Margin = new Thickness(0, 12, 0, 0);
+        _warningText.Visibility = Visibility.Collapsed;
+
         _infoText = BuildBodyText(string.Empty, "Brush.TextSecondary");
         _successText = BuildBodyText(string.Empty, "Brush.Success");
 
@@ -599,6 +609,7 @@ public class CameraView : UserControl
         stack.Children.Add(_progressText);
         stack.Children.Add(_connectedText);
         stack.Children.Add(_disconnectButton);
+        stack.Children.Add(_warningText);
         stack.Children.Add(_infoText);
         stack.Children.Add(_successText);
         return BuildPanel(stack, _texts.CameraConnectionTitle);

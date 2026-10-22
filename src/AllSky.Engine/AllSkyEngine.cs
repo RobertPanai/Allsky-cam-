@@ -277,8 +277,9 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
             lastFrame,
             Disk(archive, now),
             uptime,
-            error ?? warning,
-            jobs);
+            error,
+            jobs,
+            warning);
     }
 
     /// <inheritdoc />
@@ -513,7 +514,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
         }
 
         RaiseStatus();
-        return new ConnectResult(true, warning);
+        return new ConnectResult(true, null, warning);
     }
 
     private ConnectResult ConnectFailed(string message)
@@ -548,7 +549,7 @@ public sealed partial class AllSkyEngine : IAllSkyService, IAsyncDisposable
             minExposureMs != info.MinExposureMs
             || !ExposureLimits.IsUsable(info.MaxExposureMs)
             || maxExposureMs != Math.Min(config.Camera.MaxExposureMs, info.MaxExposureMs);
-        // Il testo resta nel log e arriva a ConnectResult.Error / StatusDto.Error: la vista Camera ne ricava i valori.
+        // Il testo resta nel log e arriva a ConnectResult.Warning / StatusDto.Warning (avviso, non errore): la vista Camera ne ricava i valori.
         string? driverWarning = driverLimitsCorrected
             ? $"Limiti di esposizione del driver non validi (min={Fmt(info.MinExposureMs)}, max={Fmt(info.MaxExposureMs)}): " +
               $"uso min={Fmt(minExposureMs)}, max={Fmt(maxExposureMs)}"
