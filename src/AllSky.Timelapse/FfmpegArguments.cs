@@ -12,7 +12,9 @@ namespace AllSky.Timelapse;
 /// Il flusso e il contenitore dichiarano BT.709 per matrice, primari e trasferimento, con range limitato:
 /// i flag <c>-colorspace</c>, <c>-color_primaries</c>, <c>-color_trc</c>, <c>-color_range</c> impostano il contesto
 /// dell'encoder (quindi il box <c>colr</c> dell'MP4 e il VUI di libx264); per gli encoder H.264 il bitstream filter
-/// <c>h264_metadata</c> riscrive il VUI del flusso, anche se un encoder ignora i flag.
+/// <c>h264_metadata</c> scrive il VUI nel flusso. Verificato con libx264: da solo il filtro scrive il VUI ma non crea
+/// il box <c>colr</c>, che arriva dai flag dell'encoder. Se un encoder ignora i flag (es. <c>h264_mf</c>) non è
+/// verificabile su questo ambiente Linux [NV].
 /// Fonti lette il 2026-10-23: ffmpeg.org/ffmpeg-filters.html (scale), ffmpeg.org/ffmpeg-bitstream-filters.html
 /// (h264_metadata), ffmpeg.org/ffmpeg-codecs.html (non leggibile in quella sessione: le opzioni dei flag
 /// sono verificate sull'help di ffmpeg 6.1.1 locale). I valori numerici 1 (BT.709) e 0 (range limitato) del
