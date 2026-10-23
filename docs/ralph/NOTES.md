@@ -228,3 +228,6 @@ Logica di montaggio in AllSky.Studio (Operations, Montage). Suite completa 2579 
 
 ## P13.3 (23/10/2026)
 Prodotti da serie in AllSky.Studio/Products. Suite 2595 test. Mancano decoder reale, selettore cerchio, timelapse da serie.
+
+## Telegram (23/10/2026)
+src/AllSky.Telegram: client, coda, limiti, impostazioni. 2706 test. Scelte da confermare: testo/didascalia oltre limite = InvalidInput; default 50 messaggi/giorno; politica video grandi = SendStillsWithLink; MB decimali; 5xx trattati come errori di rete.
