@@ -83,7 +83,7 @@ public sealed class NinaStatusPanelTests
         Error: null);
 
     /// <summary>Testo di tutti i <see cref="TextBlock"/> discendenti, nell'ordine dell'albero visuale.</summary>
-    private static List<string> TextsOf(DependencyObject root)
+    internal static List<string> TextsOf(DependencyObject root)
     {
         var result = new List<string>();
         Collect(root, result);
@@ -105,7 +105,7 @@ public sealed class NinaStatusPanelTests
     }
 
     /// <summary>Servizio fake: espone solo <see cref="LatestNinaState"/>; il resto non serve al pannello.</summary>
-    private sealed class FakeNinaService : IAllSkyService
+    internal sealed class FakeNinaService : IAllSkyService
     {
         public FakeNinaService(NinaState? state)
         {
