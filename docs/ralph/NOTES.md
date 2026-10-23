@@ -184,3 +184,41 @@ Una voce per iterazione, la più recente in fondo. Formato:
 - NINA sullo stesso PC della all-sky; plugin ninaAPI da verificare (la sessione non ha il computer collegato).
 - Telegram: un solo bot con chat autorizzate.
 - Idee aggiunte a P11: campo inquadrato (P11.9), capitoli YouTube (P11.10), allerta cielo che peggiora (P11.11), condensa sperimentale (P11.12). Scartato: indice di efficienza.
+
+## 2026-10-23 — P14.2 (prima parte): correzioni temporali del colore, spente di default
+
+**Stato:** P14.2 resta `[ ]` nel piano (non modificato, come richiesto). Fatta solo la prima parte: smoothing con costante di tempo, compensazione di esposizione e guadagno, preset, validazione. Mancano ancora: gestione delle alte luci e delle nuvole di giorno, neutralizzazione del fondo cielo, rumore temporale opzionale, misura sulla notte simulata (`smoke2`) e riduzione del flicker residuo senza perdere meteore e stelle.
+
+**Cosa è stato fatto**
+- `AllSky.Core`: sezione `color.corrections` (`ColorCorrections`), risoluzione dei preset in `ColorCorrectionPresets.Resolve` (funzione pura), validazione in `ConfigStore`. Sezione assente o `null` = tutto spento.
+- `AllSky.Imaging`: `Smoother.Update(gains, alpha)` e `StretchParamsSmoother.Update(params, alpha)`, più `StretchParamsSmoother.Rescale(ratio)` (neri e bianco, midtone escluso). Le API esistenti non cambiano nell'aritmetica.
+- `AllSky.Processing`: alpha = 1 - exp(-dt/tau), con tau interpolata giorno-notte come il blend del crepuscolo; compensazione del prodotto esposizione · guadagno lineare; reset per dt > 6 h o dt < 0 (solo con correzioni accese). Con correzioni spente il percorso è quello di prima.
+- Test: `ColorCorrectionsTests` (Core), `SmootherTimedTests` (Imaging), `ColorCorrectionsProcessingTests` (Processing, con riferimento a `AllSky.ColorMetrics` nel csproj dei test; ColorMetrics non dipende da Processing).
+
+**Verifiche**
+- Identità con config di default: impronta SHA256 di 16 frame (RGB, JPEG e miniatura, con overlay, con `UpdateConfig` a metà) identica a prima della modifica, su due esecuzioni.
+- Runner: AllSky.Imaging 184 PASS; AllSky.Processing 28 PASS; AllSky.Core 643 PASS; AllSky.ColorMetrics 37 PASS. Suite completa: 2452 test, 2451 PASS, 1 FAIL: `FrameMedian_UpdatesExposureForNextCapture`. Il test è fallito in tutte e 3 le esecuzioni sul codice nuovo (suite completa e due isolate) e in 2 su 2 su `c503eb1` (codice prima di P14.2): non è causato da questa modifica, ma qui non è risultato intermittente.
+- `dotnet build`/`dotnet test` sul `.sln` non eseguiti: il restore NuGet è bloccato dal proxy (403). Il riferimento di progetto aggiunto nel csproj dei test non è quindi verificato da MSBuild.
+
+**Misura (scena costante proporzionale all'esposizione, 30 s / 60 s ogni 20 frame, 240 frame, 320x240)**
+- Salto relativo medio ai cambi (ExposureBanding): spente 1121 %, accese 0,0036 %.
+- Salto assoluto di luminanza ai cambi (0..1): spente 0,8294, accese 0,00002.
+- Il criterio (accese < metà delle spente) è soddisfatto con ampio margine. Il valore relativo è gonfiato: con le correzioni spente la luminanza oscilla tra 0,00 e 1,00 (saturazione e nero) e i frame vicini allo zero fanno esplodere il rapporto. Il flicker di LuminanceFlicker è 0 per entrambe, perché il trend mediano è zero sui frame neri: non informativo in questa scena.
+
+**Limite trovato (non nel test)**
+- Con un offset di bias di 800 ADU che non scala con l'esposizione: spente salto assoluto 0,759, accese 0,559; la luminanza resta tra 0 e 1 in entrambi i casi. La compensazione riduce il salto ma non basta. Ipotesi, non verificata: la riscalatura di neri e bianco porta in conto anche il bias. Diagnostica con i quattro casi (nessuna, solo tempo, solo compensazione, entrambe): `/home/claude/allsky-scratch/baseline/diagnostica-bias-P14.2.cs` (fuori dal repo).
+- Lo scenario sintetico è molto più estremo della notte simulata di P14.1 (salto medio 2,0 %): non rappresenta le condizioni reali.
+
+**Deviazioni dal task**
+- «dt limitato a [0.01, 1]»: applicato all'alpha, non a dt. Con dt in secondi (30 s tra frame) il limite a 1 s avrebbe reso lo smoothing circa 30 volte più lento. Il limite a 0,01 è quello già usato da `MinSmoothingAlpha`.
+- dt < 0 azzera lo smoothing, dt = 0 mantiene l'alpha precedente (il task indicava entrambi; ho distinto i due casi).
+- `Color.Smoothing` non ha effetto sui guadagni e sullo stretch quando lo smoothing temporale è acceso (usato solo come valore iniziale e dopo il reset).
+
+**Dubbi e [NV]**
+- [NV] Unità del guadagno ZWO = 0,1 dB per unità: assunzione, da verificare sulla documentazione del driver. Non ho accesso a fonti esterne in questa sessione.
+- [S] Preset: naturale (entrambe accese, tau 180/20 s), neutro (tau 300/40 s, saturazione 1,0), profondo (saturazione 1,25). Scelte di design, non misure.
+- Il rapporto relativo ExposureBanding diverge con luminanze vicine a zero: per il confronto conviene il salto assoluto.
+- Da provare sul PC con la ZWO: il comportamento con un bias reale e con il guadagno vero della camera.
+
+**Repo**
+- Un processo esterno ha creato il commit `e437fcf` («WIP P14.2: file temporaneo del subagente») durante il lavoro: contiene solo il mio file temporaneo `ZzBaselineHashTemp.cs`, già rimosso dal working tree. Non è stato riscritto nulla. Va tolto dalla storia del branch prima di pushare.

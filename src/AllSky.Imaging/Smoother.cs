@@ -24,6 +24,25 @@ public sealed class Smoother
     /// <summary>Aggiorna con nuovi guadagni e restituisce quelli levigati.</summary>
     public (double R, double G, double B) Update((double R, double G, double B) gains)
     {
+        return Blend(gains, _alpha);
+    }
+
+    /// <summary>
+    /// Come <see cref="Update(ValueTuple{double,double,double})"/>, con un alpha proprio per questa chiamata (per
+    /// esempio dipendente dal tempo fra i frame). alpha deve essere in (0, 1]. Non cambia l'alpha dello smoother.
+    /// </summary>
+    public (double R, double G, double B) Update((double R, double G, double B) gains, double alpha)
+    {
+        if (!(alpha > 0.0 && alpha <= 1.0))
+        {
+            throw new ArgumentOutOfRangeException(nameof(alpha), "alpha deve essere in (0, 1].");
+        }
+
+        return Blend(gains, alpha);
+    }
+
+    private (double R, double G, double B) Blend((double R, double G, double B) gains, double alpha)
+    {
         if (!_state.HasValue)
         {
             _state = gains;
@@ -32,9 +51,9 @@ public sealed class Smoother
 
         var prev = _state.Value;
         var smoothed = (
-            R: _alpha * gains.R + (1.0 - _alpha) * prev.R,
-            G: _alpha * gains.G + (1.0 - _alpha) * prev.G,
-            B: _alpha * gains.B + (1.0 - _alpha) * prev.B);
+            R: alpha * gains.R + (1.0 - alpha) * prev.R,
+            G: alpha * gains.G + (1.0 - alpha) * prev.G,
+            B: alpha * gains.B + (1.0 - alpha) * prev.B);
         _state = smoothed;
         return smoothed;
     }

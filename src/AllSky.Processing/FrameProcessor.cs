@@ -33,6 +33,10 @@ namespace AllSky.Processing;
 /// <item>Smoothing: alpha = 1 - <c>Color.Smoothing</c>, con minimo 0.01 (smoothing 1 non blocca i guadagni).
 /// Lo stesso alpha vale per i guadagni di bilanciamento e per i parametri di stretch.</item>
 /// <item>Blend del crepuscolo: t = clamp(-altezzaSole / 12, 0, 1), guadagni = Blend(giorno, notte, t).</item>
+/// <item>Correzioni temporali (P14.2, [S] di design, spente di default; vedi <see cref="AllSky.Core.ColorCorrections"/>):
+/// alpha = 1 - exp(-dt / tau) con dt reale fra frame consecutivi e tau interpolata giorno-notte come il blend.
+/// Compensazione dell'esposizione: lo stato dello stretch si riscala per il rapporto esposizione · guadagno lineare.
+/// Con entrambe spente il percorso e' quello fisso di sempre, byte per byte.</item>
 /// <item>Guadagni manuali con un numero di elementi diverso da 3: si usa il neutro (1, 1, 1).</item>
 /// <item>Se la stima dei guadagni fallisce (fondo a zero o frame saturo) si riusa l'ultimo guadagno applicato.</item>
 /// <item>Se il fit del gradiente fallisce (troppo pochi pixel di cielo) il frame non viene corretto e si riprova dopo 10 frame.</item>
@@ -62,6 +66,9 @@ public sealed class FrameProcessor : IFrameProcessor
     private const int GradientFitInterval = 10;
     private const double TwilightSpanDeg = 12.0;
     private const double MinSmoothingAlpha = 0.01;
+
+    // Oltre 6 ore fra due frame lo stato dello smoothing non e' piu' significativo: si riparte da zero (solo con correzioni accese).
+    private const double MaxSmoothingGapSeconds = 6.0 * 3600.0;
     private const int JpegQuality = 90;
     private const int PreviewJpegQuality = 80;
     private const int ThumbQuality = 80;
@@ -83,6 +90,11 @@ public sealed class FrameProcessor : IFrameProcessor
     private Geometry? _geometry;
     private MasterDark? _pedestalSource;
     private int _pedestal;
+
+    // Stato delle correzioni temporali (P14.2). Usato solo con correzioni accese.
+    private DateTimeOffset? _lastTimestamp;
+    private double? _lastExposureProduct;
+    private double _timedAlpha;
 
     /// <summary>Crea il processore.</summary>
     /// <param name="config">Configurazione corrente. Non null.</param>
@@ -109,6 +121,7 @@ public sealed class FrameProcessor : IFrameProcessor
         _smoothingAlpha = SmoothingAlpha(config.Color.Smoothing);
         _wbSmoother = new Smoother(_smoothingAlpha);
         _stretchSmoother = new StretchParamsSmoother(_smoothingAlpha);
+        _timedAlpha = _smoothingAlpha;
     }
 
     /// <summary>Elabora un frame grezzo con la configurazione corrente. Lancia ArgumentException se il frame e' incoerente e InvalidOperationException se il pattern Bayer e' None.</summary>
@@ -129,6 +142,10 @@ public sealed class FrameProcessor : IFrameProcessor
         string phase = SkyPhases.Simplify(SkyPhases.Classify(sunDeg));
         int medianAdu = Median(raw.Pixels);
 
+        // Correzioni temporali (P14.2): spente = alpha fisso di sempre (null); accese = alpha dal tempo e compensazione.
+        ResolvedColorCorrections corr = ColorCorrectionPresets.Resolve(cfg.Color.Corrections, cfg.Color.Saturation);
+        double? smoothingAlpha = AdvanceTimeline(raw, sunDeg, corr);
+
         // 1. Dark e pixel caldi, su una copia di lavoro.
         Array.Copy(raw.Pixels, g.Work, n);
         ApplyDark(raw, g.Work);
@@ -138,7 +155,7 @@ public sealed class FrameProcessor : IFrameProcessor
         RgbImage img = DebayerHamiltonAdams.Demosaic(g.Work, w, h, pattern);
 
         // 3. Bilanciamento del bianco.
-        (double R, double G, double B) gains = ComputeGains(cfg, img, g, sunDeg);
+        (double R, double G, double B) gains = ComputeGains(cfg, img, g, sunDeg, smoothingAlpha);
         WhiteBalance.Apply(img, gains);
 
         // 4. Gradiente di fondo.
@@ -148,9 +165,12 @@ public sealed class FrameProcessor : IFrameProcessor
         var opts = new StretchOptions
         {
             Kind = StretchKindOf(cfg.Color.Stretch),
-            Saturation = SaturationOf(cfg.Color.Saturation),
+            Saturation = SaturationOf(corr.Saturation),
         };
-        StretchParams smoothed = _stretchSmoother.Update(SharedBlack(ImgStretch.Estimate(img, opts)));
+        StretchParams estimated = SharedBlack(ImgStretch.Estimate(img, opts));
+        StretchParams smoothed = smoothingAlpha is { } stretchAlpha
+            ? _stretchSmoother.Update(estimated, stretchAlpha)
+            : _stretchSmoother.Update(estimated);
         byte[] rgb8 = ImgStretch.ToSrgb8(img, opts, smoothed);
 
         // 6. Miniatura dal RGB pulito, poi overlay su una copia e JPEG a piena risoluzione.
@@ -196,6 +216,12 @@ public sealed class FrameProcessor : IFrameProcessor
         if (config.Site.Timezone != _config.Site.Timezone)
         {
             _timeZone = ResolveTimeZone(config.Site.Timezone);
+        }
+
+        // Con un nuovo fattore dB per unita' il prodotto precedente non e' confrontabile: il prossimo frame non si riscala.
+        if (GainDbOf(config) != GainDbOf(_config))
+        {
+            _lastExposureProduct = null;
         }
 
         double alpha = SmoothingAlpha(config.Color.Smoothing);
@@ -257,7 +283,7 @@ public sealed class FrameProcessor : IFrameProcessor
         }
     }
 
-    private (double R, double G, double B) ComputeGains(AppConfig cfg, RgbImage img, Geometry g, double sunDeg)
+    private (double R, double G, double B) ComputeGains(AppConfig cfg, RgbImage img, Geometry g, double sunDeg, double? alpha)
     {
         (double R, double G, double B) target;
         if (cfg.Color.WhiteBalance == WhiteBalanceMode.Manual)
@@ -285,10 +311,107 @@ public sealed class FrameProcessor : IFrameProcessor
             }
         }
 
-        (double R, double G, double B) smoothed = _wbSmoother.Update(target);
+        (double R, double G, double B) smoothed = alpha is { } wbAlpha
+            ? _wbSmoother.Update(target, wbAlpha)
+            : _wbSmoother.Update(target);
         g.LastGains = smoothed;
         return smoothed;
     }
+
+    /// <summary>
+    /// Stato temporale fra frame consecutivi (P14.2). Restituisce l'alpha dipendente dal tempo, oppure null se lo
+    /// smoothing temporale e' spento (percorso fisso di sempre). Con correzioni accese: un intervallo oltre 6 ore o
+    /// timestamp che vanno indietro azzerano lo smoothing; un dt nullo mantiene l'alpha precedente.
+    /// Con la compensazione accesa lo stato dello stretch si riscala prima dell'aggiornamento.
+    /// </summary>
+    private double? AdvanceTimeline(RawFrame raw, double sunDeg, ResolvedColorCorrections corr)
+    {
+        DateTimeOffset? previous = _lastTimestamp;
+        _lastTimestamp = raw.Timestamp;
+        double? exposureRatio = TrackExposure(raw, corr.GainDbPerUnit);
+
+        if (!corr.Enabled)
+        {
+            return null;
+        }
+
+        if (previous is { } last)
+        {
+            double dt = (raw.Timestamp - last).TotalSeconds;
+            if (dt < 0.0 || dt > MaxSmoothingGapSeconds)
+            {
+                ResetSmoothing();
+                exposureRatio = null;
+            }
+            else if (corr.TimeConstantSmoothing && dt > 0.0)
+            {
+                _timedAlpha = TimedAlpha(dt, sunDeg, corr, _timedAlpha);
+            }
+        }
+
+        if (corr.ExposureCompensation && exposureRatio is { } ratio)
+        {
+            _stretchSmoother.Rescale(ratio);
+        }
+
+        return corr.TimeConstantSmoothing ? _timedAlpha : null;
+    }
+
+    /// <summary>
+    /// alpha = 1 - exp(-dt / tau), con tau interpolata fra giorno e notte come il blend del crepuscolo
+    /// (t = clamp(-altezzaSole / 12, 0, 1)). Limitata a [<see cref="MinSmoothingAlpha"/>, 1]. Se il risultato non e' finito
+    /// si mantiene l'alpha precedente.
+    /// </summary>
+    internal static double TimedAlpha(double dt, double sunDeg, ResolvedColorCorrections corr, double fallback)
+    {
+        double t = Math.Clamp(-sunDeg / TwilightSpanDeg, 0.0, 1.0);
+        double tau = corr.TauDaySeconds + (corr.TauNightSeconds - corr.TauDaySeconds) * t;
+        double alpha = 1.0 - Math.Exp(-dt / tau);
+        if (!double.IsFinite(alpha))
+        {
+            return fallback;
+        }
+
+        return Math.Clamp(alpha, MinSmoothingAlpha, 1.0);
+    }
+
+    /// <summary>
+    /// Prodotto esposizione (ms) · guadagno lineare, con guadagno lineare = 10^(gain · dB per unita' / 20).
+    /// Restituisce il rapporto rispetto al frame precedente se il prodotto e' cambiato, altrimenti null.
+    /// </summary>
+    private double? TrackExposure(RawFrame raw, double gainDbPerUnit)
+    {
+        double linearGain = Math.Pow(10.0, raw.Gain * gainDbPerUnit / 20.0);
+        double product = raw.ExposureMs * linearGain;
+        if (!(double.IsFinite(product) && product > 0.0))
+        {
+            _lastExposureProduct = null;
+            return null;
+        }
+
+        double? ratio = null;
+        if (_lastExposureProduct is { } previous)
+        {
+            double r = product / previous;
+            if (Math.Abs(r - 1.0) > 1e-12)
+            {
+                ratio = r;
+            }
+        }
+
+        _lastExposureProduct = product;
+        return ratio;
+    }
+
+    /// <summary>Ricrea gli smoother con l'alpha fisso della configurazione: lo stato precedente si perde.</summary>
+    private void ResetSmoothing()
+    {
+        _wbSmoother = new Smoother(_smoothingAlpha);
+        _stretchSmoother = new StretchParamsSmoother(_smoothingAlpha);
+    }
+
+    private static double GainDbOf(AppConfig config) =>
+        ColorCorrectionPresets.Resolve(config.Color.Corrections, config.Color.Saturation).GainDbPerUnit;
 
     private static (double R, double G, double B) ManualGains(double[]? gains)
     {

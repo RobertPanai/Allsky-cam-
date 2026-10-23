@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\AllSky.Processing\AllSky.Processing.csproj" />
+    <ProjectReference Include="..\..\src\AllSky.ColorMetrics\AllSky.ColorMetrics.csproj" />
   </ItemGroup>
 
 </Project>

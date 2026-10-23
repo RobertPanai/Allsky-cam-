@@ -118,6 +118,11 @@ public sealed class ConfigStore
             errors.Add(new ValidationError("color.smoothing", "Lo smoothing deve essere compreso tra 0 e 1."));
         }
 
+        if (config.Color.Corrections is { } corrections)
+        {
+            ValidateColorCorrections(corrections, errors);
+        }
+
         ValidateSatellites(config.Satellites, errors);
         ValidateDetection(config.Detection, errors);
         ValidateWeather(config.Weather ?? new(), errors);
@@ -358,6 +363,34 @@ public sealed class ConfigStore
         if (!(t.MinVisibleTrackPx >= 0) || double.IsInfinity(t.MinVisibleTrackPx))
         {
             errors.Add(new ValidationError(root + ".transit.minVisibleTrackPx", "La lunghezza minima del tratto deve essere un numero non negativo."));
+        }
+    }
+
+    /// <summary>
+    /// Vincoli di <c>color.corrections</c> (P14.2). Le costanti di tempo devono essere in (0, 3600] secondi; il valore
+    /// NaN non supera i confronti. Il preset deve essere uno dei valori noti.
+    /// </summary>
+    private static void ValidateColorCorrections(ColorCorrections corrections, List<ValidationError> errors)
+    {
+        const string root = "color.corrections";
+        if (!(corrections.TauNightSeconds > 0 && corrections.TauNightSeconds <= 3600))
+        {
+            errors.Add(new ValidationError(root + ".tauNightSeconds", "La costante di tempo di notte deve essere maggiore di 0 e al massimo 3600 secondi."));
+        }
+
+        if (!(corrections.TauDaySeconds > 0 && corrections.TauDaySeconds <= 3600))
+        {
+            errors.Add(new ValidationError(root + ".tauDaySeconds", "La costante di tempo di giorno deve essere maggiore di 0 e al massimo 3600 secondi."));
+        }
+
+        if (!InRange(corrections.GainDbPerUnit, 0, 1))
+        {
+            errors.Add(new ValidationError(root + ".gainDbPerUnit", "I decibel per unità di guadagno devono essere compresi tra 0 e 1."));
+        }
+
+        if (!ColorCorrectionPresets.KnownNames.Contains(corrections.Preset, StringComparer.Ordinal))
+        {
+            errors.Add(new ValidationError(root + ".preset", "Preset sconosciuto: usare naturale, neutro, profondo o personalizzato."));
         }
     }
 

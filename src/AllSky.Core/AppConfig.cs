@@ -143,6 +143,9 @@ public sealed record AppConfig
         public Stretch Stretch { get; init; } = Stretch.Mtf;
 
         public double Saturation { get; init; } = 1.1;
+
+        /// <summary>Correzioni temporali del colore (P14.2). Assenti nei file precedenti: si leggono come tutto spento.</summary>
+        public ColorCorrections? Corrections { get; init; } = new();
     }
 
     public sealed record MaskConfig
