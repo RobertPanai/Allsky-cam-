@@ -59,3 +59,23 @@ La fonte da leggere è la sezione «Sending files» e le sezioni dei singoli met
 
 - https://core.telegram.org/bots/api (Bot API 10.3, 24 agosto 2026)
 - https://core.telegram.org/bots/faq
+
+## Limiti dei metodi di invio (letti il 23/10/2026)
+
+Il testo ufficiale dei metodi non è raggiungibile con lo strumento di lettura (la pagina della Bot API si interrompe prima). I valori vengono dalla documentazione di aiogram 3.27.0, che riporta le descrizioni della Bot API: **[V via copia]**, non letti sulla pagina ufficiale. Prima del rilascio conviene confrontarli con https://core.telegram.org/bots/api.
+
+| Voce | Valore | Fonte |
+|---|---|---|
+| `sendPhoto`: dimensione | al massimo 10 MB | https://docs.aiogram.dev/en/v3.27.0/api/methods/send_photo.html |
+| `sendPhoto`: larghezza + altezza | non oltre 10000 in totale | idem |
+| `sendPhoto`: rapporto larghezza/altezza | al massimo 20 | idem |
+| Didascalia (foto, video, documento) | 0-1024 caratteri dopo l'analisi delle entità | send_photo, send_video, send_document |
+| `sendMessage`: testo | 1-4096 caratteri dopo l'analisi delle entità | https://docs.aiogram.dev/en/v3.27.0/api/methods/send_message.html |
+| `sendVideo` | i client supportano MPEG4; altri formati possono partire come documento; bot fino a 50 MB, «this limit may be changed in the future» | https://docs.aiogram.dev/en/v3.27.0/api/methods/send_video.html |
+| `sendVideo`: `supports_streaming` | True se il video è adatto allo streaming | idem |
+| `sendDocument` | file di qualsiasi tipo fino a 50 MB per i bot | https://docs.aiogram.dev/en/v3.27.0/api/methods/send_document.html |
+| Errore di flood control | `ResponseParameters.retry_after`: secondi da attendere prima di ripetere | https://docs.aiogram.dev/en/v3.27.0/api/types/response_parameters.html |
+
+Ancora [NV]: limiti di `sendMediaGroup`, comportamento esatto del codice HTTP 429 (il campo `retry_after` è documentato, il codice no), limiti del caricamento `multipart/form-data` oltre quelli di dimensione.
+
+Conseguenza per P15.2: una foto resta sotto i 10 MB e sotto 10000 di larghezza+altezza (un keogram largo 4096 e alto 1500 passa; uno molto più largo va ridotto, oppure inviato come documento fino a 50 MB). Un video oltre 50 MB va ricodificato o sostituito da keogram, startrails e un link.
