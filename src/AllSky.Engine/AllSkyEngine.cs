@@ -85,6 +85,13 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
     public event Action<FrameEvent>? FrameProduced;
 
     /// <summary>
+    /// Emesso dopo ogni <see cref="UpdateConfig"/> riuscito, con la configurazione applicata. Usato dall'Host per
+    /// avviare o fermare i servizi che dipendono da una sezione (per esempio il server MCP, sezione <c>mcp</c>).
+    /// Un errore del gestore viene scritto nel log e non interrompe il motore.
+    /// </summary>
+    public event Action<AppConfig>? ConfigApplied;
+
+    /// <summary>
     /// Crea il servizio e carica la configurazione. Non avvia nulla: per la cattura chiamare <see cref="StartAsync"/>.
     /// Una configurazione non valida o illeggibile non blocca la creazione: lo stato diventa "error" con il motivo.
     /// </summary>
@@ -459,9 +466,23 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
             _processor?.UpdateConfig(config);
         }
 
+        RaiseConfigApplied(config);
         TrackBackground(Task.Run(() => ApplyChangesAsync(previous, config)));
         RaiseStatus();
         return new ConfigUpdateResult(true, Array.Empty<ValidationError>());
+    }
+
+    /// <summary>Notifica i gestori di <see cref="ConfigApplied"/>. Non lancia: un errore finisce nel log.</summary>
+    private void RaiseConfigApplied(AppConfig config)
+    {
+        try
+        {
+            ConfigApplied?.Invoke(config);
+        }
+        catch (Exception ex)
+        {
+            _log("Notifica della configurazione applicata non riuscita", ex);
+        }
     }
 
     // ---- Connessione e ciclo di cattura (sotto _control) ----

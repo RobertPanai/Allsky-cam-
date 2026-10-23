@@ -98,6 +98,7 @@ public static class AllSkyHost
 
         AllSkyEngine? engine = null;
         YouTubeServices? youTube = null;
+        McpServerHost? mcp = null;
         WebApplication? app = null;
         var shutdown = new CancellationTokenSource();
         bool ready = false;
@@ -132,6 +133,12 @@ public static class AllSkyHost
             youTube = YouTubeServices.TryCreate(options, dataFolder, engine, log);
             youTube?.Start();
 
+            // Server MCP locale (sezione mcp, spento di default). Ogni configurazione applicata passa da Apply; un errore
+            // di avvio finisce nel log e non ferma l'Host. Il render delle viste non e' ancora collegato (renderer null).
+            mcp = new McpServerHost(engine, (text, ex) => log.Write(ex is null ? text : $"{text} ({ex.GetType().Name})"));
+            engine.ConfigApplied += mcp.Apply;
+            mcp.Apply(engine.GetConfig());
+
             var context = new HostContext(engine, log, shutdown.Token, logFolder, webRoot, publishing, sanitize, updates);
             string? url = null;
             if (webEnabled)
@@ -156,7 +163,7 @@ public static class AllSkyHost
             updates.Service.Start();
             // La radice degli eventi e' la cartella d'archivio delle notti, letta dalla configurazione corrente.
             var events = new AllSky.Host.Events.EventArchiveBrowser(() => ArchiveFolder(engine?.GetConfig() ?? initial));
-            return new AllSkyHostRuntime(app, engine, shutdown, log, url, publishing, updates.Service, updates.Store, youTube, events);
+            return new AllSkyHostRuntime(app, engine, shutdown, log, url, publishing, updates.Service, updates.Store, youTube, events, mcp);
         }
         finally
         {
@@ -175,6 +182,8 @@ public static class AllSkyHost
                     await HostPublishing.StopPublisherAsync(publishing, log);
                     await publishing.DisposeAsync();
                 }
+
+                mcp?.Dispose();
 
                 if (youTube is not null)
                 {

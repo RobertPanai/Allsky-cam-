@@ -24,13 +24,15 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
     private readonly UpdateSettingsStore _updateStore;
     private readonly YouTubeServices? _youTube;
     private readonly IEventBrowser _events;
+    private readonly McpServerHost? _mcp;
     private readonly TaskCompletionSource _stopped = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly object _gate = new();
     private Task? _stopTask;
 
     /// <summary>Crea il runtime: usato solo da <see cref="AllSkyHost"/>.</summary>
-    internal AllSkyHostRuntime(WebApplication? app, AllSkyEngine engine, CancellationTokenSource shutdown, DailyFileLog log, string? url, PublishServices? publishing, UpdateService updates, UpdateSettingsStore updateStore, YouTubeServices? youTube = null, IEventBrowser? events = null)
+    internal AllSkyHostRuntime(WebApplication? app, AllSkyEngine engine, CancellationTokenSource shutdown, DailyFileLog log, string? url, PublishServices? publishing, UpdateService updates, UpdateSettingsStore updateStore, YouTubeServices? youTube = null, IEventBrowser? events = null, McpServerHost? mcp = null)
     {
+        _mcp = mcp;
         _youTube = youTube;
         _events = events ?? throw new ArgumentNullException(nameof(events));
         _app = app;
@@ -127,6 +129,9 @@ public sealed class AllSkyHostRuntime : IAsyncDisposable
             _log.Write("Arresto di AllSky Host in corso.");
             _shutdown.Cancel();
             _updates.Dispose();
+
+            // Il server MCP si ferma per primo: nessuna richiesta di lettura arriva mentre il motore si chiude.
+            _mcp?.Dispose();
 
             if (_app is not null)
             {

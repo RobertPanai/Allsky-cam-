@@ -128,6 +128,7 @@ public sealed class ConfigStore
         ValidateWeather(config.Weather ?? new(), errors);
         ValidateNina(config.Nina ?? new(), errors);
         ValidateMonitor(config.Monitor ?? new(), errors);
+        ValidateMcp(config.Mcp ?? new(), errors);
 
         return errors;
     }
@@ -160,6 +161,24 @@ public sealed class ConfigStore
         if (monitor.Version < 1 || monitor.Version > AppConfig.MonitorConfig.CurrentVersion)
         {
             errors.Add(new ValidationError(root + ".version", "Versione della sezione monitoraggio non supportata."));
+        }
+    }
+
+    /// <summary>
+    /// Vincoli della sezione <c>mcp</c>. Versione e porta sono sempre controllate, come <c>ui.port</c>: la porta
+    /// fuori intervallo non viene salvata anche con il server spento. Con <c>enabled</c> falso nessun listener parte.
+    /// </summary>
+    private static void ValidateMcp(AppConfig.McpConfig mcp, List<ValidationError> errors)
+    {
+        const string root = "mcp";
+        if (mcp.Version < 1 || mcp.Version > AppConfig.McpConfig.CurrentVersion)
+        {
+            errors.Add(new ValidationError(root + ".version", "Versione della sezione MCP non supportata."));
+        }
+
+        if (mcp.Port < 1024 || mcp.Port > 65535)
+        {
+            errors.Add(new ValidationError(root + ".port", "La porta del server MCP deve essere compresa tra 1024 e 65535."));
         }
     }
 

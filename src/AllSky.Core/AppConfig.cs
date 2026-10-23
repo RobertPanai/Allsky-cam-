@@ -104,6 +104,29 @@ public sealed record AppConfig
     /// </summary>
     public MonitorConfig Monitor { get; init; } = new();
 
+    /// <summary>
+    /// Server MCP locale di sola lettura (sezione <c>mcp</c>, P17.4). Spento di default: con <c>enabled</c> falso non
+    /// viene aperto alcun listener. Ascolta solo su 127.0.0.1. Le configurazioni precedenti non hanno la sezione e
+    /// leggono i valori predefiniti (spento).
+    /// </summary>
+    public McpConfig Mcp { get; init; } = new();
+
+    /// <summary>Sezione <c>mcp</c>: interruttore e porta del server MCP locale. Vincoli in <see cref="ConfigStore"/>.</summary>
+    public sealed record McpConfig
+    {
+        /// <summary>Versione dello schema di questo sotto-oggetto.</summary>
+        public const int CurrentVersion = 1;
+
+        /// <summary>Versione dello schema. Le configurazioni precedenti non la hanno: si legge come 1.</summary>
+        public int Version { get; init; } = CurrentVersion;
+
+        /// <summary>Interruttore del server MCP. Predefinito: spento, nessuna porta aperta.</summary>
+        public bool Enabled { get; init; } = false;
+
+        /// <summary>Porta TCP su 127.0.0.1, da 1024 a 65535. Predefinito 8765.</summary>
+        public int Port { get; init; } = 8765;
+    }
+
     public sealed record SiteConfig
     {
         public string Name { get; init; } = "Osservatorio";

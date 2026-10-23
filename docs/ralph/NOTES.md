@@ -234,3 +234,6 @@ src/AllSky.Telegram: client, coda, limiti, impostazioni. 2706 test. Scelte da co
 
 ## P13.4 (23/10/2026)
 AllSky.Studio/Export: coda di esportazione con destinazioni finte. Suite 2770 test. Mancano rendering reale, adattatori YouTube/Telegram, UI.
+
+## P17.3/P17.4 (23/10/2026)
+MCP locale in src/AllSky.Mcp (118 test), render NINA nei test UI (da provare su Windows). Suite 2888. Da confermare: eta massima coordinate NINA 60 s.
