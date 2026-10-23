@@ -222,3 +222,6 @@ Una voce per iterazione, la più recente in fondo. Formato:
 
 **Repo**
 - Un processo esterno ha creato il commit `e437fcf` («WIP P14.2: file temporaneo del subagente») durante il lavoro: contiene solo il mio file temporaneo `ZzBaselineHashTemp.cs`, già rimosso dal working tree. Non è stato riscritto nulla. Va tolto dalla storia del branch prima di pushare.
+
+## P13.2 (23/10/2026)
+Logica di montaggio in AllSky.Studio (Operations, Montage). Suite completa 2579 test. Restano nuvole, infoMask, colorCorrection, UI. Scelte da confermare: speed.factor 0,01..100; rotate 90 oraria; MAD senza 1,4826; date ISO solo UTC.
