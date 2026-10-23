@@ -19,8 +19,12 @@ public static class MarkdownReport
     [
         "Le misure sono sui JPEG dell'archivio, non sulla decodifica del timelapse.mp4: il video può cambiare i colori durante la codifica (vedi metadati).",
         "Le soglie di «Difetto» sono provvisorie e non calibrate su frame reali: servono a indicare dove guardare.",
-        "La mediana mobile non misura bene un flicker periodico a 2 frame (il residuo vale circa l'escursione picco-picco, non l'ampiezza).",
+        "Flicker periodico a 2 frame: la mediana mobile restituisce l'escursione picco-picco, cioè circa il doppio dell'ampiezza (±5 % danno circa 10 %).",
+        "La deviazione del flicker è più grande del P95 del valore assoluto: pochi residui grandi (vicino ai cambi di esposizione) pesano sulla deviazione.",
         "I rapporti salto/tipico di una rampa lineare liscia valgono circa 5 (le due mediane di 5 frame distano 5 frame).",
+        "Ai confini di fase di notte il salto tipico di luminanza è quasi zero: i rapporti esplodono per una transizione solare attesa, non per un difetto. Se il R/G tipico è zero il rapporto è n.d.",
+        "Stelle: il rivelatore a 5 sigma non separa le stelle dal cielo luminoso. Di giorno e al crepuscolo conta decine di migliaia di massimi per frame: il colore delle stelle di quei frame non è una misura delle stelle.",
+        "La banda ai cambi di esposizione: la media è dominata da pochi salti grandi; la mediana dei salti ai cambi è riportata a parte.",
         "Non c'è il guadagno effettivo del bilanciamento del bianco e dello stretch nei sidecar: le deriva misurata è quella del risultato, non dei guadagni.",
         "La luminanza è media sulla zona valida, incluse stelle e nuvole: non è un fondo cielo, il fondo è nelle colonne R/G e B/G.",
         "Il fondo delle stelle è quello globale della zona: un gradiente di colore del cielo sposta il rapporto R/G e B/G delle stelle.",
@@ -76,6 +80,7 @@ public static class MarkdownReport
 
             sb.AppendLine($"| Cambi di esposizione o guadagno | {n.Exposure.Changes} | cambi | di cui {n.Exposure.ChangesAtPhaseChange} con cambio di fase |");
             sb.AppendLine($"| Banda ai cambi: salto medio | {F(n.Exposure.MeanAbsRelJumpAtChanges * 100, 3)} | % | |");
+            sb.AppendLine($"| Banda ai cambi: salto mediano | {F(Median(n.Exposure.ChangeList.Select(c => c.RelativeJump * 100).ToArray()), 3)} | % | su {n.Exposure.ChangeList.Count} cambi |");
             sb.AppendLine($"| Banda fuori dai cambi: salto medio | {F(n.Exposure.MeanAbsRelJumpWithoutChanges * 100, 3)} | % | |");
             sb.AppendLine($"| Banda: rapporto | {F(n.Exposure.Ratio)} | rapporto | ~1 = nessuna banda |");
             sb.AppendLine($"| Stelle: mediana R/G | {F(n.Stars.MedianRg, 4)} | rapporto | IQR {F(n.Stars.MedianRgQ25, 4)}–{F(n.Stars.MedianRgQ75, 4)} |");
@@ -153,6 +158,8 @@ public static class MarkdownReport
     private static string Ts(DateTimeOffset? t) => t is { } v ? v.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) : "n.d.";
 
     private static string D(string? s) => s ?? "non dichiarato";
+
+    private static double? Median(double[] v) => v.Length == 0 ? null : Robust.Median(v);
 
     private static string F(double? v, int digits = 2) =>
         v is { } x && double.IsFinite(x) ? x.ToString($"F{digits}", CultureInfo.InvariantCulture) : "n.d.";

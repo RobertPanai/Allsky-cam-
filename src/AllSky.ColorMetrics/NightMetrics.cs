@@ -118,7 +118,7 @@ public static class NightMetrics
         {
             string detail = $"{b.From}→{b.To} alle {b.Time:u}: rapporto salto/tipico luminanza {Fmt(b.LumaRatio)}, R/G {Fmt(b.RgRatio)}, B/G {Fmt(b.BgRatio)}";
             lines.Add(max >= Thresholds.PhaseRatio
-                ? $"Difetto, confine di fase: {detail} (soglia {Fmt(Thresholds.PhaseRatio)})."
+                ? $"Segnalato, da verificare, confine di fase: {detail} (soglia {Fmt(Thresholds.PhaseRatio)}; il salto tipico di notte è quasi zero, quindi il rapporto non prova un difetto)."
                 : $"Non emerge, confine di fase: {detail}.");
         }
 
@@ -127,7 +127,7 @@ public static class NightMetrics
             string detail = $"{r.Exposure.Changes} cambi (di cui {r.Exposure.ChangesAtPhaseChange} coincidenti con un cambio di fase); "
                             + $"salto medio relativo {Fmt(r.Exposure.MeanAbsRelJumpAtChanges * 100, 3)} % ai cambi contro {Fmt(r.Exposure.MeanAbsRelJumpWithoutChanges * 100, 3)} % altrove, rapporto {Fmt(er)}";
             lines.Add(er >= Thresholds.ExposureRatio
-                ? $"Difetto, bande ai cambi di esposizione/guadagno: {detail} (soglia {Fmt(Thresholds.ExposureRatio)})."
+                ? $"Segnalato, da verificare, bande ai cambi di esposizione/guadagno: {detail} (soglia {Fmt(Thresholds.ExposureRatio)}; la media è trascinata da pochi salti grandi)."
                 : $"Non emerge, bande ai cambi: {detail}.");
         }
         else
