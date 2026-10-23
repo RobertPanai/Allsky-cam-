@@ -28,6 +28,21 @@ public sealed record StudioProject
     /// <summary>Operazioni di montaggio. In P13.1 sono solo contenitori neutri: la logica arriva in P13.2.</summary>
     public IReadOnlyList<StudioOperation> Operations { get; init; } = [];
 
+    /// <summary>
+    /// Esportazioni richieste. Nel JSON stanno nel campo <c>exports</c>, che viene scritto solo se l'elenco non è
+    /// vuoto: un progetto senza esportazioni resta identico a prima di P13.4.
+    /// </summary>
+    [JsonIgnore]
+    public IReadOnlyList<ExportTarget> Exports { get; init; } = [];
+
+    /// <summary>Forma JSON di <see cref="Exports"/>: null (campo omesso) quando l'elenco è vuoto.</summary>
+    [JsonPropertyName("exports")]
+    public IReadOnlyList<ExportTarget>? ExportsJson
+    {
+        get => Exports.Count == 0 ? null : Exports;
+        init => Exports = value ?? [];
+    }
+
     /// <summary>Campi JSON sconosciuti al livello del progetto, riscritti tali e quali.</summary>
     [JsonExtensionData]
     public Dictionary<string, JsonElement> UnknownFields { get; init; } = new(StringComparer.Ordinal);

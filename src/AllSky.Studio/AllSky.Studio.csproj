@@ -15,6 +15,9 @@
     <ProjectReference Include="..\AllSky.Archive\AllSky.Archive.csproj" />
     <ProjectReference Include="..\AllSky.Timelapse\AllSky.Timelapse.csproj" />
     <ProjectReference Include="..\AllSky.Products\AllSky.Products.csproj" />
+    <!-- Export: titoli e descrizioni con il motore di modelli di YouTube, limiti e validazione di Telegram. Nessun NuGet. -->
+    <ProjectReference Include="..\AllSky.YouTube\AllSky.YouTube.csproj" />
+    <ProjectReference Include="..\AllSky.Telegram\AllSky.Telegram.csproj" />
   </ItemGroup>
 
   <ItemGroup>

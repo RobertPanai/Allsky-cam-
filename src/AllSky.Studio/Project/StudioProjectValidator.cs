@@ -54,6 +54,22 @@ internal static class StudioProjectValidator
             }
         }
 
+        if (project.Exports is null)
+        {
+            problems.Add("elenco delle esportazioni mancante.");
+        }
+        else
+        {
+            for (int i = 0; i < project.Exports.Count; i++)
+            {
+                IReadOnlyList<string> exportErrors = ExportValidator.ValidateTarget(project.Exports[i]);
+                if (exportErrors.Count > 0)
+                {
+                    problems.Add($"esportazione {i + 1}: {exportErrors[0]}");
+                }
+            }
+        }
+
         if (project.Operations is null)
         {
             problems.Add("elenco delle operazioni mancante.");

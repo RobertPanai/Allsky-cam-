@@ -231,3 +231,6 @@ Prodotti da serie in AllSky.Studio/Products. Suite 2595 test. Mancano decoder re
 
 ## Telegram (23/10/2026)
 src/AllSky.Telegram: client, coda, limiti, impostazioni. 2706 test. Scelte da confermare: testo/didascalia oltre limite = InvalidInput; default 50 messaggi/giorno; politica video grandi = SendStillsWithLink; MB decimali; 5xx trattati come errori di rete.
+
+## P13.4 (23/10/2026)
+AllSky.Studio/Export: coda di esportazione con destinazioni finte. Suite 2770 test. Mancano rendering reale, adattatori YouTube/Telegram, UI.
