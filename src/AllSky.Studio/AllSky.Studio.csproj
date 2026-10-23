@@ -9,10 +9,12 @@
   </PropertyGroup>
 
   <!-- Nessuna dipendenza NuGet: JSON e processi sono del framework.
-       Archive: sorgente "notte dell'archivio". Timelapse: solo per localizzare ffmpeg (stesse regole di licenza). -->
+       Archive: sorgente "notte dell'archivio". Timelapse: solo per localizzare ffmpeg (stesse regole di licenza).
+       Products: keogram e startrails per le serie (Products non riferisce Studio: nessun ciclo). -->
   <ItemGroup>
     <ProjectReference Include="..\AllSky.Archive\AllSky.Archive.csproj" />
     <ProjectReference Include="..\AllSky.Timelapse\AllSky.Timelapse.csproj" />
+    <ProjectReference Include="..\AllSky.Products\AllSky.Products.csproj" />
   </ItemGroup>
 
   <ItemGroup>

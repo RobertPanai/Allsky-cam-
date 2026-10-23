@@ -225,3 +225,6 @@ Una voce per iterazione, la più recente in fondo. Formato:
 
 ## P13.2 (23/10/2026)
 Logica di montaggio in AllSky.Studio (Operations, Montage). Suite completa 2579 test. Restano nuvole, infoMask, colorCorrection, UI. Scelte da confermare: speed.factor 0,01..100; rotate 90 oraria; MAD senza 1,4826; date ISO solo UTC.
+
+## P13.3 (23/10/2026)
+Prodotti da serie in AllSky.Studio/Products. Suite 2595 test. Mancano decoder reale, selettore cerchio, timelapse da serie.
