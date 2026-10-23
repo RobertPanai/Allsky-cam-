@@ -5,11 +5,42 @@ namespace AllSky.Timelapse;
 /// <summary>
 /// Costruzione pura degli argomenti di ffmpeg per il timelapse. Gli argomenti vanno passati come
 /// <c>ArgumentList</c> (mai come stringa concatenata), quindi nessun percorso può iniettare opzioni.
+/// <para>
+/// <b>Colore (scelta e fonti).</b> I JPEG in ingresso sono YCbCr a range pieno (JFIF, matrice BT.601).
+/// La conversione verso <c>yuv420p</c> avviene nel filtro <c>scale</c> con <c>out_color_matrix=bt709</c>
+/// e <c>out_range=tv</c>, e <c>flags=accurate_rnd+full_chroma_int</c> riduce l'errore di arrotondamento.
+/// Il flusso e il contenitore dichiarano BT.709 per matrice, primari e trasferimento, con range limitato:
+/// i flag <c>-colorspace</c>, <c>-color_primaries</c>, <c>-color_trc</c>, <c>-color_range</c> impostano il contesto
+/// dell'encoder (quindi il box <c>colr</c> dell'MP4 e il VUI di libx264); per gli encoder H.264 il bitstream filter
+/// <c>h264_metadata</c> riscrive il VUI del flusso, anche se un encoder ignora i flag.
+/// Fonti lette il 2026-10-23: ffmpeg.org/ffmpeg-filters.html (scale), ffmpeg.org/ffmpeg-bitstream-filters.html
+/// (h264_metadata), ffmpeg.org/ffmpeg-codecs.html (non leggibile in quella sessione: le opzioni dei flag
+/// sono verificate sull'help di ffmpeg 6.1.1 locale). I valori numerici 1 (BT.709) e 0 (range limitato) del
+/// bitstream filter sono quelli delle tabelle E-2..E-5 di H.264 citate dalla documentazione di h264_metadata;
+/// sono verificati anche sull'output di libx264 (box <c>colr</c> nclx 1/1/1, full_range 0).
+/// Misure: vedi <c>tests/AllSky.Timelapse.Tests/ColourMetadataTests.cs</c>.
+/// </para>
 /// </summary>
 public static class FfmpegArguments
 {
     /// <summary>CRF di libx264 (qualità costante).</summary>
     public const int Crf = 23;
+
+    /// <summary>Nome BT.709 per matrice, primari e trasferimento (argomenti di ffmpeg).</summary>
+    public const string Bt709 = "bt709";
+
+    /// <summary>Range limitato (TV), nome di ffmpeg.</summary>
+    public const string LimitedRange = "tv";
+
+    /// <summary>Flag di swscale: arrotondamento preciso e crominanza piena nella conversione di matrice.</summary>
+    public const string ScaleFlags = "accurate_rnd+full_chroma_int";
+
+    /// <summary>
+    /// Bitstream filter per la VUI del flusso H.264: primari 1 (BT.709), trasferimento 1 (BT.709),
+    /// matrice 1 (BT.709), video_full_range_flag 0 (range limitato).
+    /// </summary>
+    public const string H264MetadataFilter =
+        "h264_metadata=colour_primaries=1:transfer_characteristics=1:matrix_coefficients=1:video_full_range_flag=0";
 
     /// <summary>Bitrate minimo per gli encoder a bitrate, in bit/s.</summary>
     public const int MinBitrate = 1_000_000;
@@ -75,15 +106,21 @@ public static class FfmpegArguments
 
         string encoder = options.Encoder!;
         string fps = options.Fps.ToString(CultureInfo.InvariantCulture);
+        string widthText = width.ToString(CultureInfo.InvariantCulture);
+        string heightText = height.ToString(CultureInfo.InvariantCulture);
 
         var args = new List<string>
         {
             "-hide_banner", "-loglevel", "warning", "-y",
             "-f", "image2pipe", "-framerate", fps, "-c:v", "mjpeg", "-i", "-",
-            "-vf", $"scale={width.ToString(CultureInfo.InvariantCulture)}:{height.ToString(CultureInfo.InvariantCulture)}",
+            "-vf", $"scale={widthText}:{heightText}:out_color_matrix={Bt709}:out_range={LimitedRange}:flags={ScaleFlags}",
             "-r", fps,
             "-c:v", encoder,
             "-pix_fmt", "yuv420p",
+            "-colorspace", Bt709,
+            "-color_primaries", Bt709,
+            "-color_trc", Bt709,
+            "-color_range", LimitedRange,
         };
 
         if (encoder == GplEncoder)
@@ -97,6 +134,12 @@ public static class FfmpegArguments
             args.Add(BitrateFor(width, height, options.Fps).ToString(CultureInfo.InvariantCulture));
         }
 
+        if (IsH264Encoder(encoder))
+        {
+            args.Add("-bsf:v");
+            args.Add(H264MetadataFilter);
+        }
+
         args.Add("-movflags");
         args.Add("+faststart");
         args.Add("-f");
@@ -104,6 +147,17 @@ public static class FfmpegArguments
         args.Add(outputPath);
 
         return args;
+    }
+
+    /// <summary>
+    /// True se l'encoder produce H.264 (<c>h264_*</c> oppure <c>libx264</c>): solo per questi
+    /// si applica il bitstream filter <c>h264_metadata</c>, che non accetta mpeg4.
+    /// </summary>
+    /// <param name="encoder">Nome dell'encoder di ffmpeg.</param>
+    public static bool IsH264Encoder(string encoder)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(encoder);
+        return encoder.StartsWith("h264_", StringComparison.Ordinal) || encoder == GplEncoder;
     }
 
     /// <summary>Controlla i parametri. Lancia <see cref="ArgumentOutOfRangeException"/> o <see cref="TimelapseException"/>.</summary>

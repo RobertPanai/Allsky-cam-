@@ -50,7 +50,7 @@ public class FfmpegArgumentsTests
         Assert.Equal("25", ValueAfter(args, "-framerate"));
         Assert.Equal("mjpeg", ValueAfter(args, "-c:v"));
         Assert.Equal("-", ValueAfter(args, "-i"));
-        Assert.Equal("scale=1920:1080", ValueAfter(args, "-vf"));
+        Assert.Equal("scale=1920:1080:out_color_matrix=bt709:out_range=tv:flags=accurate_rnd+full_chroma_int", ValueAfter(args, "-vf"));
         Assert.Equal("25", ValueAfter(args, "-r"));
         Assert.Equal("h264_mf", ValueAfter(args, "-c:v", skip: 1));
         Assert.Equal("yuv420p", ValueAfter(args, "-pix_fmt"));
@@ -69,6 +69,73 @@ public class FfmpegArgumentsTests
 
         Assert.Equal("23", ValueAfter(args, "-crf"));
         Assert.DoesNotContain("-b:v", args);
+    }
+
+    [Fact]
+    public void Build_DeclaresBt709ColourAfterPixelFormat()
+    {
+        // Ordine atteso: encoder, pixel format, poi matrice, primari, trasferimento e range (tutti BT.709, tv).
+        var options = new TimelapseOptions { Fps = 25, Encoder = "libx264", FfmpegPath = "ffmpeg" };
+
+        IReadOnlyList<string> args = FfmpegArguments.Build(options, Output, 64, 48);
+
+        int encoderAt = Index(args, "libx264");
+        int pixFmtAt = Index(args, "-pix_fmt");
+        Assert.True(encoderAt < pixFmtAt, "l'encoder va prima di -pix_fmt");
+        Assert.Equal("bt709", ValueAfter(args, "-colorspace"));
+        Assert.Equal("bt709", ValueAfter(args, "-color_primaries"));
+        Assert.Equal("bt709", ValueAfter(args, "-color_trc"));
+        Assert.Equal("tv", ValueAfter(args, "-color_range"));
+
+        int colourAt = Index(args, "-colorspace");
+        Assert.True(pixFmtAt < colourAt, "i tag colore seguono -pix_fmt");
+        Assert.True(colourAt < Index(args, "-color_primaries"), "ordine: -colorspace, -color_primaries");
+        Assert.True(Index(args, "-color_primaries") < Index(args, "-color_trc"), "ordine: -color_primaries, -color_trc");
+        Assert.True(Index(args, "-color_trc") < Index(args, "-color_range"), "ordine: -color_trc, -color_range");
+        Assert.True(Index(args, "-color_range") < Index(args, "-crf"), "i tag precedono i parametri di qualità");
+    }
+
+    [Fact]
+    public void Build_ConvertsMatrixInScaleFilterToBt709LimitedRange()
+    {
+        var options = new TimelapseOptions { Fps = 25, Encoder = "libx264", FfmpegPath = "ffmpeg" };
+
+        IReadOnlyList<string> args = FfmpegArguments.Build(options, Output, 640, 480);
+
+        string filter = ValueAfter(args, "-vf");
+        Assert.StartsWith("scale=640:480:", filter);
+        Assert.Contains("out_color_matrix=bt709", filter);
+        Assert.Contains("out_range=tv", filter);
+        Assert.Contains("flags=accurate_rnd+full_chroma_int", filter);
+    }
+
+    [Theory]
+    [InlineData("libx264")]
+    [InlineData("h264_mf")]
+    [InlineData("h264_nvenc")]
+    public void Build_H264Encoders_AddH264MetadataBitstreamFilter(string encoder)
+    {
+        var options = new TimelapseOptions { Fps = 25, Encoder = encoder, FfmpegPath = "ffmpeg" };
+
+        IReadOnlyList<string> args = FfmpegArguments.Build(options, Output, 64, 48);
+
+        Assert.Equal(FfmpegArguments.H264MetadataFilter, ValueAfter(args, "-bsf:v"));
+        Assert.Equal("h264_metadata=colour_primaries=1:transfer_characteristics=1:matrix_coefficients=1:video_full_range_flag=0",
+            FfmpegArguments.H264MetadataFilter);
+        Assert.True(Index(args, "-bsf:v") < Index(args, "-movflags"), "il bitstream filter precede -movflags");
+    }
+
+    [Fact]
+    public void Build_Mpeg4Fallback_HasColourTagsButNoH264Filter()
+    {
+        // mpeg4 (fallback) non e' H.264: h264_metadata non si applica, i tag colore restano.
+        var options = new TimelapseOptions { Fps = 25, Encoder = "mpeg4", FfmpegPath = "ffmpeg" };
+
+        IReadOnlyList<string> args = FfmpegArguments.Build(options, Output, 64, 48);
+
+        Assert.DoesNotContain("-bsf:v", args);
+        Assert.Equal("bt709", ValueAfter(args, "-colorspace"));
+        Assert.Equal("tv", ValueAfter(args, "-color_range"));
     }
 
     [Fact]
