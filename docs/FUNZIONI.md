@@ -52,6 +52,8 @@ File della cartella dati fuori da `config.json`: `youtube-auth.json` (token e cl
 | `camera.gain` | intero | `250` | nessuna | letto | Guadagno in notte. |
 | `camera.maxExposureMs` | numero | `30000` | nessuna | letto | Esposizione massima in millisecondi. |
 | `camera.dayExposureMs` | numero | `2` | nessuna | letto | Esposizione di giorno in millisecondi. |
+| `camera.exposureMode` | testo | `"auto"` | `auto` o `manual` | letto | `auto`: il controllo regola l'esposizione. `manual`: esposizione fissa a `manualExposureMs`, controllo spento. Il gain è sempre quello di `camera.gain`, in entrambe le modalità. |
+| `camera.manualExposureMs` | numero | `5000` | maggiore di zero; in `manual`, non superiore a `maxExposureMs` | letto | Esposizione fissa in millisecondi, usata solo in modalità `manual`. Valore predefinito scelto [S-scelta]. Se il driver accetta meno, si usa il limite del driver e il log lo segnala. |
 | `camera.binning` | intero | `1` | nessuna | **non letto** | Il valore non entra nella cattura. |
 
 ### `color`: elaborazione dell'immagine

@@ -86,6 +86,9 @@ public class CameraView : UserControl
     private TextBlock _gainProblem = null!;
     private TextBox _exposureBox = null!;
     private TextBlock _exposureProblem = null!;
+    private CheckBox _manualBox = null!;
+    private TextBox _manualExposureBox = null!;
+    private TextBlock _manualExposureProblem = null!;
     private Button _saveButton = null!;
 
     private IReadOnlyList<CameraCandidate> _candidates = Array.Empty<CameraCandidate>();
@@ -274,18 +277,21 @@ public class CameraView : UserControl
 
         // Si legge la configurazione corrente al momento del salvataggio: il form può essere cambiato da altre viste.
         AllSky.Core.AppConfig current = _service.GetConfig();
-        if (!CameraSettingsForm.HasChanges(check, current.Camera.Gain, current.Camera.MaxExposureMs))
+        if (!CameraSettingsForm.HasChanges(check, current.Camera))
         {
             _infoText.Text = _texts.CameraNoChanges;
             return;
         }
 
+        // Il valore manuale si salva solo se è richiesto; altrimenti resta quello precedente, intatto.
         AllSky.Core.AppConfig updated = current with
         {
             Camera = current.Camera with
             {
                 Gain = check.Gain!.Value,
                 MaxExposureMs = check.MaxExposureMs!.Value,
+                ExposureMode = check.Mode,
+                ManualExposureMs = check.ManualExposureMs ?? current.Camera.ManualExposureMs,
             },
         };
 
@@ -403,16 +409,24 @@ public class CameraView : UserControl
 
     private CameraSettingsCheck RenderProblems()
     {
-        CameraSettingsCheck check = CameraSettingsForm.Check(_gainBox.Text, _exposureBox.Text, _texts.Culture);
+        AllSky.Core.CameraExposureMode mode = ReadMode();
+        _manualExposureBox.IsEnabled = mode == AllSky.Core.CameraExposureMode.Manual;
+        CameraSettingsCheck check = CameraSettingsForm.Check(_gainBox.Text, _exposureBox.Text, mode, _manualExposureBox.Text, _texts.Culture);
         SetProblem(_gainProblem, CameraFieldMessages.For(check.GainProblem, _texts));
         SetProblem(_exposureProblem, CameraFieldMessages.For(check.MaxExposureProblem, _texts));
+        SetProblem(_manualExposureProblem, CameraFieldMessages.For(check.ManualExposureProblem, _texts));
         return check;
     }
+
+    private AllSky.Core.CameraExposureMode ReadMode() =>
+        _manualBox.IsChecked == true ? AllSky.Core.CameraExposureMode.Manual : AllSky.Core.CameraExposureMode.Auto;
 
     private void ShowSettings(AllSky.Core.AppConfig config)
     {
         _gainBox.Text = CameraSettingsForm.FormatGain(config.Camera.Gain);
         _exposureBox.Text = CameraSettingsForm.FormatExposure(config.Camera.MaxExposureMs, _texts.Culture);
+        _manualBox.IsChecked = config.Camera.ExposureMode == AllSky.Core.CameraExposureMode.Manual;
+        _manualExposureBox.Text = CameraSettingsForm.FormatExposure(config.Camera.ManualExposureMs, _texts.Culture);
         RenderProblems();
     }
 
@@ -635,6 +649,21 @@ public class CameraView : UserControl
         stack.Children.Add(BuildBodyText(_texts.CameraMaxExposureHint, "Brush.TextTertiary", "Size.Caption"));
         _exposureProblem = BuildBodyText(string.Empty, "Brush.Error", "Size.Body");
         stack.Children.Add(_exposureProblem);
+
+        _manualBox = new CheckBox { Content = _texts.CameraManualToggle, Margin = new Thickness(0, 16, 0, 0) };
+        _manualBox.SetResourceReference(Control.ForegroundProperty, "Brush.Text");
+        _manualBox.SetResourceReference(Control.FontSizeProperty, "Size.Body");
+        _manualBox.Checked += (_, _) => RenderProblems();
+        _manualBox.Unchecked += (_, _) => RenderProblems();
+        stack.Children.Add(_manualBox);
+
+        stack.Children.Add(BuildLabel(_texts.CameraManualExposureLabel));
+        _manualExposureBox = BuildTextBox(_texts.CameraManualExposureLabel);
+        _manualExposureBox.TextChanged += (_, _) => RenderProblems();
+        stack.Children.Add(_manualExposureBox);
+        stack.Children.Add(BuildBodyText(_texts.CameraManualExposureHint, "Brush.TextTertiary", "Size.Caption"));
+        _manualExposureProblem = BuildBodyText(string.Empty, "Brush.Error", "Size.Body");
+        stack.Children.Add(_manualExposureProblem);
 
         _saveButton = BuildButton(_texts.CameraSave, primary: true);
         _saveButton.Margin = new Thickness(0, 16, 0, 0);

@@ -247,3 +247,11 @@ CaptureLoopTests.FrameMedian_UpdatesExposureForNextCapture: causa trovata. Il pr
 - Restano in P1.9: i messaggi «Non disponibile…» in monospazio e troppo alti a 1280×800; pulsante primario in rosso notte poco leggibile in Impostazioni; revisione dei 1920×1080; screenshot non ancora copiati in `docs/ralph/shots/`.
 - Decisioni: P1.9 resta `[~]`. La richiesta di Robert su esposizione e gain manuali è P1.12, non ancora implementata.
 - Dubbi / da confermare con Robert: valore predefinito di `ManualExposureMs`; se «ecc.» include anche binning o altri parametri oltre a esposizione e gain.
+
+## 2026-10-24 — P1.12 (parziale): esposizione e gain manuali
+- Fatto: `camera.exposureMode` (`auto` / `manual`) e `camera.manualExposureMs` (predefinito 5000 ms, [S-scelta]). In `manual` l'engine usa min = max = esposizione manuale, clampata sui limiti del driver (avviso nel log se il driver la riduce). Validazione nell'engine: esposizione manuale > 0 e finita; in `manual`, non superiore a `maxExposureMs`. `CameraSettingsForm` esteso (modalità, campo manuale, `AboveMaximum`), vista Camera con casella «Esposizione manuale» e campo IT/EN.
+- Il gain era già fisso in entrambe le modalità (il controller regola solo l'esposizione): la richiesta di «gain manuale» è soddisfatta già prima di questa modifica. La nota in vista lo dice.
+- Test: suite completa 2891 test verdi tranne 5 falliti già prima delle modifiche (confermato con stash): `FolderScannerTests.CollegamentiSimbolici_FuoriNonSeguiti_DentroAccettati`, `McpServerHostTests.Acceso_ApreLaPortaSoloSulLoopback`, `McpServerTests.AscoltaSoloSuLoopback`, `McpServerTests.PortaOccupata_LanciaUnErroreGestibile`, `McpServerHostTests.PortaOccupata_NonLanciaELoRegistra`. Nuovi test: 8 in `CameraSettingsFormTests` (Core 651/651), 1 in `AutoExposureTests` (Capture 53/53).
+- Restano in P1.12: test engine con camera Sim (esposizione costante nei frame) e test UI del pannello.
+- Decisioni: valore predefinito 5000 ms [S-scelta]; nessun campo binning (la chiave `camera.binning` non è letta, già segnalato in FUNZIONI.md).
+- Dubbi / da confermare con Robert: il predefinito 5000 ms; se «ecc.» include altri parametri oltre a esposizione e gain.

@@ -385,8 +385,20 @@ public sealed record DesktopTexts
     /// <summary>Salvataggio senza modifiche.</summary>
     public required string CameraNoChanges { get; init; }
 
+    /// <summary>Casella «Esposizione manuale» nel pannello di cattura.</summary>
+    public required string CameraManualToggle { get; init; }
+
+    /// <summary>Etichetta dell'esposizione manuale.</summary>
+    public required string CameraManualExposureLabel { get; init; }
+
+    /// <summary>Suggerimento sotto il campo dell'esposizione manuale.</summary>
+    public required string CameraManualExposureHint { get; init; }
+
     /// <summary>Problema di un campo vuoto; in fondo al campo.</summary>
     public required string CameraProblemEmpty { get; init; }
+
+    /// <summary>Problema di un'esposizione manuale maggiore di quella massima.</summary>
+    public required string CameraProblemAboveMaximum { get; init; }
 
     /// <summary>Problema di un campo che non è un numero.</summary>
     public required string CameraProblemNotNumber { get; init; }
@@ -1017,13 +1029,17 @@ public sealed record DesktopTexts
         CameraSelectFirst = "Selezionare una camera dall'elenco.",
         CameraSettingsTitle = "Impostazioni di cattura",
         CameraGainLabel = "Guadagno",
-        CameraGainHint = "Numero intero, 0 o più.",
+        CameraGainHint = "Numero intero, 0 o più. Il guadagno è sempre quello impostato: in automatico regola solo l'esposizione.",
         CameraMaxExposureLabel = "Esposizione massima (ms)",
         CameraMaxExposureHint = "Millisecondi, maggiore di zero.",
+        CameraManualToggle = "Esposizione manuale",
+        CameraManualExposureLabel = "Esposizione fissa (ms)",
+        CameraManualExposureHint = "Con l'esposizione manuale il controllo automatico è spento. Non può superare l'esposizione massima.",
         CameraSave = "Salva e applica",
         CameraSaved = "Impostazioni salvate e applicate.",
         CameraNoChanges = "Nessuna modifica da salvare.",
         CameraProblemEmpty = "Inserire un valore.",
+        CameraProblemAboveMaximum = "Non può superare l'esposizione massima.",
         CameraProblemNotNumber = "Inserire un numero.",
         CameraProblemNotInteger = "Il guadagno deve essere un numero intero.",
         CameraProblemNegative = "Il guadagno non può essere negativo.",
@@ -1735,13 +1751,17 @@ public sealed record DesktopTexts
         CameraSelectFirst = "Select a camera from the list.",
         CameraSettingsTitle = "Capture settings",
         CameraGainLabel = "Gain",
-        CameraGainHint = "Whole number, 0 or more.",
+        CameraGainHint = "Whole number, 0 or more. The gain is always the one set here: automatic mode only adjusts the exposure.",
         CameraMaxExposureLabel = "Maximum exposure (ms)",
         CameraMaxExposureHint = "Milliseconds, greater than zero.",
+        CameraManualToggle = "Manual exposure",
+        CameraManualExposureLabel = "Fixed exposure (ms)",
+        CameraManualExposureHint = "With manual exposure the automatic control is off. It cannot exceed the maximum exposure.",
         CameraSave = "Save and apply",
         CameraSaved = "Settings saved and applied.",
         CameraNoChanges = "No changes to save.",
         CameraProblemEmpty = "Enter a value.",
+        CameraProblemAboveMaximum = "It cannot exceed the maximum exposure.",
         CameraProblemNotNumber = "Enter a number.",
         CameraProblemNotInteger = "Gain must be a whole number.",
         CameraProblemNegative = "Gain cannot be negative.",

@@ -610,6 +610,20 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
         }
 
         // Gain fisso da configurazione: il controller regola solo l'esposizione.
+        // In modalità manuale min e max coincidono: il controller non può muovere l'esposizione.
+        if (config.Camera.ExposureMode == CameraExposureMode.Manual)
+        {
+            double manualMs = Math.Clamp(config.Camera.ManualExposureMs, minExposureMs, maxExposureMs);
+            if (manualMs != config.Camera.ManualExposureMs)
+            {
+                _log($"Esposizione manuale {Fmt(config.Camera.ManualExposureMs)} ms fuori dai limiti del driver: uso {Fmt(manualMs)} ms.", null);
+            }
+
+            minExposureMs = manualMs;
+            maxExposureMs = manualMs;
+            initial = new ExposureSetting(manualMs, config.Camera.Gain);
+        }
+
         var exposureOptions = new AutoExposureOptions(
             minExposureMs,
             maxExposureMs,
@@ -1052,6 +1066,16 @@ public sealed partial class AllSkyEngine : IAllSkyService, AllSky.Core.Calibrati
         if (!(config.Camera.DayExposureMs > 0.0 && double.IsFinite(config.Camera.DayExposureMs)))
         {
             errors.Add(new ValidationError("camera.dayExposureMs", "L'esposizione iniziale deve essere maggiore di zero."));
+        }
+
+        if (!(config.Camera.ManualExposureMs > 0.0 && double.IsFinite(config.Camera.ManualExposureMs)))
+        {
+            errors.Add(new ValidationError("camera.manualExposureMs", "L'esposizione manuale deve essere maggiore di zero."));
+        }
+        else if (config.Camera.ExposureMode == CameraExposureMode.Manual
+            && config.Camera.ManualExposureMs > config.Camera.MaxExposureMs)
+        {
+            errors.Add(new ValidationError("camera.manualExposureMs", "L'esposizione manuale non può superare l'esposizione massima."));
         }
 
         return errors;

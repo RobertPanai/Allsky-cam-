@@ -148,6 +148,23 @@ public class AutoExposureTests
         Assert.True(result.Gain > 250);
     }
 
+    /// <summary>Esposizione manuale: min = max. Il controller non deve muovere né l'esposizione né il gain (P1.12).</summary>
+    [Fact]
+    public void FixedRange_ManualExposure_NeverMoves()
+    {
+        var fixedOptions = new AutoExposureOptions(5000, 5000, 250, 250);
+        var ae = new AutoExposure(fixedOptions, MaxAdu, new ExposureSetting(2, 250));
+
+        Assert.Equal(5000.0, ae.Current.ExposureMs);
+
+        foreach (int median in new[] { 100, 1000, 20000, 60000 })
+        {
+            ExposureSetting result = ae.Update(median, SkyPhase.Night);
+            Assert.Equal(5000.0, result.ExposureMs);
+            Assert.Equal(250.0, result.Gain);
+        }
+    }
+
     [Fact]
     public void Day_OnlyDescends_NeverRaises()
     {

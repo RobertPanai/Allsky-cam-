@@ -18,6 +18,7 @@ public static class CameraFieldMessages
             CameraFieldProblem.NotInteger => texts.CameraProblemNotInteger,
             CameraFieldProblem.Negative => texts.CameraProblemNegative,
             CameraFieldProblem.NotPositive => texts.CameraProblemNotPositive,
+            CameraFieldProblem.AboveMaximum => texts.CameraProblemAboveMaximum,
             _ => texts.CameraProblemNotNumber,
         };
     }

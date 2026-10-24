@@ -9,6 +9,13 @@ public enum Language
     En
 }
 
+/// <summary>Modalità di esposizione della camera ("auto", "manual").</summary>
+public enum CameraExposureMode
+{
+    Auto,
+    Manual
+}
+
 /// <summary>Modalità di bilanciamento del bianco ("auto", "manual").</summary>
 public enum WhiteBalanceMode
 {
@@ -144,11 +151,18 @@ public sealed record AppConfig
     {
         public string Id { get; init; } = "sim-1";
 
+        /// <summary>Guadagno. In entrambe le modalità è quello configurato: il controllo automatico regola solo l'esposizione.</summary>
         public int Gain { get; init; } = 250;
 
         public double MaxExposureMs { get; init; } = 30000;
 
         public double DayExposureMs { get; init; } = 2;
+
+        /// <summary>Automatica (il controllo regola l'esposizione) o manuale (esposizione fissa a <see cref="ManualExposureMs"/>).</summary>
+        public CameraExposureMode ExposureMode { get; init; } = CameraExposureMode.Auto;
+
+        /// <summary>Esposizione fissa in millisecondi, usata solo in modalità manuale. Predefinito scelto [S-scelta]: 5 s, tipico per il cielo notturno.</summary>
+        public double ManualExposureMs { get; init; } = 5000;
 
         public int Binning { get; init; } = 1;
     }
