@@ -240,3 +240,10 @@ MCP locale in src/AllSky.Mcp (118 test), render NINA nei test UI (da provare su 
 
 ## Test intermittente Capture (24/10/2026)
 CaptureLoopTests.FrameMedian_UpdatesExposureForNextCapture: causa trovata. Il produttore legge CurrentSetting prima di chiamare la camera, quindi il frame 2 poteva partire con l esposizione vecchia (corsa). Il test ora blocca la prima attesa finche il consumer ha aggiornato l esposizione (GatedDelay). Codice di produzione invariato. Da riconfermare sulla CI Windows.
+
+## 2026-10-24 — P1.9 (parziale), richiesta P1.12 (esposizione e gain manuali)
+- Fatto: P1.9 avviata. Test `DesktopUiTests` 54/54 verdi in locale (dotnet 10, Release). Corretta la scheda «Condizioni» di Stanotte (`TonightView.cs`: `Row` a colonne Star con a capo; colonna laterale in `ScrollViewer`). Build Desktop: 0 errori.
+- Test: 54 / 54 / 0.
+- Restano in P1.9: i messaggi «Non disponibile…» in monospazio e troppo alti a 1280×800; pulsante primario in rosso notte poco leggibile in Impostazioni; revisione dei 1920×1080; screenshot non ancora copiati in `docs/ralph/shots/`.
+- Decisioni: P1.9 resta `[~]`. La richiesta di Robert su esposizione e gain manuali è P1.12, non ancora implementata.
+- Dubbi / da confermare con Robert: valore predefinito di `ManualExposureMs`; se «ecc.» include anche binning o altri parametri oltre a esposizione e gain.

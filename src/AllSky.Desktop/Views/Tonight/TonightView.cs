@@ -113,8 +113,16 @@ public sealed class TonightView : UserControl
         side.Children.Add(FramePanel(BuildConditions()));
         side.Children.Add(FramePanel(BuildEvents(), top: 12));
         side.Children.Add(FramePanel(BuildCapture(), top: 12));
-        Grid.SetColumn(side, 1);
-        body.Children.Add(side);
+
+        // Su schermi bassi le schede non devono essere tagliate: la colonna scorre.
+        var sideScroll = new ScrollViewer
+        {
+            Content = side,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+        };
+        Grid.SetColumn(sideScroll, 1);
+        body.Children.Add(sideScroll);
 
         Grid.SetRow(body, 1);
         root.Children.Add(body);
@@ -281,9 +289,11 @@ public sealed class TonightView : UserControl
         value.SetResourceReference(TextBlock.FontSizeProperty, "Size.Body");
         AutomationProperties.SetName(value, label);
 
+        // Entrambe le colonne sono Star: il valore va a capo invece di spingere l'etichetta fuori dalla scheda.
+        caption.TextWrapping = TextWrapping.Wrap;
         var row = new Grid();
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         Grid.SetColumn(caption, 0);
         Grid.SetColumn(value, 1);
         row.Children.Add(caption);
