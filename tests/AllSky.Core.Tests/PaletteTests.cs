@@ -130,6 +130,19 @@ public sealed class PaletteTests
         }
     }
 
+    /// <summary>Il pulsante primario scrive il testo in <c>Brush.Background</c> sopra <c>Brush.Accent</c>: deve superare 4.5:1 in entrambe le modalità.</summary>
+    [Theory]
+    [InlineData("Dark")]
+    [InlineData("NightRed")]
+    public void PrimaryButtonText_OnAccent_MeetsAa(string name)
+    {
+        Palette palette = name == "Dark" ? Palette.Dark : Palette.NightRed;
+
+        double ratio = Palette.ContrastRatio(palette.Background, palette.Accent);
+
+        Assert.True(ratio >= AaText, $"{name}: testo del pulsante {palette.Background} su {palette.Accent} = {ratio:F2}:1");
+    }
+
     [Fact]
     public void ParseHex_AcceptsWithAndWithoutHash()
     {

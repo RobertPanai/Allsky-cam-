@@ -175,10 +175,13 @@ public sealed class TonightView : UserControl
 
         stack.Children.Add(Row(_texts.TonightSunAltitude, _sunAltitude));
         stack.Children.Add(Row(_texts.TonightMoonAltitude, _moonAltitude));
+        // Il valore resta breve («n/d») e la spiegazione va sotto la riga, non dentro la colonna del valore.
         stack.Children.Add(Row(_texts.TonightSkyClarity, _skyClarity));
+        stack.Children.Add(Hint(new TextBlock { Text = _texts.TonightSkyClarityPending }));
         stack.Children.Add(Row(_texts.TonightWeather, _weather));
-        _skyClarity.Text = _texts.TonightSkyClarityPending;
-        _weather.Text = _texts.TonightWeatherPending;
+        stack.Children.Add(Hint(new TextBlock { Text = _texts.TonightWeatherPending }));
+        _skyClarity.Text = _texts.NotAvailable;
+        _weather.Text = _texts.NotAvailable;
         return stack;
     }
 

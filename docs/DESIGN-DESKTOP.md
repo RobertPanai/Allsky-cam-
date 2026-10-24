@@ -19,7 +19,7 @@ I colori sono definiti per ruolo in `Palette.Dark` e `Palette.NightRed`. Nel tem
 | Text | `#E6EDF7` | `#FF0000` |
 | TextSecondary | `#8C98AB` | `#F20000` |
 | TextTertiary | `#7A8594` | `#EE0000` |
-| Accent | `#5CC8FF` | `#E60000` |
+| Accent | `#5CC8FF` | `#F20000` (era `#E60000`: contrasto 4,4:1 con il testo del pulsante, sotto 4,5:1; senza verde né blu) |
 | Accent2 | `#8A7DFF` | `#C00000` |
 | Success | `#3DDC97` | `#F80000` |
 | Warning | `#FFC24B` | `#FF0000` |

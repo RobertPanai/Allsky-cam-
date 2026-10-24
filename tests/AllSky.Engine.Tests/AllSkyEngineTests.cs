@@ -173,6 +173,92 @@ public sealed class AllSkyEngineTests
         await engine.StopAsync();
     }
 
+    /// <summary>P1.12: in modalità manuale ogni posa usa l'esposizione e il gain configurati, anche di notte.</summary>
+    [Fact]
+    public async Task ModalitaManuale_OgniPosaUsaLEsposizioneFissa()
+    {
+        using var h = new Harness();
+        var clock = new FakeClock(new DateTimeOffset(2026, 10, 19, 22, 0, 0, TimeSpan.Zero)); // notte
+        AppConfig cfg = Config(h.ArchiveFolder, intervalSeconds: 60);
+        cfg = cfg with
+        {
+            Camera = cfg.Camera with
+            {
+                Gain = 250,
+                MaxExposureMs = 30000,
+                ExposureMode = CameraExposureMode.Manual,
+                ManualExposureMs = 2000,
+            },
+        };
+        h.SaveConfig(cfg);
+
+        var sim = new SimCamera(SmallSim(), clock);
+        var exposures = new List<double>();
+        var gains = new List<double>();
+        var gate = new object();
+        var camera = new TestCamera(sim, capture: (exposureMs, gain, ct) =>
+        {
+            lock (gate)
+            {
+                exposures.Add(exposureMs);
+                gains.Add(gain);
+            }
+
+            return sim.CaptureAsync(exposureMs, gain, ct);
+        });
+        var reached = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var delay = new ScriptDelay(clock, (index, ct) =>
+        {
+            if (index < 5)
+            {
+                return Task.CompletedTask;
+            }
+
+            reached.TrySetResult();
+            return Task.Delay(System.Threading.Timeout.Infinite, ct);
+        });
+
+        await using var engine = new AllSkyEngine(h.Dependencies(clock, new TestCameraProvider(_ => camera), delay));
+        await engine.StartAsync();
+        await reached.Task.WaitAsync(Timeout);
+        await engine.StopAsync();
+
+        lock (gate)
+        {
+            Assert.True(exposures.Count >= 5, $"Pose registrate: {exposures.Count}");
+            Assert.All(exposures, e => Assert.Equal(2000.0, e));
+            Assert.All(gains, g => Assert.Equal(250.0, g));
+        }
+    }
+
+    /// <summary>P1.12: un'esposizione manuale oltre il massimo non viene salvata.</summary>
+    [Fact]
+    public async Task UpdateConfig_EsposizioneManualeOltreIlMassimo_Rifiutata()
+    {
+        using var h = new Harness();
+        var clock = new FakeClock(new DateTimeOffset(2026, 10, 19, 22, 0, 0, TimeSpan.Zero));
+        AppConfig cfg = Config(h.ArchiveFolder, intervalSeconds: 60);
+        h.SaveConfig(cfg);
+
+        var sim = new SimCamera(SmallSim(), clock);
+        await using var engine = new AllSkyEngine(h.Dependencies(clock, new TestCameraProvider(_ => new TestCamera(sim)), new ScriptDelay(clock, (_, _) => Task.CompletedTask)));
+
+        AppConfig bad = cfg with
+        {
+            Camera = cfg.Camera with
+            {
+                MaxExposureMs = 30000,
+                ExposureMode = CameraExposureMode.Manual,
+                ManualExposureMs = 40000,
+            },
+        };
+
+        ConfigUpdateResult result = engine.UpdateConfig(bad);
+
+        Assert.False(result.Ok);
+        Assert.Contains(result.Errors, e => e.Path == "camera.manualExposureMs");
+    }
+
     [Fact]
     public async Task LimitiDriverNonValidi_ConnectResultEStatoSonoLeggibiliDallaVistaCamera()
     {

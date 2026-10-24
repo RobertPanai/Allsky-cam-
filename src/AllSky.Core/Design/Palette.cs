@@ -83,7 +83,7 @@ public sealed record Palette(
         Text: "#FF0000",
         TextSecondary: "#F20000",
         TextTertiary: "#EE0000",
-        Accent: "#E60000",
+        Accent: "#F20000",
         Accent2: "#C00000",
         Success: "#F80000",
         Warning: "#FF0000",
