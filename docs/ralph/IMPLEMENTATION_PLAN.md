@@ -208,21 +208,21 @@ Se un comando fallisce per motivi d'ambiente (SDK, rete, NuGet), scrivi il motiv
 ### P9 — Funzioni avanzate (dopo P8.4; ogni task include la sua parte di UI secondo §5)
 Fatti da verificare prima di ciascun task: tutti [NV] finché non hai letto la fonte ufficiale e non l'hai annotata in NOTES.md.
 
-- [ ] **P9.1 [S] Catalogo stellare e raffinamento astrometrico.**
+- [~] **P9.1 [S] Catalogo stellare e raffinamento astrometrico.** *Stato 24/10:* fatto il codice e i test sintetici: precessione J2000→data (`AllSky.Astro.Precession`, Meeus cap. 21, tassi di riferimento 46,1″/anno e 20,04″/anno nei test) e raffinamento della calibrazione fisheye (`AllSky.Sky.StarFit`: Gauss-Newton su centro, scala e K2, identificazione per vicinanza). **[B] Dati del catalogo:** il Bright Star Catalogue (V/50) non ha una licenza verificabile (copyright Hoffleit e Warren 1991, Debian lo classifica non-free, la distribuzione è limitata al CD dell'ADC); Hipparcos/Tycho è CC BY-NC 3.0 IGO (non permissiva per il piano). Serve una decisione di Robert su quale catalogo accettare, o su una licenza diversa. Non copio dati senza licenza verificata.
   - **Catalogo:** stelle luminose fino a circa mag 6, per esempio il Yale Bright Star Catalogue. **Prima verifica e annota la licenza.** Se non è di pubblico dominio o permissiva (CC0, CC-BY, BSD, MIT), cerca un'alternativa permissiva. Niente dati GPL o share-alike senza una nota per Robert.
   - **Dati:** copia ridotta nel repository (RA, Dec, mag V, B−V), con un file che ne documenta fonte e licenza.
   - **Precessione a J2000→data:** usa un algoritmo standard, per esempio di Meeus. Annota la fonte della formula.
   - **Raffinamento:** usa le stelle per rifinire la calibrazione fisheye di P3: identificazione delle stelle vicino alla posizione prevista e fit ai minimi quadrati con un termine radiale.
   - *Test:* stelle sintetiche proiettate con parametri noti, che il fit deve ritrovare.
   - *Dip.:* P3.2.
-- [ ] **P9.2 [S] Calibrazione fotometrica sulle stelle note.**
+- [~] **P9.2 [S] Calibrazione fotometrica sulle stelle note.** *Stato 24/10:* fatto il fit (`AllSky.Sky.Photometry.Fit`: punto zero, estinzione e termine di colore per minimi quadrati lineari, test su dati con parametri noti) e l'indice di cielo sereno (`SkyClarityIndex`). **Restano:** fotometria d'apertura sui frame reali (dipende dal catalogo P9.1 bloccato), matrice colore e guadagni del bilanciamento, magnitudine limite.
   - Su frame notturni senza nuvole: fotometria d'apertura delle stelle identificate in P9.1, con il fondo misurato in un anello.
   - Fit del **punto zero** in funzione della massa d'aria (estinzione) e dei **termini di colore** per canale da B−V.
   - Ne derivano una **matrice di correzione colore** e i guadagni del bilanciamento del bianco, per colori coerenti tra notti diverse. È opzionale e sostituisce il bilanciamento automatico solo se l'utente lo attiva.
   - Fornisce anche **magnitudine limite** e **indice di cielo sereno**: stelle rilevate diviso stelle attese per settore. Questo indice alimenta la carta "Condizioni" di P1.11.
   - *Test:* campo stellare sintetico con punto zero ed estinzione noti, che il fit deve ritrovare entro la tolleranza.
   - *Dip.:* P9.1.
-- [ ] **P9.3 [S] SQM stimato.**
+- [~] **P9.3 [S] SQM stimato.** *Stato 24/10:* fatta la formula (`AllSky.Sky.SkyBrightness.MagPerArcsec2`: μ = Z − 2,5·log10(F/(t·A)) + offset) con test a brillanza nota. **Restano:** il fondo depurato dalle stelle (dipende da P9.1/P9.2), il grafico della notte, il valore nel sidecar, l'etichetta «stimato» in UI.
   - Stima la brillanza del fondo allo zenit in mag/arcsec² dalla luminanza del fondo, una volta tolte le stelle.
   - Servono l'area del pixel in arcsec² (dal modello fisheye allo zenit), l'esposizione e il punto zero di P9.2.
   - **Offset di calibrazione** facoltativo, inseribile dall'utente confrontando una sera con un SQM reale.

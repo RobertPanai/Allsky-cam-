@@ -295,3 +295,24 @@ CaptureLoopTests.FrameMedian_UpdatesExposureForNextCapture: causa trovata. Il pr
 - Scelte di colore della modalità notte rossa in Impostazioni (pulsante primario, contrasto).
 
 **Note di stato:** i punti marcati [NV] vanno verificati prima di usarli; per quelli che dipendono dal PC di Robert o dagli artifact, il loop non può procedere da solo.
+
+## 2026-10-24 — P9.1, P9.2, P9.3 (parziale): codice e test; dati del catalogo bloccati da licenza
+
+### Licenza del catalogo (P9.1)
+- **Yale Bright Star Catalogue (V/50, BSC5):** non ho trovato un testo di licenza verificabile. Copyright Hoffleit e Warren 1991; Debian lo classifica non-free (https://metadata.ftp-master.debian.org/changelogs/non-free/y/yale/stable_copyright); la nota del catalogo CDS dice che è distribuito per il CD dell'ADC (https://cdsarc.u-strasbg.fr/ftp/cati/V/50). Non permissiva secondo il criterio del piano. Il download diretto da CDS non è riuscito in questo ambiente per un certificato non riconosciuto da curl (schannel), quindi non l'ho scaricato.
+- **Hipparcos/Tycho (ESA):** licenza CC BY-NC 3.0 IGO secondo ESA (https://www.cosmos.esa.int/web/hipparcos/catalogues). Contiene la clausola NC, quindi non è permissiva per il piano.
+- **Decisione richiesta a Robert:** quale catalogo accettare (per esempio un dataset dichiarato CC0 o pubblico dominio, da lui indicato), oppure consentire una licenza con clausole diverse. Finché non c'è, nessun dato copiato nel repository.
+
+### Codice e test
+- `AllSky.Astro.Precession.FromJ2000`: Meeus cap. 21, eq. 21.2–21.4 (formula da verificare contro una fonte primaria [NV]). Test: identità a J2000; tassi di riferimento 46,1″/anno in RA e 20,04″/anno in Dec a α = δ = 0 (valori standard [V] dalla letteratura, usati come tolleranza ±1%).
+- `AllSky.Sky.StarFit`: Gauss-Newton su centro, scala e K2 del modello fisheye; identificazione per vicinanza. Test: senza rumore recupera il modello (tolleranza 1e-4 px); con rumore 0,2 px resta nelle tolleranze. Errore trovato e corretto durante il lavoro: scambio di righe nel risolutore con doppio scambio della diagonale.
+- `AllSky.Sky.Photometry`: fit lineare di Z, k e c; indice di cielo sereno limitato a [0, 1]. Test su dati sintetici con parametri noti. Durante il lavoro: il rumore sinusoidale dei test era correlato con la massa d'aria (periodo 7) e spostava lo zero point di 0,05; sostituito con una sequenza deterministica non periodica.
+- `AllSky.Sky.SkyBrightness.MagPerArcsec2`: μ = Z − 2,5·log10(F/(t·A)) + offset. Test: 1 ADU/s/arcsec² dà Z; ×100 di flusso dà −5 magnitudini; offset sommato.
+
+### Test (runner locale)
+- Sky 89/89, Astro 46/46. Suite completa: falliti solo i 5 già presenti prima (Studio 1, Mcp 4).
+
+### Restano
+- P9.1: dati del catalogo (bloccato da licenza), applicazione del fit ai frame reali.
+- P9.2: fotometria d'apertura sui frame; matrice colore; magnitudine limite.
+- P9.3: fondo depurato dalle stelle, grafico, sidecar, etichetta «stimato» in UI.
