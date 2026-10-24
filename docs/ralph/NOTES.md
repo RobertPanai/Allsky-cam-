@@ -237,3 +237,6 @@ AllSky.Studio/Export: coda di esportazione con destinazioni finte. Suite 2770 te
 
 ## P17.3/P17.4 (23/10/2026)
 MCP locale in src/AllSky.Mcp (118 test), render NINA nei test UI (da provare su Windows). Suite 2888. Da confermare: eta massima coordinate NINA 60 s.
+
+## Test intermittente Capture (24/10/2026)
+CaptureLoopTests.FrameMedian_UpdatesExposureForNextCapture: causa trovata. Il produttore legge CurrentSetting prima di chiamare la camera, quindi il frame 2 poteva partire con l esposizione vecchia (corsa). Il test ora blocca la prima attesa finche il consumer ha aggiornato l esposizione (GatedDelay). Codice di produzione invariato. Da riconfermare sulla CI Windows.

@@ -313,7 +313,9 @@ public class CaptureLoopTests
             }
             return Frames.Uniform(2000, s, clock.UtcNow); // ~3% di MaxAdu: scuro
         });
-        var delay = new FakeDelay(clock, n => { if (n == 2) cts.Cancel(); });
+        // Il produttore legge l'impostazione corrente PRIMA di chiamare la camera: per rendere il test deterministico
+        // la prima attesa dopo il frame 1 aspetta che il consumer abbia aggiornato l'esposizione (corsa vista su CI Windows).
+        var delay = new GatedDelay(new FakeDelay(clock, n => { if (n == 2) cts.Cancel(); }), firstProcessed.Task);
 
         Task OnFrame(RawFrame frame, CancellationToken ct)
         {
@@ -346,5 +348,29 @@ public class CaptureLoopTests
             new CaptureLoop(camera, clock, NoOp, new BlockingDelay(), ae, new CaptureLoopOptions(30, true, 91, 7)));
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             new CaptureLoop(camera, clock, NoOp, new BlockingDelay(), ae, new CaptureLoopOptions(30, true, 45, 181)));
+    }
+
+    /// <summary>Ritardo che, alla prima chiamata, attende un segnale prima di delegare al ritardo finto.</summary>
+    private sealed class GatedDelay : ICaptureDelay
+    {
+        private readonly ICaptureDelay _inner;
+        private readonly Task _gate;
+        private int _calls;
+
+        public GatedDelay(ICaptureDelay inner, Task gate)
+        {
+            _inner = inner;
+            _gate = gate;
+        }
+
+        public async Task DelayAsync(TimeSpan delay, CancellationToken cancellationToken)
+        {
+            if (Interlocked.Increment(ref _calls) == 1)
+            {
+                await _gate.WaitAsync(TimeSpan.FromSeconds(10), cancellationToken);
+            }
+
+            await _inner.DelayAsync(delay, cancellationToken);
+        }
     }
 }
