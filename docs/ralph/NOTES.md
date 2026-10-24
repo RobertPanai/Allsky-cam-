@@ -255,3 +255,43 @@ CaptureLoopTests.FrameMedian_UpdatesExposureForNextCapture: causa trovata. Il pr
 - Restano in P1.12: test engine con camera Sim (esposizione costante nei frame) e test UI del pannello.
 - Decisioni: valore predefinito 5000 ms [S-scelta]; nessun campo binning (la chiave `camera.binning` non è letta, già segnalato in FUNZIONI.md).
 - Dubbi / da confermare con Robert: il predefinito 5000 ms; se «ecc.» include altri parametri oltre a esposizione e gain.
+
+## 2026-10-24 — P8.3 Riepilogo per Robert, P8.4 marcato [B]
+
+### Riepilogo per Robert
+**Fatto (con test verdi nel runner locale):** configurazione e aggiornamenti; cattura e timelapse; maschera informativa; rilevamento meteore e transiti; meteo e satelliti collegati al sidecar; pubblicazione YouTube (OAuth, upload, pianificazione); viste Stanotte, Live, Eventi, Notti, Pubblicazione, Camera, Maschera, Impostazioni, Log. Rilascio 0.3.0 già pubblicato il 22/10.
+
+**Parziale:**
+- P1.9 Revisione UI: corretta la scheda Condizioni di Stanotte; restano pulsante in rosso notte, messaggi «Non disponibile» e revisione a 1920×1080.
+- P1.12 Esposizione e gain manuali: config, validazione, engine, vista Camera fatti; restano test engine con camera Sim e test UI del pannello.
+- P9.7 (client Telegram), P11.x (logica NINA), P12.1 (dati pubblici), P13.2–P13.4 (Studio: logica), P14.2 (correzioni colore), P15.2 (invio Telegram), P17.3–P17.4 (render NINA e server MCP locale): logica fatta, UI o verifica su Windows ancora aperte.
+
+**Bloccato o non fatto:**
+- P8.4 (release 0.3.0 ripetuta): marcato [B], la versione esiste già.
+- P17.2 (revisione visiva degli artifact): il container non scarica gli artifact (403). Sblocco previsto tramite PC collegato (P17.5).
+- P12.4 (lato sito): solo con autorizzazione di Robert, su branch dedicato.
+
+**Test (runner locale, Release):** Core 651/651, Capture 53/53, Desktop UI 54/54, Engine 87/87. Suite completa: cinque test falliti in Studio (1) e Mcp (4), che falliscono anche senza le modifiche di P1.12 (confermato con stash): collegamenti simbolici fuori dalla cartella e porte in loopback. Sono legati all'ambiente, non alle modifiche.
+
+**Decisioni da confermare con Robert:**
+- Predefinito di `camera.manualExposureMs`: 5000 ms [S-scelta].
+- Unità del guadagno ZWO, 0,1 dB per unità [NV], non verificata su fonte.
+- Telegram: 50 messaggi al giorno di default; testo oltre il limite trattato come input non valido.
+- Studio P13.2: speed.factor 0,01–100; rotazione 90 gradi in senso orario.
+- Open-Meteo: pressione da `surface_pressure`; unità non confermate con una risposta reale.
+- Se «ecc.» in P1.12 include altri parametri oltre a esposizione e gain.
+
+**Prossimi passi proposti:** chiudere P1.9 e P1.12 (test engine con Sim e UI); poi P9.1 (catalogo stellare, serve una scelta di dataset con licenza verificata); eventuale nuova release solo su decisione di Robert.
+
+### Da provare sul PC con la ZWO
+- Modello e tipo di sensore della camera ZWO (`ASICamera2`, oggi rifiutata come «Monochrome»).
+- Limiti di esposizione ZWO: la correzione 0.2.1 non è ancora provata sulla camera reale.
+- Unità del guadagno (0,1 dB per unità) [NV].
+- Esposizione manuale (P1.12) con il driver reale: limiti, arrotondamenti, comportamento con bias reale.
+- Soglie del rilevatore di scie e meteore su immagini reali; oggi solo dati sintetici.
+- Correzioni temporali del colore (P14.2): il bias da 800 ADU non scala con l'esposizione, la compensazione non basta; decidere prima di attivarla su dati reali.
+- Aggiornamento Velopack dalla 0.2.1 all'altro PC.
+- Avvio dell'exe su Windows con camera Sim e overlay meteo/satelliti a schermo.
+- Scelte di colore della modalità notte rossa in Impostazioni (pulsante primario, contrasto).
+
+**Note di stato:** i punti marcati [NV] vanno verificati prima di usarli; per quelli che dipendono dal PC di Robert o dagli artifact, il loop non può procedere da solo.
